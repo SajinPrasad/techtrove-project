@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!--=======  breadcrumb area =======-->
+
+<div class="breadcrumb-area breadcrumb-bg-1 pt-50 pb-70 mb-130">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="breadcrumb-title">Customer login</h1>
+
+				<!--=======  breadcrumb list  =======-->
+
+				<ul class="breadcrumb-list">
+					<li class="breadcrumb-list__item"><a href="{% url 'landingpage' %}">HOME</a></li>
+					<li class="breadcrumb-list__item breadcrumb-list__item--active">customer login</li>
+				</ul>
+
+				<!--=======  End of breadcrumb list  =======-->
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--=======  End of breadcrumb area =======-->
+
+<!--=============================================
+=            login page content         =
+=============================================-->
+
+<div class="login-area mb-130 mb-md-70 mb-sm-70 mb-xs-70 mb-xxs-70">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6 mb-md-50 mb-sm-50">
+				<div class="lezada-form login-form">
+					<form method="post" enctype="multipart/form-data" action="{% url 'login' %}">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-lg-12">
+								<!--=======  login title  =======-->
+
+								<div class="section-title section-title--login text-center mb-50">
+									<h2 class="mb-20">Login</h2>
+									<p>Great to have you back!</p>
+								</div>
+
+								<!--=======  End of login title  =======-->
+							</div>
+							<div class="col-lg-12 mb-60">
+								<input type="text" placeholder="Email address" name="email" required>
+							</div>
+							<div class="col-lg-12 mb-60">
+								<input type="password" placeholder="Password" name="password" required>
+							</div>
+							<div class="col-lg-12 text-center mb-30">
+								<button class="lezada-button lezada-button--medium">login</button>
+							</div>
+
+							<div class="col-lg-12">
+								<input type="checkbox"> <span class="remember-text">Remember me</span>
+								<a href="#" class="reset-pass-link">Lost your password?</a>
+							</div>
+						</div>
+						{% include 'includes/alerts.html' %}
+					</form>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="lezada-form login-form--register">
+					<form action="{% url 'register' %}" method="post">
+						{% csrf_token %}
+						<div class="row">
+							<div class="col-lg-12">
+								<!--=======  login title  =======-->
+
+								<div class="section-title section-title--login text-center mb-50">
+									<h2 class="mb-20">Register</h2>
+									<p>If you don’t have an account, register now!</p>
+								</div>
+
+								<!--=======  End of login title  =======-->
+							</div>
+							<div class="col-lg-12 mb-30">
+								<label for="regEmail">First Name <span class="required">*</span> </label>
+								{{frm.first_name}}
+							</div>
+							<div class="col-lg-12 mb-30">
+								<label for="regEmail">Last Name <span class="required">*</span> </label>
+								{{frm.last_name}}
+							</div>
+							<div class="col-lg-12 mb-30">
+								<label for="regEmail">Email Address <span class="required">*</span> </label>
+								{{frm.email}}
+							</div>
+							<div class="col-lg-12 mb-30">
+								<label for="regEmail">Phone Number <span class="required">*</span> </label>
+								{{frm.phone_number}}
+							</div>
+							<div class="col-lg-12 mb-50">
+								<label for="regPassword">Create Password <span class="required">*</span> </label>
+								{{frm.password}}
+								{{frm.password.errors}}
+							</div>
+							<div class="col-lg-12 mb-50">
+								<label for="regPassword">Rpeat Password <span class="required">*</span> </label>
+								{{frm.confirm_password}}
+								{{frm.confirm_password.errors}}
+								{{ frm.email_errors }}
+                    			{{ frm.non_field_errors }}
+								{% if frm.errors.phone_number %}
+									<div class="alert alert-danger">
+										{{ frm.errors.phone_number }}
+									</div>
+								{% endif %}
+							</div>
+							<div class="col-lg-12 text-center">
+								<button class="lezada-button lezada-button--medium">register</button>
+							</div>
+						</div>
+						{% include 'includes/alerts.html' %}
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--=====  End of login content  ======-->
+
+
+<!--=============================================
+=            footer area         =
+=============================================-->
+
+<div class="footer-container footer-one pt-100 pb-50">
+	<div class="container wide">
+		<div class="row">
+			<div class="col footer-single-widget">
+				<!--=======  copyright text  =======-->
+				<!--=======  logo  =======-->
+
+				<div class="logo">
+					<img src="{% static 'images/logo.png' %}" class="img-fluid" alt="">
+				</div>
+
+				<!--=======  End of logo  =======-->
+
+				<!--=======  copyright text  =======-->
+
+				<div class="copyright-text">
+					<p> &copy; 2021 lezada. <span>All Rights Reserved</span></p>
+				</div>
+
+				<!--=======  End of copyright text  =======-->
+
+				<!--=======  End of copyright text  =======-->
+			</div>
+			<div class="col footer-single-widget">
+				<!--=======  single widget  =======-->
+				<h5 class="widget-title">ABOUT</h5>
+
+				<!--=======  footer navigation container  =======-->
+
+				<div class="footer-nav-container">
+					<nav>
+						<ul>
+							<li><a href="#">About us</a></li>
+							<li><a href="#">Store location</a></li>
+							<li><a href="#">Contact</a></li>
+							<li><a href="#">Orders tracking</a></li>
+						</ul>
+					</nav>
+				</div>
+
+				<!--=======  End of footer navigation container  =======-->
+
+				<!--=======  single widget  =======-->
+			</div>
+			<div class="col footer-single-widget">
+				<!--=======  single widget  =======-->
+				<h5 class="widget-title">USEFUL LINKS</h5>
+
+				<!--=======  footer navigation container  =======-->
+
+				<div class="footer-nav-container">
+					<nav>
+						<ul>
+							<li><a href="#">Returns</a></li>
+							<li><a href="#">Support Policy</a></li>
+							<li><a href="#">Size guide</a></li>
+							<li><a href="#">FAQs</a></li>
+						</ul>
+					</nav>
+				</div>
+
+				<!--=======  End of footer navigation container  =======-->
+
+				<!--=======  single widget  =======-->
+			</div>
+
+			<div class="col footer-single-widget">
+				<!--=======  single widget  =======-->
+				<h5 class="widget-title">FOLLOW US ON</h5>
+
+				<!--=======  footer navigation container  =======-->
+
+				<div class="footer-nav-container footer-social-links">
+					<nav>
+						<ul>
+							<li><a href="http://twitter.com/"><i class="fa fa-twitter"></i> Twitter</a></li>
+							<li><a href="http://facebook.com/"> <i class="fa fa-facebook"></i> Facebook</a></li>
+							<li><a href="http://instagram.com/"><i class="fa fa-instagram"></i> Instagram</a></li>
+							<li><a href="http://youtube.com/"> <i class="fa fa-youtube"></i> Youtube</a></li>
+						</ul>
+					</nav>
+				</div>
+
+				<!--=======  End of footer navigation container  =======-->
+
+
+				<!--=======  single widget  =======-->
+			</div>
+			<div class="col footer-single-widget">
+				<!--=======  single widget  =======-->
+
+				<div class="footer-subscription-widget">
+					<h2 class="footer-subscription-title">Subscribe.</h2>
+					<p class="subscription-subtitle">Subscribe to our newsletter to receive news on update.</p>
+
+					<!--=======  subscription form  =======-->
+
+					<div class="subscription-form">
+						<form id="mc-form" class="mc-form">
+							<input type="email" placeholder="Your email address" required>
+							<button type="submit"><i class="ion-ios-arrow-thin-right"></i></button>
+						</form>
+					</div>
+
+					<!--=======  End of subscription form  =======-->
+
+					<!-- mailchimp-alerts Start -->
+
+					<div class="mailchimp-alerts">
+						<div class="mailchimp-submitting"></div><!-- mailchimp-submitting end -->
+						<div class="mailchimp-success"></div><!-- mailchimp-success end -->
+						<div class="mailchimp-error"></div><!-- mailchimp-error end -->
+					</div><!-- mailchimp-alerts end -->
+
+				</div>
+
+				<!--=======  End of single widget  =======-->
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--=====  End of footer area  ======-->
+
+<!--=============================================
+=            overlay items         =
+=============================================-->
+
+<!--=======  about overlay  =======-->
+
+<div class="header-offcanvas about-overlay" id="about-overlay">
+	<div class="overlay-close inactive"></div>
+	<div class="overlay-content">
+
+		<!--=======  close icon  =======-->
+
+		<span class="close-icon" id="about-close-icon">
+			<a href="javascript:void(0)">
+				<i class="ti-close"></i>
+			</a>
+		</span>
+
+		<!--=======  End of close icon  =======-->
+
+		<!--=======  overlay content container  =======-->
+
+		<div class="overlay-content-container d-flex flex-column justify-content-between h-100">
+			<!--=======  widget wrapper  =======-->
+
+			<div class="widget-wrapper">
+				<!--=======  single widget  =======-->
+
+				<div class="single-widget">
+					<h2 class="widget-title">About Us</h2>
+					<p>At Lezada, we put a strong emphasis on simplicity, quality and usefulness of fashion products over other
+						factors. Our fashion items never get outdated. They are not short-lived as normal fashion clothes.</p>
+				</div>
+
+				<!--=======  End of single widget  =======-->
+			</div>
+
+			<!--=======  End of widget wrapper  =======-->
+
+			<!--=======  contact widget  =======-->
+
+			<div class="contact-widget">
+				<p class="email"><a href="mailto:contact@lezada.com">contact@lezada.com</a></p>
+				<p class="phone">(+00) 123 567990</p>
+
+				<div class="social-icons">
+					<ul>
+						<li><a href="http://www.twitter.com/" data-tippy="Twitter" data-tippy-inertia="true"
+								data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+								data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-twitter"></i></a></li>
+						<li><a href="http://www.facebook.com/" data-tippy="Facebook" data-tippy-inertia="true"
+								data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+								data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-facebook"></i></a></li>
+						<li><a href="http://www.instagram.com/" data-tippy="Instagram" data-tippy-inertia="true"
+								data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+								data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-instagram"></i></a></li>
+						<li><a href="http://www.youtube.com/" data-tippy="Youtube" data-tippy-inertia="true"
+								data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+								data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-youtube-play"></i></a></li>
+					</ul>
+				</div>
+			</div>
+
+			<!--=======  End of contact widget  =======-->
+		</div>
+
+		<!--=======  End of overlay content container  =======-->
+	</div>
+</div>
+
+<!--=======  End of about overlay  =======-->
+
+<!--=======  wishlist overlay  =======-->
+
+<div class="wishlist-overlay" id="wishlist-overlay">
+	<div class="wishlist-overlay-close inactive"></div>
+	<div class="wishlist-overlay-content">
+		<!--=======  close icon  =======-->
+
+		<span class="close-icon" id="wishlist-close-icon">
+			<a href="javascript:void(0)">
+				<i class="ion-android-close"></i>
+			</a>
+		</span>
+
+		<!--=======  End of close icon  =======-->
+
+		
+
+<!--=====  End of overlay items  ======-->
+
+<!-- scroll to top  -->
+<a href="#" class="scroll-top"></a>
+<!-- end of scroll to top -->
+
+<!-- JS
+============================================ -->
+<!-- jQuery JS -->
+<script src="{% static 'js/vendor/jquery.min.js' %}"></script>
+
+<!-- Popper JS -->
+<script src="{% static 'js/popper.min.js' %}"></script>
+
+<!-- Bootstrap JS -->
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+<!-- Plugins JS -->
+<script src="{% static 'js/plugins.js' %}"></script>
+
+<!-- Main JS -->
+<script src="{% static 'js/main.js' %}"></script>
+
+</body>
+
+
+<!-- Mirrored from htmldemo.net/lezada/lezada/shop-customer-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Jun 2022 10:53:15 GMT -->
+</html>
+
+{% endblock %}
