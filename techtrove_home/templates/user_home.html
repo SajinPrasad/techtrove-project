@@ -177,7 +177,7 @@
 									<div class="single-product">
 										<!--=======  single product image  =======-->
 										<div class="single-product__image">
-											<a class="image-wrap" href="shop-product-basic.html">
+											<a class="image-wrap" href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">
 												<img src="{{ product.images_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
 											</a>
 											<div class="single-product__floating-badges">
@@ -204,7 +204,7 @@
 										<!--=======  single product content  =======-->
 										<div class="single-product__content">
 											<div class="title">
-												<h3><a href="shop-product-basic.html">{{ product.product_name }}</a></h3>
+												<h3><a href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">{{ product.product_name }}</a></h3>
 												<a href="#">Add to cart</a>
 											</div>
 											<div class="price">

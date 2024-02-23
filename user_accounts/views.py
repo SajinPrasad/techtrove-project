@@ -57,8 +57,9 @@ def register(request):
             subject = "Activate your account"
             message = f"Activate your account using this otp: {otp}"
             send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+            messages.success(request, 'You are successfully registered with us please verify OTP ')
 
-            red = redirect(f'/verify/{user.id}/')
+            red = redirect(f'/user/verify/{user.id}/')
 
             red.set_cookie("can_otp_enter",True,max_age=600)
             messages.success(request, 'You are successfully registered with us please verify OTP ')

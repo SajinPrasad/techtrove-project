@@ -21,7 +21,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <div class="wrapper">
 
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+  {<nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
     <div class="container">
       <a href="../../index3.html" class="navbar-brand">
         <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -36,7 +36,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Left navbar links -->
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a href="index3.html" class="nav-link">Home</a>
+            <a href="{% url 'adminhome' %}" class="nav-link">Home</a>
           </li>
           <li class="nav-item">
             <a href="#" class="nav-link">Contact</a>
@@ -183,7 +183,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </li>
       </ul>
     </div>
-  </nav>
+  </nav>}
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -261,6 +261,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </div>
                   </form>
                 </div>
+                {{ form.cat_image.errors }}
+                {% include 'includes/alerts.html' %}
                 <!-- /.card-body -->
               </div>
           <!-- /.col-md-6 -->

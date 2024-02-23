@@ -69,61 +69,12 @@
 									<!--=======  End of shop product gallery icons  =======-->
 
 									<div class="shop-product__big-image-gallery-slider">
-
 										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-1.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-2.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-3.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-4.jpg' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-5.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/trendcoat-1.jpg' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/trendcoat-2.jpg' %}" class="img-fluid" alt="">
-										</div>
-
+										{% for image in single.images_set.all %}
+											<div class="single-image">
+												<img src="{{ image.image.url }}" class="img-fluid" alt="{{ single.product_name }}">
+											</div>
+										{% endfor %}
 										<!--=======  End of single image  =======-->
 									</div>
 
@@ -134,66 +85,15 @@
 								<!--=======  shop product small image gallery  =======-->
 
 								<div class="shop-product__small-image-gallery-wrapper">
-
 									<div class="shop-product__small-image-gallery-slider">
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-1-100x100.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-2-100x100.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-3-100x100.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-4-100x100.jpg' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/soccer-5-100x100.png' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/trendcoat-1-100x100.jpg' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
-
-										<!--=======  single image  =======-->
-
-										<div class="single-image">
-											<img src="{% static 'images/shop-product/trendcoat-2-100x100.jpg' %}" class="img-fluid" alt="">
-										</div>
-
-										<!--=======  End of single image  =======-->
+										{% for image in single.images_set.all %}
+											<!--=======  single image  =======-->
+											<div class="single-image">
+												<img src="{{ image.image.url }}" class="img-fluid" alt="">
+											</div>
+											<!--=======  End of single image  =======-->
+										{% endfor %}
 									</div>
-
 								</div>
 
 								<!--=======  End of shop product small image gallery  =======-->
@@ -233,7 +133,7 @@
 									<!--=======  shop product title  =======-->
 
 									<div class="shop-product__title mb-15">
-										<h2>High waist trousers</h2>
+										<h2>{{single.product_name}}</h2>
 									</div>
 
 									<!--=======  End of shop product title  =======-->
@@ -242,7 +142,7 @@
 
 									<div class="shop-product__price mb-30">
 										<span class="main-price discounted">$160.00</span>
-										<span class="discounted-price">$180.00</span>
+										<span class="discounted-price">₹{{single.price}}</span>
 									</div>
 
 									<!--=======  End of shop product price  =======-->
@@ -250,17 +150,14 @@
 									<!--=======  shop product short description  =======-->
 
 									<div class="shop-product__short-desc mb-50">
-										Hurley Dry-Fit Chino Short. Men's chino short. Outseam Length: 19 Dri-FIT Technology helps keep you
-										dry and comfortable. Made with sweat-wicking fabric. Fitted waist with belt loops. Button waist with
-										zip fly provides a classic look and feel . Back welt pockets and coin pocket for storage. Dual side
-										seam pockets. Heat transferred logos. 70% nylon 24% polyester 6% spandex. Imported.
+										{{single.description}}
 									</div>
 
 									<!--=======  End of shop product short description  =======-->
 
 									<!--=======  shop product size block  =======-->
 
-									<div class="shop-product__block shop-product__block--size mb-20">
+									<!-- <div class="shop-product__block shop-product__block--size mb-20">
 										<div class="shop-product__block__title">Size: </div>
 										<div class="shop-product__block__value">
 											<div class="shop-product-size-list">
@@ -270,13 +167,13 @@
 												<span class="single-size">XS</span>
 											</div>
 										</div>
-									</div>
+									</div> -->
 
 									<!--=======  End of shop product size block  =======-->
 
 									<!--=======  shop product color block  =======-->
 
-									<div class="shop-product__block shop-product__block--color mb-20">
+									<!-- <div class="shop-product__block shop-product__block--color mb-20">
 										<div class="shop-product__block__title">Color: </div>
 										<div class="shop-product__block__value">
 											<div class="shop-product-color-list">
@@ -290,7 +187,7 @@
 												</ul>
 											</div>
 										</div>
-									</div>
+									</div> -->
 
 									<!--=======  End of shop product color block  =======-->
 
@@ -315,12 +212,16 @@
 											data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-placement="left"
 											data-tippy-arrow="true" data-tippy-theme="sharpborder"><i class="ion-ios-shuffle"></i></a>
 									</div>
+									
+									{% if user.is_superuser %}
+									<button type="button" class="btn btn-secondary"><a href="{% url 'editproduct' single.id %}">Edit product</a></button>
+									{% endif %}
 
 									<!--=======  End of shop product buttons  =======-->
 
 									<!--=======  shop product brands  =======-->
 
-									<div class="shop-product__brands mb-20">
+									<!-- <div class="shop-product__brands mb-20">
 
 										<a href="#">
 											<img src="{% static 'images/brands/brand-1.png' %}" class="img-fluid" alt="">
@@ -330,13 +231,13 @@
 											<img src="{% static 'images/brands/brand-2.png' %}" class="img-fluid" alt="">
 										</a>
 
-									</div>
+									</div> -->
 
 									<!--=======  End of shop product brands  =======-->
 
 									<!--=======  other info table  =======-->
 
-									<div class="quick-view-other-info pb-0">
+									<!-- <div class="quick-view-other-info pb-0">
 										<table>
 											<tr class="single-info">
 												<td class="quickview-title">SKU: </td>
@@ -369,7 +270,7 @@
 												</td>
 											</tr>
 										</table>
-									</div>
+									</div> -->
 
 									<!--=======  End of other info table  =======-->
 								</div>
@@ -846,274 +747,7 @@
 
 			<!--=======  End of close icon  =======-->
 
-			<!--=======  offcanvas wishlist content container  =======-->
-
-			<div class="offcanvas-cart-content-container">
-				<h3 class="cart-title">Wishlist</h3>
-
-				<div class="cart-product-wrapper">
-					<div class="cart-product-container ps-scroll">
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dining Chair</a></h5>
-								<p><span class="main-price discounted">$300.00</span> <span class="discounted-price">$220.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="main-price discounted">$100.00</span> <span class="discounted-price">$80.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-					</div>
-
-					<!--=======  cart buttons  =======-->
-
-					<div class="cart-buttons">
-						<a href="shop-wishlist.html">view wishlist</a>
-					</div>
-
-					<!--=======  End of cart buttons  =======-->
-				</div>
-			</div>
-
-			<!--=======  End of offcanvas wishlist content container   =======-->
-		</div>
-	</div>
-
-	<!--=======  End of wishlist overlay  =======-->
-
-	<!--=======  cart overlay  =======-->
-
-	<div class="cart-overlay" id="cart-overlay">
-		<div class="cart-overlay-close inactive"></div>
-		<div class="cart-overlay-content">
-			<!--=======  close icon  =======-->
-
-			<span class="close-icon" id="cart-close-icon">
-				<a href="javascript:void(0)">
-					<i class="ion-android-close"></i>
-				</a>
-			</span>
-
-			<!--=======  End of close icon  =======-->
-
-			<!--=======  offcanvas cart content container  =======-->
-
-			<div class="offcanvas-cart-content-container">
-				<h3 class="cart-title">Cart</h3>
-
-				<div class="cart-product-wrapper">
-					<div class="cart-product-container ps-scroll">
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dining Chair</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$220.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$80.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-					</div>
-
-					<!--=======  subtotal calculation  =======-->
-
-					<p class="cart-subtotal">
-						<span class="subtotal-title">Subtotal:</span>
-						<span class="subtotal-amount">$200.00</span>
-					</p>
-
-					<!--=======  End of subtotal calculation  =======-->
-
-					<!--=======  cart buttons  =======-->
-
-					<div class="cart-buttons">
-						<a href="shop-cart.html">view cart</a>
-						<a href="shop-checkout.html">checkout</a>
-					</div>
-
-					<!--=======  End of cart buttons  =======-->
-
-					<!--=======  free shipping text  =======-->
-
-					<p class="free-shipping-text">
-						Free Shipping on All Orders Over $100!
-					</p>
-
-					<!--=======  End of free shipping text  =======-->
-				</div>
-			</div>
-
-			<!--=======  End of offcanvas cart content container   =======-->
+			
 		</div>
 	</div>
 

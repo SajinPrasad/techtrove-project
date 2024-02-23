@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from user_accounts.models import Accounts
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
+from django.contrib import messages
+
+from user_accounts.models import Accounts
 
 # Create your views here.
 
@@ -34,6 +36,9 @@ def admin_login(request):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
 def adminhome(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('adminlogin')
     return render(request, 'admin_home.html')
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
@@ -43,5 +48,6 @@ def admin_logout(request):
         logout(request)
         return redirect('adminlogin')
     return redirect('adminhome')
+
 
 

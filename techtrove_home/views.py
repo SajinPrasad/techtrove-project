@@ -27,7 +27,7 @@ def user_home(request):
 def single_product(request, category_slug, product_slug):
     items = Category.objects.all()
     try:
-        single = Products.objects.get(category_slug=category_slug, slug=product_slug)
+        single = Products.objects.get(category__slug=category_slug, slug=product_slug)
     except Exception as e:
         raise e
     context = {
