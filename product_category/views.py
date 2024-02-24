@@ -22,7 +22,7 @@ def add_category(request):
     else:
         form = CategoryForm()
     context = {'form':form}
-    return render(request, 'cart.html', context)
+    return render(request, 'add_category.html', context)
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
@@ -39,7 +39,7 @@ def edit_category(request, pk):
     else:
         form = CategoryForm(instance=item)
 
-    return render(request, 'cart.html', {'form':form})
+    return render(request, 'add_category.html', {'form':form})
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')

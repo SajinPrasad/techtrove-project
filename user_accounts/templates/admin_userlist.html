@@ -13,21 +13,7 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
 </head>
-<style>
-  .single-product {
-      border: 1px solid lightgrey;
-      padding: 10px;
-      margin-bottom: 10px;
-      max-height: 350px;
-      overflow: hidden;
-  }
 
-  .single-product__image img {
-      width: 260px;
-      height: 200px;
-      object-fit: cover;  /* This property maintains the aspect ratio while covering the container */
-  }
-</style>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   <!-- Navbar -->
@@ -178,12 +164,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Category list</h1>
+            <h1>User list</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="{% url 'adminhome' %}">Home</a></li>
-              <li class="breadcrumb-item active">Categories</li>
+              <li class="breadcrumb-item active">Users</li>
             </ol>
           </div>
         </div>
@@ -191,53 +177,96 @@
     </section>
 
     <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-          <div class="row">
-              <div class="col-12">
-                  <div class="card card-primary">
-                      <div class="card-header">
-                          <h3 class="card-title">Categories</h3>
-                      </div>
-                      <!-- /.card-header -->
-                      <div class="card-body">
-                          <div class="row">
-                            {% for product in products %}
-                            {% if product.is_available %}
-                              <div class="col-md-3">
-                                  <div class="single-product">
-                                      <div class="single-product__content text-center">
-                                          <div class="title">
-                                              <div class="single-product__image">
-                                                  <a class="image-wrap" href="{% url 'singleproductadmin' category_slug=product.category.slug product_slug=product.slug %}">
-                                                      <img src="{{ product.images_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
-                                                  </a>
-                                              </div>
-                                              <div class="title">
-                                    						<h6><a style="color: black;" href="{% url 'singleproductadmin' category_slug=product.category.slug product_slug=product.slug %}">{{ product.product_name }}</a></h6>
-                                  						</div>
-                                  						<div class="price">
-                                    						<h5>₹{{ product.price }}</h5>
-                                  						</div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                              {% endif %}
-                              {% endfor %}
-                          </div>
-                      </div>
-                      <!-- /.card-body -->
-                  </div>
-                  <!-- /.card -->
-              </div>
-              <!-- /.col -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Userlist Table</h3>
           </div>
-          <!-- /.row -->
-      </div>
-      <!-- /.container-fluid -->
-  </section>
-  
+          <!-- ./card-header -->
+          <div class="card-body">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Sl no</th>
+                  <th>First name</th>
+                  <th>Last name</th>
+                  <th>Email</th>
+                  <th>Username</th>
+                  <th>Phone number</th>
+                  <th>Is verified</th>
+                  <th>Is blocked</th>
+                  <th>Date joined</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+               {% for user in users %}
+               <tr data-widget="expandable-table" aria-expanded="false">
+                <td>{{ forloop.counter }}</td>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_name}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.username}}</td>
+                <td>{{user.phone_number}}</td>
+                <td>{{user.is_verified}}</td>
+                <td>{{user.is_blocked}}</td>
+                <td>{{user.date_joined}}</td>
+                <td><a href="{% url 'adminuseredit' user.id %}">Edit</a></td>
+              </tr>
+               {% endfor %}
+                <!-- <tr data-widget="expandable-table" aria-expanded="true">
+                  <td>219</td>
+                  <td>Alexander Pierce</td>
+                  <td>11-7-2014</td>
+                  <td>Pending</td>
+                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                </tr>
+                <tr data-widget="expandable-table" aria-expanded="true">
+                  <td>657</td>
+                  <td>Alexander Pierce</td>
+                  <td>11-7-2014</td>
+                  <td>Approved</td>
+                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                </tr>
+                <tr data-widget="expandable-table" aria-expanded="false">
+                  <td>175</td>
+                  <td>Mike Doe</td>
+                  <td>11-7-2014</td>
+                  <td>Denied</td>
+                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                </tr>
+                <tr data-widget="expandable-table" aria-expanded="false">
+                  <td>134</td>
+                  <td>Jim Doe</td>
+                  <td>11-7-2014</td>
+                  <td>Approved</td>
+                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                </tr>
+                <tr data-widget="expandable-table" aria-expanded="false">
+                  <td>494</td>
+                  <td>Victoria Doe</td>
+                  <td>11-7-2014</td>
+                  <td>Pending</td>
+                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                </tr>
+                <tr data-widget="expandable-table" aria-expanded="false">
+                  <td>832</td>
+                  <td>Michael Doe</td>
+                  <td>11-7-2014</td>
+                  <td>Approved</td>
+                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                </tr>
+                <tr data-widget="expandable-table" aria-expanded="false">
+                  <td>982</td>
+                  <td>Rocky Doe</td>
+                  <td>11-7-2014</td>
+                  <td>Denied</td>
+                  <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->

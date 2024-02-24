@@ -49,3 +49,8 @@ class RegistrationForm(forms.ModelForm):
                 raise forms.ValidationError('Phone number should contain at least 10 digits.')
 
         return cleaned_data
+    
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = Accounts
+        fields = ['is_blocked']

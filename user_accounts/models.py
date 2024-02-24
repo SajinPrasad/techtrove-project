@@ -35,6 +35,7 @@ class Accounts(AbstractUser):
     otp = models.IntegerField(null=True, blank=True)
     uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     is_verified = models.BooleanField(default=False)
+    is_blocked = models.BooleanField(default=False)
 
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)

@@ -153,12 +153,12 @@
 
 					<div class="tab-product-navigation mb-50">
 						<div class="nav nav-tabs justify-content-center" id="nav-tab2" role="tablist">
-							<a class="nav-item nav-link active" id="product-tab-1" data-toggle="tab" href="#product-series-1"
-								role="tab" aria-selected="true">New</a>
-							<a class="nav-item nav-link" id="product-tab-2" data-toggle="tab" href="#product-series-2" role="tab"
+							<!-- <a class="nav-item nav-link active" id="product-tab-1" data-toggle="tab" href="#product-series-1"
+								role="tab" aria-selected="true">New</a> -->
+							<a class="nav-item nav-link" id="product-tab-2" data-toggle="tab" href="#" role="tab"
 								aria-selected="false">Popular</a>
-							<a class="nav-item nav-link" id="product-tab-3" data-toggle="tab" href="#product-series-3" role="tab"
-								aria-selected="false">Sale</a>
+							<!-- <a class="nav-item nav-link" id="product-tab-3" data-toggle="tab" href="#product-series-3" role="tab"
+								aria-selected="false">Sale</a> -->
 						</div>
 					</div>
 
@@ -172,6 +172,7 @@
 							<div class="row">
 
 								{% for product in products %}
+								{% if product.is_available %}
 								<!--=======  single product  =======-->
 								<div class="col-12 col-lg-4 col-md-6 col-sm-6 mb-45">
 									<div class="single-product">
@@ -215,12 +216,8 @@
 									</div>
 								</div>
 								<!--=======  End of single product  =======-->
+								{% endif %}
 								{% endfor %}
-
-
-								
-
-
 							</div>
 						</div>
 					</div>

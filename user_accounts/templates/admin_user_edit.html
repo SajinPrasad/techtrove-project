@@ -21,7 +21,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <div class="wrapper">
 
   <!-- Navbar -->
-  {<nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+  <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
     <div class="container">
       <a href="../../index3.html" class="navbar-brand">
         <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -183,7 +183,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </li>
       </ul>
     </div>
-  </nav>}
+  </nav>
   <!-- /.navbar -->
 
   <!-- Content Wrapper. Contains page content -->
@@ -193,13 +193,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Add Categories</h1>
+            <h1 class="m-0">Edit user</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item"><a href="#">Layout</a></li>
-              <li class="breadcrumb-item active">Top Navigation</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -208,70 +207,48 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- /.content-header -->
 
     <!-- Main content -->
-    <div class="content">
-      <div class="container">
-        <div class="row">
+    <div class="content w-50 mx-auto">
+      <!-- <div class="container">
+        <div class="row"> -->
             <div class="card card-warning">
                 <div class="card-header">
-                  <h3 class="card-title">General Elements</h3>
+                  <h3 class="card-title">Block or ublock the user</h3>
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body">
+                <div class="card-body mr-auto w-100">
                   <form action="" method="post" enctype="multipart/form-data">
                   {% csrf_token %}
                     <div class="row">
                       <div class="col-sm-6">
                         <!-- text input -->
-                        <div class="form-group">
-                          <label>Category Name</label>
-                          {{form.category_name}}
-                        </div>
+                        <div class="form-group d-flex">
+                          <h5>First name : {{user.first_name}}</h5>
                       </div>
-                      <div class="col-sm-6">
-                        <!-- text input -->
-                        <div class="form-group">
-                          <label>Slug</label>
-                          {{form.slug}}
-                        </div>
+                      <div class="form-group d-flex">
+                        <h5>Last name : {{user.last_name}}</h5>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-sm-12">
-                        <!-- textarea -->
-                        <div class="form-group">
-                          <label>Description</label>
-                          {{form.description}}
-                        </div>
+                      <div class="form-group d-flex">
+                        <h5>Username : {{user.username}}</h5>
                       </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputFile">Image input</label>
-                        <div class="input-group">
-                          <div class="custom-file">
-                            {{form.cat_image}}
-                            <!-- <label class="custom-file-label" ></label> -->
-                          </div>
-                          <!-- <div class="input-group-append">
-                            <span class="input-group-text">Upload</span>
-                          </div> -->
-                        </div>
-                    </div>
-                    <div class="card-footer text-center">
+                      <div class="form-group d-flex">
+                        <h5>Email : {{user.email}}</h5>
+                      </div>
+                      <div class="form-group">
+                        <h5>Blocked<h5>
+                        {{form.is_blocked}}
+                      </div>
+                      <div class="card-footer text-center">
                         <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
+                    </div> 
                   </form>
                 </div>
-                {{ form.cat_image.errors }}
-                {% include 'includes/alerts.html' %}
+              {% include 'includes/alerts.html' %}
                 <!-- /.card-body -->
               </div>
           <!-- /.col-md-6 -->
         </div>
         <!-- /.row -->
-      </div><!-- /.container-fluid -->
     </div>
-    <!-- /.content -->
-  </div>
   <!-- /.content-wrapper -->
 
   <!-- Control Sidebar -->

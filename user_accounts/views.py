@@ -11,9 +11,11 @@ from django.contrib import messages, auth
 from django.core.exceptions import MultipleObjectsReturned
 from django.utils import timezone
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import update_session_auth_hash
 
 from .models import Accounts
-from .forms import RegistrationForm
+from .forms import RegistrationForm, UserEditForm
 
 # Create your views here.
 
@@ -93,13 +95,14 @@ def verify(request, uid):
                 if int(stored_otp) == int(entered_otp):
                     profile.is_verified = True
                     profile.save()
+                    messages.success(request, 'Your account has been verified successfully')
 
                     # Redirect to the login page after successful activation
                     red=redirect("register")
                     red.set_cookie('verified', True)
                     return red
-
-                messages.success(request, 'Wrong OTP. Try again')
+                else:
+                    messages.success(request, 'Wrong OTP. Try again')
 
             return redirect(request.path)  # Redirect to the same page on OTP failure
 
@@ -123,8 +126,12 @@ def login_page(request):
         print(user)
 
         if user is not None and user.is_verified:
-            login(request, user)
-            return redirect('userhome')
+            if user.is_blocked:
+                messages.error(request, 'Your account is blocked. Please contact the administrator.')
+                return redirect('register')
+            else:
+                login(request, user)
+                return redirect('userhome')
         else:
             try:
                 Accounts.objects.get(email=email)
@@ -139,6 +146,153 @@ def login_page(request):
 def logout(request):
     if request.POST:
         auth.logout(request)
-        return redirect('register')
+        return redirect('landingpage')
     return redirect('userhome')
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
+def admin_userlist(request):
+    if not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('adminlogin')
+    users = Accounts.objects.all()
+    context = {
+        'users':users
+    }
+    return render(request, 'admin_userlist.html', context)
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
+def admin_user_edit(request, user_id):
+    if not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('adminlogin')
+    
+    user = get_object_or_404(Accounts, id=user_id)
+    
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'User details updated successfully.')
+            return redirect('adminuserlist')  
+    else:
+        form = UserEditForm(instance=user)
+    
+    return render(request, 'admin_user_edit.html', {'form': form, 'user': user})
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        if Accounts.objects.filter(email=email).exists():
+            user = Accounts.objects.get(email=email)
+            
+            otp = random.randint(100000, 999999)
+
+            # Consider using a safer method to store OTP, like Django's cache framework
+
+            # Store OTP in session (consider safer alternatives)
+            request.session['otp_fp'] = otp
+            request.session['otp_timestamp'] = str(timezone.now())
+
+            # Send OTP via email
+            try:
+                send_mail('Reset techtrove password', f"Verify your mail by OTP: {otp}", settings.EMAIL_HOST_USER, [email], fail_silently=False)
+            except Exception as e:
+                messages.error(request, "Failed to send email. Please try again later.")
+                return redirect('register')
+            
+            # Set a cookie for OTP entry
+            red = redirect(f'/{user.id}/otp_fp/verify/')
+            red.set_cookie("can_otp_enter", True, max_age=600)  # Adjust max_age as needed
+            messages.success(request, 'For reset password pleas verify the OTP sent to your email.')
+            return red
+            
+        else:
+            messages.error(request, "The account doesn't exist!")
+            return redirect('forgotpassword')
+        
+    return render(request, 'forgot_password.html')
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+def otp_fp_verify(request, uid):
+    try:
+        profile = Accounts.objects.get(uid=uid)
+        if request.method == "POST":
+            stored_otp = request.session.get('otp_fp')
+            entered_otp = request.POST.get('otp')
+
+            if stored_otp and entered_otp and int(stored_otp) == int(entered_otp):
+                # Clear OTP session variables after successful verification
+                del request.session['otp_fp']
+                del request.session['otp_timestamp']
+                
+                request.session['uid'] = profile.uid
+                messages.success(request, 'Now you can edit your password.')
+                
+                # Redirect to the reset_password page after successful activation
+                return redirect('resetpassword', uid=profile.uid)
+
+            messages.error(request, 'Wrong OTP. Try again')
+
+    except ObjectDoesNotExist:
+        messages.error(request, 'Error: Account not found.')
+    except MultipleObjectsReturned:
+        messages.error(request, 'Error: Multiple accounts found for the given UID.')
+
+    return render(request, "otp_fp.html", {'id': uid})
+
+# @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+# def reset_password(request, uid):
+#     if request.method == 'POST':
+#         password = request.POST.get('password')
+#         confirm_password = request.POST.get('confirm_password')
+
+#         if password == confirm_password:
+#             #uid = request.session.get('uid')
+            
+#             if uid:
+#                 try:
+#                     user = Accounts.objects.get(uid=uid)
+#                     user.set_password(password)
+#                     user.save()
+#                     # Update the session auth hash to prevent logout after password change
+#                     update_session_auth_hash(request, user)
+#                     messages.success(request, 'Password reset successful')
+#                     return redirect('register')
+#                 except Accounts.DoesNotExist:
+#                     messages.error(request, 'User does not exist.')
+#                     return redirect('resetpassword')
+#             else:
+#                 messages.error(request, 'Session data missing. Please try again.')
+#                 return redirect('resetpassword')
+#         else:
+#             messages.error(request, 'Passwords do not match.')
+#             return redirect('resetpassword')
+#     else:
+#         return render(request, "reset_password.html",{'uid': uid})
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+def reset_password(request, user_id):
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if password == confirm_password:
+            try:
+                user = Accounts.objects.get(pk=user_id)
+                user.set_password(password)
+                user.save()
+                # Update the session auth hash to prevent logout after password change
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Password reset successful')
+                return redirect('register')
+            except ObjectDoesNotExist:
+                messages.error(request, 'User does not exist.')
+                return redirect('resetpassword', user_id=user_id)
+        else:
+            messages.error(request, 'Passwords do not match.')
+            return redirect('resetpassword', user_id=user_id)
+    else:
+        return render(request, "reset_password.html", {'user_id': user_id})

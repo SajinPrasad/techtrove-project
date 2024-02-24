@@ -8,8 +8,12 @@ from products.models import Products
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def landing_page(request):
+    products = Products.objects.all()
     items = Category.objects.all()
-    context = {'items':items}
+    context = {
+        'products':products, 
+        'items':items,
+        }
     return render(request, 'landing.html', context)
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
