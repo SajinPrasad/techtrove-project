@@ -15,7 +15,7 @@ from . import views
 # ]
 
 urlpatterns = [
-    path('reset_password/<str:user_id>/', views.reset_password, name='resetpassword'),
+    path('reset_password/<int:user_id>/user/', views.reset_password, name='resetpassword'),
     path('user/verify/<int:uid>/', views.verify, name='verify'),
     path('<int:uid>/otp_fp/verify/', views.otp_fp_verify, name='otpfpverify'),
     path('register/', views.register, name='register'),

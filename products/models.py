@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator
 
 # Create your models here.
 
-class Products(models.Model):
+class Product(models.Model):
     product_name        = models.CharField(max_length=150, unique=True)
     slug                = models.SlugField(max_length=150, unique=True)
     description         = models.TextField(max_length=500, blank=True)
@@ -18,6 +18,7 @@ class Products(models.Model):
     def __str__(self):
         return self.product_name
     
-class Images(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+class Image(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='photos/products', null=True, blank=True)
+    date_uploaded = models.DateTimeField(auto_now_add=True)

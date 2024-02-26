@@ -29,10 +29,10 @@
     <div class="otp-form">
         <h2 class="text-center mb-4">Enter OTP to reset your password</h2>
         
-        <form method="post" action="{% url 'verify' id %}">
+        <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="otp">OTP:</label>
+                <label for="otp_fp">OTP:</label>
                 <input type="text" class="form-control" name="otp" required>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Verify OTP</button>

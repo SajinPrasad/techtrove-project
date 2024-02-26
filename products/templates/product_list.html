@@ -204,27 +204,27 @@
                           <div class="row">
                             {% for product in products %}
                             {% if product.is_available %}
-                              <div class="col-md-3">
-                                  <div class="single-product">
-                                      <div class="single-product__content text-center">
-                                          <div class="title">
-                                              <div class="single-product__image">
-                                                  <a class="image-wrap" href="{% url 'singleproductadmin' category_slug=product.category.slug product_slug=product.slug %}">
-                                                      <img src="{{ product.images_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
-                                                  </a>
-                                              </div>
-                                              <div class="title">
-                                    						<h6><a style="color: black;" href="{% url 'singleproductadmin' category_slug=product.category.slug product_slug=product.slug %}">{{ product.product_name }}</a></h6>
-                                  						</div>
-                                  						<div class="price">
-                                    						<h5>₹{{ product.price }}</h5>
-                                  						</div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                              {% endif %}
-                              {% endfor %}
+                                <div class="col-md-3">
+                                    <div class="single-product">
+                                        <div class="single-product__content text-center">
+                                            <div class="title">
+                                                <div class="single-product__image">
+                                                    <a class="image-wrap" href="{% url 'singleproductadmin' category_slug=product.category.slug product_slug=product.slug %}">
+                                                        <img src="{{ product.image_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
+                                                    </a>
+                                                </div>
+                                                <div class="title">
+                                                    <h6><a style="color: black;" href="{% url 'singleproductadmin' category_slug=product.category.slug product_slug=product.slug %}">{{ product.product_name }}</a></h6>
+                                                </div>
+                                                <div class="price">
+                                                    <h5>₹{{ product.price }}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% endfor %}
                           </div>
                       </div>
                       <!-- /.card-body -->

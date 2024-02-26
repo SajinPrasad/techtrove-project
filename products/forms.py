@@ -1,17 +1,19 @@
 from django import forms
-from . models import Products, Images
+from . models import Product, Image
 from multiupload.fields import MultiFileField
 
 # Product form
 class ProductForm(forms.ModelForm):
     class Meta:
-        model = Products
+        model = Product
         fields = ['product_name', 'slug', 'description', 'price', 'stock', 'category', 'is_available',]
 
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+        # self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
 
 # Image form
 class ImageForm(forms.ModelForm):
@@ -23,7 +25,7 @@ class ImageForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Images
+        model = Image
         fields = ['image']
 
     def clean_image(self):

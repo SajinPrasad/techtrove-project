@@ -24,7 +24,7 @@ class MyAccountManager(UserManager):
         user.save(using=self._db)
         return user
 
-class Accounts(AbstractUser):
+class Account(AbstractUser):
     objects = MyAccountManager()
 
     first_name = models.CharField(max_length=50)

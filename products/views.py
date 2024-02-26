@@ -5,7 +5,7 @@ from django.views.decorators.cache import cache_control
 
 
 from .forms import ProductForm, ImageForm
-from .models import Images, Products
+from .models import Image, Product
 
 # Create your views here.
 
@@ -24,7 +24,7 @@ def add_product(request):
             form.save()
             form = ProductForm()
             for i in images:
-                Images.objects.create(product=f, image=i)
+                Image.objects.create(product=f, image=i)
             messages.success(request, 'Added new prodect')
             return redirect('addproduct')
     else:
@@ -39,7 +39,7 @@ def list_product(request):
     if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
-    products = Products.objects.all()
+    products = Product.objects.all()
     context = {
         'products':products
     }
@@ -52,7 +52,7 @@ def single_product_admin(request, category_slug, product_slug):
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     try:
-        single = Products.objects.get(category__slug=category_slug, slug=product_slug)
+        single = Product.objects.get(category__slug=category_slug, slug=product_slug)
     except Exception as e:
         raise e
     context = {
@@ -66,7 +66,7 @@ def edit_product(request, pk):
     if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
-    item = Products.objects.get(pk=pk)
+    item = Product.objects.get(pk=pk)
     if request.POST:
         form = ProductForm(request.POST, request.FILES, instance=item)
         if form.is_valid():

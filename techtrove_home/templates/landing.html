@@ -179,7 +179,7 @@
 										<!--=======  single product image  =======-->
 										<div class="single-product__image">
 											<a class="image-wrap" href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">
-												<img src="{{ product.images_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
+												<img src="{{ product.image_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
 											</a>
 											<div class="single-product__floating-badges">
 												{% if product.is_available %}

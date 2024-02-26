@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from uuid import UUID
+from django.urls import reverse
 import random
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
@@ -13,9 +13,13 @@ from django.utils import timezone
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
+from django.core.cache import cache
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
-from .models import Accounts
+from .models import Account
 from .forms import RegistrationForm, UserEditForm
+
+CACHE_TIMEOUT = 600
 
 # Create your views here.
 
@@ -39,7 +43,11 @@ def register(request):
             #username = email.split("@")[0]
             username = email.split('@')[0] or slugify(email.split('@')[0])
 
-            user = Accounts.objects.create_user(
+            if Account.objects.filter(email=email).exists():
+                messages.error('This email is already registered, try another one.')
+            
+            else:
+                user = Account.objects.create_user(
                 first_name=first_name, 
                 last_name=last_name, 
                 email=email, 
@@ -81,9 +89,9 @@ def verify(request, uid):
     if request.method == "POST":
         try:
             try:
-                profile = get_object_or_404(Accounts, id=uid)
+                profile = get_object_or_404(Account, id=uid)
                 # Rest of your code...
-            except Accounts.DoesNotExist:
+            except Account.DoesNotExist:
                 return HttpResponse('User not found')
 
             # Check if the 'can_otp_enter' cookie is set
@@ -134,10 +142,12 @@ def login_page(request):
                 return redirect('userhome')
         else:
             try:
-                Accounts.objects.get(email=email)
+                Account.objects.get(email=email)
                 messages.success(request, 'Invalid password!')
-            except Accounts.DoesNotExist:
+                return redirect('register')
+            except Account.DoesNotExist:
                 messages.success(request, 'User not found!')
+                return redirect('register')
                 
     return render(request, 'login_register.html')
 
@@ -155,7 +165,7 @@ def admin_userlist(request):
     if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
-    users = Accounts.objects.all()
+    users = Account.objects.all()
     context = {
         'users':users
     }
@@ -168,7 +178,7 @@ def admin_user_edit(request, user_id):
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     
-    user = get_object_or_404(Accounts, id=user_id)
+    user = get_object_or_404(Account, id=user_id)
     
     if request.method == 'POST':
         form = UserEditForm(request.POST, instance=user)
@@ -185,8 +195,8 @@ def admin_user_edit(request, user_id):
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        if Accounts.objects.filter(email=email).exists():
-            user = Accounts.objects.get(email=email)
+        if Account.objects.filter(email=email).exists():
+            user = Account.objects.get(email=email)
             
             otp = random.randint(100000, 999999)
 
@@ -218,7 +228,7 @@ def forgot_password(request):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def otp_fp_verify(request, uid):
     try:
-        profile = Accounts.objects.get(uid=uid)
+        profile = Account.objects.get(id=uid)
         if request.method == "POST":
             stored_otp = request.session.get('otp_fp')
             entered_otp = request.POST.get('otp')
@@ -228,11 +238,11 @@ def otp_fp_verify(request, uid):
                 del request.session['otp_fp']
                 del request.session['otp_timestamp']
                 
-                request.session['uid'] = profile.uid
+                request.session['uid'] = profile.id
                 messages.success(request, 'Now you can edit your password.')
                 
                 # Redirect to the reset_password page after successful activation
-                return redirect('resetpassword', uid=profile.uid)
+                return redirect('resetpassword', user_id=profile.id)
 
             messages.error(request, 'Wrong OTP. Try again')
 
@@ -243,35 +253,6 @@ def otp_fp_verify(request, uid):
 
     return render(request, "otp_fp.html", {'id': uid})
 
-# @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
-# def reset_password(request, uid):
-#     if request.method == 'POST':
-#         password = request.POST.get('password')
-#         confirm_password = request.POST.get('confirm_password')
-
-#         if password == confirm_password:
-#             #uid = request.session.get('uid')
-            
-#             if uid:
-#                 try:
-#                     user = Accounts.objects.get(uid=uid)
-#                     user.set_password(password)
-#                     user.save()
-#                     # Update the session auth hash to prevent logout after password change
-#                     update_session_auth_hash(request, user)
-#                     messages.success(request, 'Password reset successful')
-#                     return redirect('register')
-#                 except Accounts.DoesNotExist:
-#                     messages.error(request, 'User does not exist.')
-#                     return redirect('resetpassword')
-#             else:
-#                 messages.error(request, 'Session data missing. Please try again.')
-#                 return redirect('resetpassword')
-#         else:
-#             messages.error(request, 'Passwords do not match.')
-#             return redirect('resetpassword')
-#     else:
-#         return render(request, "reset_password.html",{'uid': uid})
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def reset_password(request, user_id):
@@ -281,7 +262,7 @@ def reset_password(request, user_id):
 
         if password == confirm_password:
             try:
-                user = Accounts.objects.get(pk=user_id)
+                user = Account.objects.get(pk=user_id)
                 user.set_password(password)
                 user.save()
                 # Update the session auth hash to prevent logout after password change

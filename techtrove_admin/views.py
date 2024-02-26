@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.contrib import messages
 
-from user_accounts.models import Accounts
+from user_accounts.models import Account
 
 # Create your views here.
 
@@ -24,12 +24,12 @@ def admin_login(request):
             return redirect('adminhome')
         else:
             try:
-                existing_user = Accounts.objects.get(email=email)
+                existing_user = Account.objects.get(email=email)
                 if existing_user.is_superuser:
                     err_msg = "Invalid Password"
                 else:
                     err_msg = 'You are not authorised to this page'
-            except Accounts.DoesNotExist:
+            except Account.DoesNotExist:
                 err_msg = "User doesn't exist"
     return render(request, 'admin_login.html', {'err_msg':err_msg})
 

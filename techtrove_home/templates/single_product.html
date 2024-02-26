@@ -70,7 +70,7 @@
 
 									<div class="shop-product__big-image-gallery-slider">
 										<!--=======  single image  =======-->
-										{% for image in single.images_set.all %}
+										{% for image in single.image_set.all %}
 											<div class="single-image">
 												<img src="{{ image.image.url }}" class="img-fluid" alt="{{ single.product_name }}">
 											</div>
@@ -86,7 +86,7 @@
 
 								<div class="shop-product__small-image-gallery-wrapper">
 									<div class="shop-product__small-image-gallery-slider">
-										{% for image in single.images_set.all %}
+										{% for image in single.image_set.all %}
 											<!--=======  single image  =======-->
 											<div class="single-image">
 												<img src="{{ image.image.url }}" class="img-fluid" alt="">
