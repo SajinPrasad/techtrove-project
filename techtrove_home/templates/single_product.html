@@ -215,6 +215,7 @@
 									
 									{% if user.is_superuser %}
 									<button type="button" class="btn btn-secondary"><a href="{% url 'editproduct' single.id %}">Edit product</a></button>
+									<button type="button" class="btn btn-danger"><a href="{% url 'deleteproduct' single.id %}">Delete product</a></button>
 									{% endif %}
 
 									<!--=======  End of shop product buttons  =======-->

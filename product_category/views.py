@@ -43,11 +43,24 @@ def edit_category(request, pk):
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
+def category_soft_delete(request, pk):
+    try:
+        category = Category.objects.get(pk=pk)
+        category.is_deleted = True
+        category.save()
+        messages.success(request, 'Category successfully deleted.')
+        return redirect('categorylist')
+    except Category.DoesNotExist:
+        messages.error(request, 'Category not found.')
+    return redirect('categorylist')
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
 def category_list(request):
     if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
-    categories = Category.objects.all()
+    categories = Category.objects.filter(is_deleted=False)
     context = {
         'categories':categories
     }

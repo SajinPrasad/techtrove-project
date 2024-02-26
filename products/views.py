@@ -39,7 +39,7 @@ def list_product(request):
     if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
-    products = Product.objects.all()
+    products = Product.objects.filter(is_deleted=False)
     context = {
         'products':products
     }
@@ -58,7 +58,7 @@ def single_product_admin(request, category_slug, product_slug):
     context = {
         'single':single,
     }
-    return render(request, 'single_product_admin.html', context)
+    return render(request, 'techtrove_home/single_product.html', context)
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
@@ -76,3 +76,15 @@ def edit_product(request, pk):
         form = ProductForm(instance=item)
 
     return render(request, 'add_product.html', {'form':form})
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+def soft_delete_product(request, pk):
+    try:
+        product = Product.objects.get(pk=pk)
+        product.is_deleted = True
+        product.save()
+        messages.success(request, 'Product successfully deleted.')
+        return redirect('listproduct')
+    except Product.DoesNotExist:
+        messages.error(request, 'Product not found.')
+    return redirect('listproduct')

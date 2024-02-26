@@ -1,9 +1,11 @@
 from django import forms
 from . models import Product, Image
 from multiupload.fields import MultiFileField
+from product_category.models import Category
 
 # Product form
 class ProductForm(forms.ModelForm):
+    category = forms.ModelChoiceField(queryset=Category.objects.exclude(is_deleted=True), required=False)
     class Meta:
         model = Product
         fields = ['product_name', 'slug', 'description', 'price', 'stock', 'category', 'is_available',]

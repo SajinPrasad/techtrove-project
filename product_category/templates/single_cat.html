@@ -189,7 +189,8 @@
                   <div class="col-md- d-flex flex-column px-5">
                     <img src="{{ single.cat_image.url }}" class="img-fluid mb-3" alt="{{ single.category_name }}">
                     <!-- Edit Button -->
-                    <a href="{% url 'editcategory' single.id %}" class="btn btn-primary">Edit Category</a>
+                    <a href="{% url 'editcategory' single.id %}" class="btn btn-primary">Edit Category</a><br><br>
+                    <a href="{% url 'deletecategory' single.id %}" class="btn btn-danger mt-1">Delete Category</a>
                   </div>
                   <!-- Category name and description on the right side -->
                   <div class="col-md-8">
