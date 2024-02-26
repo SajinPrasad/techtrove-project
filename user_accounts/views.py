@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.urls import reverse
 import random
 from django.contrib.auth.decorators import login_required
@@ -9,8 +9,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.contrib import messages, auth
 from django.core.exceptions import MultipleObjectsReturned
-from django.utils import timezone
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.utils import timezone 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.core.cache import cache
@@ -277,3 +276,5 @@ def reset_password(request, user_id):
             return redirect('resetpassword', user_id=user_id)
     else:
         return render(request, "reset_password.html", {'user_id': user_id})
+    
+

@@ -25,27 +25,30 @@ class MyAccountManager(UserManager):
         return user
 
 class Account(AbstractUser):
-    objects = MyAccountManager()
+    objects         = MyAccountManager()
 
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    username = models.CharField(max_length=50, unique=True)
-    email = models.EmailField(max_length=100, unique=True)
-    phone_number = models.CharField(max_length=20)
-    otp = models.IntegerField(null=True, blank=True)
-    uid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    is_verified = models.BooleanField(default=False)
-    is_blocked = models.BooleanField(default=False)
+    first_name      = models.CharField(max_length=50)
+    last_name       = models.CharField(max_length=50)
+    username        = models.CharField(max_length=50, unique=True)
+    email           = models.EmailField(max_length=100, unique=True)
+    phone_number    = models.CharField(max_length=20)
+    otp             = models.IntegerField(null=True, blank=True)
+    uid             = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    is_verified     = models.BooleanField(default=False)
+    is_blocked      = models.BooleanField(default=False)
 
-    date_joined = models.DateTimeField(auto_now_add=True)
-    last_login = models.DateTimeField(auto_now_add=True)
+    date_joined     = models.DateTimeField(auto_now_add=True)
+    last_login      = models.DateTimeField(auto_now_add=True)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD  = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
-    groups = models.ManyToManyField(Group, related_name='user_accounts_groups')
+    groups          = models.ManyToManyField(Group, related_name='user_accounts_groups')
     user_permissions = models.ManyToManyField(Permission, related_name='user_accounts_permissions')
 
     def __str__(self):
         return self.email
+
+    
+
 
