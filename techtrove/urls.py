@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('techtrove_admin.urls')),
     path('', include('products.urls')),
     path('', include('product_category.urls')),
+    path('', include('userprofile.urls')),
 ]
 
 if settings.DEBUG:

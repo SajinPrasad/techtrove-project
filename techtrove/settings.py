@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'techtrove_admin',
     'products',
     'product_category',
+    'userprofile.apps.UserprofileConfig',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +125,8 @@ USE_TZ = True
 
 AUTH_USER_MODEL = 'user_accounts.Account'
 AUTHENTICATION_BACKENDS = ['user_accounts.backends.EmailBackend']
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

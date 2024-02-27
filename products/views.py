@@ -78,7 +78,11 @@ def edit_product(request, pk):
     return render(request, 'add_product.html', {'form':form})
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
 def soft_delete_product(request, pk):
+    if not request.user.is_superuser:
+        messages.error(request, 'You do not have permission to access this page.')
+        return redirect('adminlogin')
     try:
         product = Product.objects.get(pk=pk)
         product.is_deleted = True

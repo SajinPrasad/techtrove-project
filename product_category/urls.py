@@ -6,5 +6,5 @@ urlpatterns = [
     path('edit_category/<pk>', views.edit_category, name='editcategory'),
     path('delete_category/<pk>', views.category_soft_delete, name='deletecategory'),
     path('category_list/', views.category_list, name='categorylist'),
-    path('<slug:category_slug>/', views.single_category, name='singlecat'),
+    path('category/<slug:category_slug>/item/', views.single_category, name='singlecat'),
 ]

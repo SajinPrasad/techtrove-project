@@ -120,11 +120,7 @@
 							<div class="single-icon user-login">
 								{% if user.is_authenticated %}
 									<!-- Display user's name when logged in -->
-									<p>
-										Welcome,
-										<a href="{% url 'user_profile' %}" id="user-name">{{ user.username }}</a>
-										<span class="popup" id="profile-popup">Click to view profile</span>
-									</p>
+									<p>Welcome, <a href="#">{{ user.username }}!</a></p>
 								{% else %}
 									<!-- Display the "Signin" link when not logged in -->
 									<li class="menu-item-has-children">
@@ -345,33 +341,6 @@
 
 			</div>
 		</div>
-
-		<script>
-			// JavaScript to show the popup on hover
-			const userName = document.getElementById('user-name');
-			const profilePopup = document.getElementById('profile-popup');
-
-			userName.addEventListener('mouseenter', () => {
-				profilePopup.style.display = 'inline';
-			});
-
-			userName.addEventListener('mouseleave', () => {
-				profilePopup.style.display = 'none';
-			});
-		</script>
-
-		<style>
-			/* CSS to style the popup */
-			.popup {
-				display: none;
-				position: absolute;
-				background-color: #fff;
-				padding: 5px;
-				border: 1px solid #ccc;
-				box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-				z-index: 1;
-			}
-		</style>
 
 		<!--=======  End of header bottom  =======-->
 	</header>
