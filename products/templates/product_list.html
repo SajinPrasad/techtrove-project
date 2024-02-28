@@ -197,13 +197,12 @@
               <div class="col-12">
                   <div class="card card-primary">
                       <div class="card-header">
-                          <h3 class="card-title">Categories</h3>
+                        <h3 class="card-title">Products <a href="{% url 'addproduct' %}"><i class="fa fa-plus"></i></a></h3>
                       </div>
                       <!-- /.card-header -->
                       <div class="card-body">
                           <div class="row">
                             {% for product in products %}
-                            {% if product.is_available %}
                                 <div class="col-md-3">
                                     <div class="single-product">
                                         <div class="single-product__content text-center">
@@ -223,7 +222,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            {% endif %}
                             {% endfor %}
                           </div>
                       </div>

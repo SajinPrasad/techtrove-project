@@ -196,21 +196,26 @@
 									<div class="shop-product__block shop-product__block--quantity mb-40">
 										<div class="shop-product__block__title">Quantity: </div>
 										<div class="shop-product__block__value">
-											<div class="pro-qty d-inline-block mx-0 pt-0">
-												<input type="text" value="1">
-											</div>
+											<form method="post" action="{% url 'add_to_cart' single.id %}">
+												{% csrf_token %}
+												<div class="pro-qty d-inline-block mx-0 pt-0">
+													<input type="text" value="1" id="quantityInput" name="quantity">
+												</div>
+												<div class="mt-2">
+													<button type="submit" class="lezada-button lezada-button--medium mt-2">Add to Cart</button>
+												</div>
+											</form>
 										</div>
 									</div>
-
 									<!--=======  End of shop product quantity block  =======-->
-
+									
 									<!--=======  shop product buttons  =======-->
-
 									<div class="shop-product__buttons mb-40">
-										<a class="lezada-button lezada-button--medium" href="#">add to cart</a>
-										<a class="lezada-compare-button ml-20" href="#" data-tippy="Compare" data-tippy-inertia="true"
+										<a class="lezada-compare-button" href="#" data-tippy="Compare" data-tippy-inertia="true"
 											data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-placement="left"
-											data-tippy-arrow="true" data-tippy-theme="sharpborder"><i class="ion-ios-shuffle"></i></a>
+											data-tippy-arrow="true" data-tippy-theme="sharpborder">
+											<i class="ion-ios-shuffle"></i>
+										</a>
 									</div>
 									
 									{% if user.is_superuser %}

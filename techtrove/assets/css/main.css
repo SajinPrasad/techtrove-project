@@ -16537,4 +16537,16 @@ nav.site-nav > ul > li ul.mega-menu-column-5 > li .mega-sub-menu li:last-child a
   font-weight: 400;
 }
 
+
+.fixed-size-image {
+  height: 300px; /* Adjust the height as needed */
+  overflow: hidden;
+}
+
+/* Ensure the images take up 100% width of the container */
+.fixed-size-image img {
+  width: 100%;
+  height: auto; /* Maintain aspect ratio */
+}
+
 /*=====  End of 41. compare  ======*/

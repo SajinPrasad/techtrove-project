@@ -8,7 +8,7 @@ from products.models import Product
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def landing_page(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(is_deleted=False, is_available=True)
     items = Category.objects.all()
     context = {
         'products':products, 
@@ -19,7 +19,7 @@ def landing_page(request):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')
 def user_home(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(is_deleted=False, is_available=True)
     items = Category.objects.all()
     context = {
         'products':products, 

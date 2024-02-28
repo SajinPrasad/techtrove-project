@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'home_base.html' %}
 
 {% load static %}
 
@@ -172,12 +172,11 @@
 							<div class="row">
 
 								{% for product in products %}
-								{% if product.is_available %}
 								<!--=======  single product  =======-->
 								<div class="col-12 col-lg-4 col-md-6 col-sm-6 mb-45">
 									<div class="single-product">
 										<!--=======  single product image  =======-->
-										<div class="single-product__image">
+										<div class="single-product__image fixed-size-image">
 											<a class="image-wrap" href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">
 												<img src="{{ product.image_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
 											</a>
@@ -216,7 +215,6 @@
 									</div>
 								</div>
 								<!--=======  End of single product  =======-->
-								{% endif %}
 								{% endfor %}
 							</div>
 						</div>

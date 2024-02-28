@@ -26,7 +26,7 @@ def add_product(request):
             for i in images:
                 Image.objects.create(product=f, image=i)
             messages.success(request, 'Added new prodect')
-            return redirect('addproduct')
+            return redirect('listproduct')
     else:
         form = ProductForm()
         imgform = ImageForm()
@@ -66,16 +66,33 @@ def edit_product(request, pk):
     if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
+    
     item = Product.objects.get(pk=pk)
-    if request.POST:
+
+    if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=item)
-        if form.is_valid():
+        imgform = ImageForm(request.POST, request.FILES)
+        
+        if form.is_valid() and imgform.is_valid():
             form.save()
+            # If the image form is valid, associate the images with the product
+            images = imgform.cleaned_data.get('image')
+            for image in images:
+                Image.objects.create(product=item, image=image)
+            
             return redirect('listproduct')
     else:
         form = ProductForm(instance=item)
+        images = Image.objects.filter(product=item)
+        imgform = ImageForm()
 
-    return render(request, 'add_product.html', {'form':form})
+        context = {
+            'form': form,
+            'imgform': imgform,
+            'images':images
+            }
+
+    return render(request, 'add_product.html', context)
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')

@@ -286,16 +286,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             {{ imgform.image }}
                             <!-- <label class="custom-file-label" ></label> -->
                           </div>
-                          <!-- <div class="input-group-append">
-                            <span class="input-group-text">Upload</span>
-                          </div> -->
+                          {% for image in images %}
+                              <img src="{{ image.image.url }}" alt="Existing Image">
+                          {% endfor %}
                         </div>
                     </div>
                     <div class="card-footer text-center">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
-                </form>
-              </div>
+                  </form>
+                </div>
               {% include 'includes/alerts.html' %}
                 <!-- /.card-body -->
               </div>

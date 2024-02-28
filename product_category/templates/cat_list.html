@@ -197,7 +197,7 @@
               <div class="col-12">
                   <div class="card card-primary">
                       <div class="card-header">
-                          <h3 class="card-title">Categories</h3>
+                          <h3 class="card-title">Categories <a href="{% url 'addcategory' %}"><i class="fa fa-plus"></i></a></h3>
                       </div>
                       <!-- /.card-header -->
                       <div class="card-body">
@@ -212,7 +212,7 @@
                                                       <img src="{{ category.cat_image.url }}" class="img-fluid" alt="{{ category.category_name }}" width="260" height="200">
                                                   </a>
                                               </div>
-                                              <h3><a style="color: black;" href="{% url 'singlecat' category_slug=category.slug %}">{{ category.category_name }}</a></h3>
+                                              <h5 class="mt-1"><a  style="color: black;" href="{% url 'singlecat' category_slug=category.slug %}">{{ category.category_name }}</a></h5>
                                           </div>
                                       </div>
                                   </div>
