@@ -79,15 +79,20 @@
                                 <td class="product-price"><span class="price">₹{{ cart_item.product.price }}</span></td>
 
                                 <td class="product-quantity">
-                                    <div class="pro-qty d-inline-block mx-0">
-                                        <input type="text" value="{{ cart_item.quantity }}" readonly>
-                                    </div>
+                                    <form class="quantity-form" method="post" action="{% url 'update_cart' cart_item.id %}" data-product-id="{{ cart_item.product.id }}" data-update-cart-url="{% url 'update_cart' cart_item.id %}">
+                                        {% csrf_token %}
+                                        <div class="pro-qty d-inline-block mx-0">
+                                            <button type="button" class="quantity-change" data-change="decrement">-</button>
+                                            <input type="text" value="{{ cart_item.quantity }}" readonly>
+                                            <button type="button" class="quantity-change" data-change="increment">+</button>
+                                        </div>
+                                    </form>
                                 </td>
                                 
                                 <td class="total-price"><span class="price">₹{{ product_total }}</span></td>
 
                                 <td class="product-remove">
-                                    <a href="#">
+                                    <a href="{% url 'delete_cart_item' cart_item.id %}">
                                         <i class="ion-android-close"></i>
                                     </a>
                                 </td>
@@ -96,6 +101,8 @@
                         </tbody>
                     </table>
                 </div>
+
+                {% include 'includes/alerts.html' %}
 
                 <!--=======  End of cart table  =======-->
             </div>
@@ -705,6 +712,68 @@
 
 <!-- Main JS -->
 <script src="{% static 'js/main.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.quantity-form').forEach(function(form) {
+            const input = form.querySelector('input');
+            const totalCell = form.closest('tr').querySelector('.total-price span');
+            const productId = form.dataset.productId;
+            const updateCartUrl = form.dataset.updateCartUrl;
+
+            function updateTotalPrice() {
+                const quantity = parseInt(input.value, 10);
+
+                if (isNaN(quantity) || quantity < 1) {
+                    console.error('Invalid quantity value');
+                    return;
+                }
+
+                // Send Ajax request
+                fetch(updateCartUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token
+                    },
+                    body: new URLSearchParams({
+                        'product_id': productId,
+                        'quantity': quantity,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    totalCell.textContent = '₹' + data.total_price.toFixed(2);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            input.addEventListener('change', updateTotalPrice);
+
+            form.querySelectorAll('.quantity-change').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const changeType = button.dataset.change;
+                    let newValue = parseInt(input.value, 10);
+
+                    if (changeType === 'increment') {
+                        newValue += 1;
+                    } else if (changeType === 'decrement' && newValue > 1) {
+                        newValue -= 1;
+                    }
+
+                    input.value = newValue;
+                    updateTotalPrice();
+                });
+            });
+
+            updateTotalPrice();
+        });
+    });
+</script>
+    
+
 
 </body>
 
