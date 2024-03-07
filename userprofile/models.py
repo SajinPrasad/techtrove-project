@@ -8,9 +8,10 @@ from django.dispatch import receiver
 
 class Address(models.Model):
     user            = models.ForeignKey(Account, on_delete=models.CASCADE)
-    street_address  = models.CharField(max_length=200)
+    address_line    = models.CharField(max_length=100, blank=True, null =True)
+    street_name     = models.CharField(max_length=100)
     city            = models.CharField(max_length=50)
-    country         = models.CharField(max_length=50)
+    country         = models.CharField(max_length=50) 
     state           = models.CharField(max_length=50)
     zip_code        = models.CharField(max_length=10)
     is_primary      = models.BooleanField(default=False)
@@ -22,20 +23,20 @@ class Address(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.street}, {self.city}, {self.state}, {self.zip_code}"
+        return f"{self.street_name}, {self.city}, {self.state}, {self.zip_code}"
 
 
 class UserProfile(models.Model):
     class Gender(models.TextChoices):
-        MALE = 'M', 'Male'
-        FEMALE = 'F', 'Female'
-        OTHER = 'O', 'Other'
+        MALE = 'Male', 'Male'
+        FEMALE = 'Female', 'Female'
+        OTHER = 'Other', 'Other'
 
     user = models.OneToOneField(Account, on_delete=models.CASCADE)
     birthdate = models.DateField(null=True, blank=True)
-    profile_pic = models.ImageField(blank=True, upload_to='profilepicture/')
+    profile_pic = models.ImageField(blank=True, upload_to='photos/profilepictures')
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
-    gender = models.CharField(max_length=1, choices=Gender.choices, null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=Gender.choices, null=True, blank=True)
 
     def __str__(self):
         return self.name

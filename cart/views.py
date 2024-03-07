@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
+from .utils import calculate_grand_total 
 from itertools import zip_longest
 from django.http import JsonResponse
+from django.http import HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
 from products.models import Product
@@ -66,9 +68,12 @@ def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
 
     if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))  # Get the quantity, default to 1
+        quantity = int(request.POST.get('quantity', 1))
 
-        # Retrieve cart based on user status
+        if not (1 <= quantity <= 5):
+            messages.warning(request, 'Please enter a quantity between 1 and 5.')
+            return redirect(reverse('singleproduct', kwargs={'category_slug': product.category.slug, 'product_slug': product.slug}))
+
         if request.user.is_authenticated:
             cart, created = Cart.objects.get_or_create(user=request.user)
         else:
@@ -78,68 +83,110 @@ def add_to_cart(request, product_id):
                 cart = Cart.objects.create(cart_id=_cart_id(request))
                 cart.save()
 
+        cart_item = None
+
         try:
             cart_item = CartItem.objects.get(product=product, cart=cart)
-            cart_item.quantity += quantity
-            cart_item.save()
         except CartItem.DoesNotExist:
-            cart_item = CartItem.objects.create(
-                product=product,
-                quantity=quantity,
-                cart=cart
-            )
-            cart_item.save()
+            cart_item = None
 
-        return redirect('cart')
+        if cart_item is not None:
+            if quantity <= product.stock:
+                cart_item.quantity += quantity
+                cart_item.save()
 
-    return render(request, 'cart.html', {'product': product})
+                product.stock -= quantity
+                product.save()
 
-@csrf_exempt
-def update_cart_item(request, cart_item_id):
-    if request.method == 'POST' and request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        quantity = request.POST.get('quantity', 1)  # Assuming you're sending the quantity via POST
+                messages.success(request, f'{quantity} item(s) added to your cart.')
+                return redirect('cart')
+            else:
+                messages.warning(request, f'Exceeds the available stock for this product. Stock: {product.stock}')
 
-        # Assuming you have a CartItem model with a ForeignKey to Product
-        cart_item = get_object_or_404(CartItem, id=cart_item_id)
+        else:
+            # Cart item does not exist
+            if quantity <= product.stock:
+                cart_item = CartItem.objects.create(
+                    product=product,
+                    quantity=quantity,
+                    cart=cart
+                )
+                cart_item.save()
 
-        # Update the quantity
-        cart_item.quantity = quantity
-        cart_item.save()
+                product.stock -= quantity
+                product.save()
 
-        # Calculate the new total price for the item
-        total_price = cart_item.product.price * cart_item.quantity
-
-        # Return updated data as JSON
-        data = {
-            'quantity': cart_item.quantity,
-            'total_price': total_price,
-            'grand_total': calculate_grand_total(),  # You need to implement this function
-        }
-
-        return JsonResponse(data)
-
-    return JsonResponse({'error': 'Invalid request'})
-
-def delete_cart_item(request, cart_item_id):
-    if request.user.is_authenticated:
-        # For logged-in users, filter by cart and user
-        try:
-            cart_item = CartItem.objects.get(pk=cart_item_id, cart__user=request.user, is_active=True)
-            cart_item.delete()
-        except CartItem.DoesNotExist:
-            pass  # Handle case where item doesn't exist or user doesn't have permission
+                messages.success(request, f'{quantity} item(s) added to your cart.')
+                return redirect('cart')
+            else:
+                messages.warning(request, f'Exceeds the available stock for this product. You can only pick {product.stock}')
+                return redirect(reverse('singleproduct', kwargs={'category_slug': product.category.slug, 'product_slug': product.slug}))
 
     else:
-        # For non-logged-in users, filter by session cart_id
-        try:
-            cart_id = request.session.session_key
-            if cart_id:
-                cart_item = CartItem.objects.get(pk=cart_item_id, cart__cart_id=cart_id, is_active=True)
-                cart_item.delete()
-        except (Cart.DoesNotExist, CartItem.DoesNotExist):
-            pass  # Handle cases where cart or item doesn't exist
+        max_quantity = min(product.stock, 5)
+    
+    # Calculate max_quantity after the CartItem creation
+    max_quantity = min(cart_item.product.stock, 5) if cart_item and cart_item.product else 0
 
-    messages.info(request, 'Item removed from cart')
+    context = {
+        'product': product,
+        'max_quantity': max_quantity,
+    }
+
+    return render(request, 'cart.html', context)
+
+
+def update_cart_item(request, cart_item_id):
+    if request.method == 'POST':
+        quantity_str = request.POST.get('quantity')
+        cart_item = get_object_or_404(CartItem, id=cart_item_id)
+        product = cart_item.product
+
+        try:
+            new_quantity = int(quantity_str)
+        except ValueError:
+            return HttpResponseBadRequest("Invalid quantity")
+
+        old_quantity = cart_item.quantity
+        quantity_difference = new_quantity - old_quantity
+
+        if new_quantity > 5:
+            messages.info(request, 'You can only add up to 5 units per product.')
+        elif new_quantity > (product.stock + old_quantity):
+            if product.stock > 0:
+                messages.warning(request, f'Only {product.stock} stock available, try within the limit.')
+            elif product.stock == 0:
+                messages.info(request, 'No stock available for this product')
+        else:
+            # Update cart item quantity
+            cart_item.quantity = new_quantity
+            cart_item.save()
+
+            # Update product stock based on the quantity difference
+            product.stock -= quantity_difference
+            if product.stock < 0:
+                product.stock = 0
+            product.save()
+
+            messages.info(request, 'Cart updated.')
+
+    return redirect('cart')
+
+def delete_cart_item(request, cart_item_id):
+    try:
+        cart_item = CartItem.objects.get(pk=cart_item_id, is_active=True)
+        product = cart_item.product
+        quantity_to_add_back = cart_item.quantity 
+
+        cart_item.delete()  
+
+        product.stock += quantity_to_add_back
+        product.save()
+
+        messages.info(request, 'Item removed from cart')
+    except CartItem.DoesNotExist:
+        messages.warning(request, 'Cart item not found')
+
     return redirect('cart')
 
 

@@ -40,37 +40,31 @@
 						<div class="site-main-nav d-none d-lg-block">
 							<nav class="site-nav center-menu">
 								<ul>
-									<li class="menu-item-has-children"><a href="#">Categories</a>
-										<ul class="sub-menu mega-menu mega-menu-column-5">
-											<li><a href="javascript:void(0)" class="mega-column-title">Home Group</a>
+									<li class="menu-item-has-children"><a href=#>Explore</a>
+										<ul class="sub-menu mega-menu mega-menu-column-5" >
+											<li><a href="javascript:void(0)" class="mega-column-title">Category list</a>
 												<ul class="mega-sub-menu">
-													<li><a href="index-trending.html">Trending</a><img src="{% static 'images/home-preview/01.jpg' %}"
+													{% for category in items %}
+													<li><a href="{% url 'category_filter_shop' category.id %}">{{category.category_name}}</a>
+														<img src="{{ category.cat_image.url }}" class="img-fluid" alt="{{ category.category_name }}"></li>
+													{% endfor %}
+												</ul>
+											</li>
+											<li><a href="javascript:void(0)" class="mega-column-title">Navigate</a>
+												<ul class="mega-sub-menu">
+													<li><a href="{% url 'userhome' %}">Home </a><img src="{% static 'images/home-preview/06.jpg' %}"
 															class="img-fluid" alt=""></li>
-													<li><a href="index-collection.html">My collection</a><img
-															src="{% static 'images/home-preview/02.jpg' %}" class="img-fluid" alt=""></li>
-													<li><a href="index-special.html">Special</a><img src="{% static 'images/home-preview/03.jpg' %}"
+													<li><a href="{% url 'shop_view' %}">Shop</a><img src="{% static 'images/home-preview/07.jpg' %}"
 															class="img-fluid" alt=""></li>
-													<li><a href="index-concept.html">concept</a><img src="{% static 'images/home-preview/04.jpg' %}"
+													<li><a href="{% url 'cart' %}">Cart</a><img src="{% static 'images/home-preview/08.jpg' %}"
 															class="img-fluid" alt=""></li>
-													<li><a href="index-smart.html">smart design</a><img src="{% static 'images/home-preview/05.jpg' %}"
+													<li><a href="{% url 'user_profile' %}">Dashboard</a><img src="{% static 'images/home-preview/09.jpg' %}"
 															class="img-fluid" alt=""></li>
+													<!-- <li><a href="index-accessories.html">Accessories</a><img
+															src="{% static 'images/home-preview/10.jpg' %}" class="img-fluid" alt=""></li> -->
 												</ul>
 											</li>
 											<!-- <li><a href="javascript:void(0)" class="mega-column-title">Home Group</a>
-												<ul class="mega-sub-menu">
-													<li><a href="index-furniture.html">Furniture </a><img src="{% static 'images/home-preview/06.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="index-essentials.html">Essentials</a><img src="{% static 'images/home-preview/07.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="index-lookbook.html">Lookbook</a><img src="{% static 'images/home-preview/08.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="index-wearables.html">Wearables</a><img src="{% static 'images/home-preview/09.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="index-accessories.html">Accessories</a><img
-															src="{% static 'images/home-preview/10.jpg' %}" class="img-fluid" alt=""></li>
-												</ul>
-											</li>
-											<li><a href="javascript:void(0)" class="mega-column-title">Home Group</a>
 												<ul class="mega-sub-menu">
 													<li><a href="index-shoppable.html">Shoppable</a><img src="{% static 'images/home-preview/11.jpg' %}"
 															class="img-fluid" alt=""></li>

@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'userprofile.apps.UserprofileConfig',
     'crispy_forms',
     'cart',
+    'orders',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +70,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'techtrove.context_processors.categories',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',

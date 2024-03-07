@@ -11,7 +11,7 @@ class Product(models.Model):
     price               = models.IntegerField(validators=[MinValueValidator(1)])
     stock               = models.IntegerField(validators=[MinValueValidator(0)])
     is_available        = models.BooleanField(default=True)
-    category            = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
+    category            = models.ForeignKey(Category, on_delete=models.CASCADE)
     created_date        = models.DateTimeField(auto_now_add=True)
     modified_date       = models.DateTimeField(auto_now=True)
     is_deleted          = models.BooleanField(default=False)

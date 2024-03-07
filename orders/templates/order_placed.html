@@ -1,0 +1,119 @@
+{% extends 'orders_base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<style>
+    h2 {
+        color: #28a745;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .order-details-container {
+        max-width: 800px;
+        margin: 50px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .customer-info-box,
+    .shipping-address-box {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+        text-align: left;  /* Left-align the text */
+    }
+
+    .customer-info h4,
+    .shipping-address h4 {
+        margin-bottom: 10px;
+    }
+
+    .ordered-products {
+        margin-top: 20px;
+    }
+
+    .card {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .product-details {
+        flex-grow: 1;
+    }
+
+    .product-image {
+        max-width: 90px;
+        height: auto;
+        border-radius: 5px;
+        margin-left: auto;
+        display: block;
+    }
+</style>
+
+<div class="container mt-5 order-details-container">
+    <h2 class="mb-4">
+        <div class="alert alert-success" role="alert">
+            <i class=""></i> Order Placed Successfully
+        </div>
+    </h2>
+
+    <div class="row">
+        <div class="col-md-6 customer-info-box">
+            <h4 class="mb-3">Customer Information</h4>
+            <p><strong>Name : </strong> {{ order.full_name }}</p>
+            <p><strong>Order Number : </strong> {{ order.order_number }}</p>
+            <p><strong>Email : </strong> {{ order.email }}</p>
+            <p><strong>Phone : </strong> {{ order.phone }}</p>
+            <p><strong>Email : </strong> {{ order.email }}</p>
+            <p><strong>Payment Method : </strong> {{ order.payment.payment_method }}</p>
+            <p><strong>Tax : </strong>  ₹{{ order.tax }}</p>
+            <p><strong>Shipping Fee : </strong>  ₹{{ order.shipping_fee }}</p>
+            <p><strong>Grand Total : </strong>  ₹{{ order.order_total }}</p>
+        </div>
+
+        <div class="col-md-6 shipping-address-box">
+            <h4 class="mb-3">Shipping Address</h4>
+            <div class="col-md-6">
+              <address>
+                <p>{{ order.billing_address|linebreaksbr|safe }}</p>
+            </address>
+            </div>
+          </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h4 class="mb-4">Ordered Products</h4>
+
+    <div class="ordered-products">
+            <div class="card mb-3">
+                <div class="ordered-products">
+                    {% for order_product in order_products %}
+                    <div class="card mb-3">
+                        <div class="card-body d-flex">
+                        <div class="product-details">
+                            <h5 class="card-title">{{ order_product.product.product_name }}</h5>
+                            <p class="card-text"><strong>Price : </strong> ₹{{ order_product.product.price }}</p>
+                            <p><strong>Quantity : </strong> {{ order_product.quantity }}</p>
+                        </div>
+                        <img src="{{ order_product.product.image_set.first.image.url }}" class="product-image" alt="">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+    <a href="{% url 'generate_invoice_pdf' order_id=order.order_id %}">Download Invoice PDF</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,831 @@
+{% extends 'home_base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+	<!--=======  breadcrumb area =======-->
+
+	<div class="breadcrumb-area breadcrumb-bg-1 pt-50 pb-70 mb-130">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<h1 class="breadcrumb-title">Checkout</h1>
+
+					<!--=======  breadcrumb list  =======-->
+
+					<ul class="breadcrumb-list">
+						<li class="breadcrumb-list__item"><a href="index-2.html">HOME</a></li>
+						<li class="breadcrumb-list__item breadcrumb-list__item--active">checkout</li>
+					</ul>
+
+					<!--=======  End of breadcrumb list  =======-->
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--=======  End of breadcrumb area =======-->
+
+	<!--=============================================
+	=            checkout page content         =
+	=============================================-->
+
+	<div class="checkout-page-area mb-130">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<div class="lezada-form">
+						<!-- Checkout Form s-->
+						<form id="checkoutForm"  action="{% url 'order_checkout' %}" method="post" class="checkout-form">
+							{% csrf_token %}
+							<div class="row row-40">
+
+								<div class="col-lg-7 mb-20">
+
+									<!-- Billing Address -->
+									<div id="billing-form" class="mb-40">
+										<h4 class="checkout-title">Billing Address</h4>
+
+										<div class="row">                                                
+                                                <div class="col-md-6 col-12 mb-20">
+                                                    <label for="id_first_name">First Name*</label>
+                                                    {{form.first_name}}
+                                                </div>
+                                            
+                                                <div class="col-md-6 col-12 mb-20">
+                                                    <label for="id_last_name">Last Name*</label>
+                                                    {{form.last_name}}
+                                                </div>
+                                            
+                                                <div class="col-md-6 col-12 mb-20">
+                                                    <label for="id_email">Email Address*</label>
+                                                    {{form.email}}
+                                                </div>
+                                            
+                                                <div class="col-md-6 col-12 mb-20">
+                                                    <label for="id_phone">Phone no*</label>
+                                                    {{form.phone}}
+                                                </div>
+                                            
+                                                <div class="col-12 mb-20">
+                                                    <label for="id_address">Address*</label>
+                                                    {{form.address}}
+                                                </div>
+
+												<div class="col-12 mb-20">
+													<div class="check-box">
+														<input type="checkbox" name="diff-address" id="different_address" data-shipping>
+														<label for="different_address">Choose different address</label>
+													</div>
+												</div>
+												
+												<div id="additionalFields" class="row" style="display: none;">
+													<div class="col-12 mb-20">
+														<label for="address_line">Address Line</label>
+														<input type="text" name="address_line" placeholder="Address Line" class="additional-field">
+													</div>
+												
+													<div class="d-flex">
+														<div class="col-md-6 col-12 mb-20">
+															<label for="street_name">Street Address</label>
+															<input type="text" name="street_name" placeholder="Street Address" class="additional-field">
+														</div>
+												
+														<div class="col-md-6 col-12 mb-20">
+															<label for="city">City</label>
+															<input type="text" name="city" placeholder="Town/City" class="additional-field">
+														</div>
+													</div>
+												
+													<div class="d-flex">
+														<div class="col-md-6 col-12 mb-20">
+															<label for="state">State</label>
+															<input type="text" name="state" placeholder="State" class="additional-field">
+														</div>
+												
+														<div class="col-md-6 col-12 mb-20">
+															<label for="country">Country</label>
+															<input type="text" name="country" placeholder="Country" class="additional-field">
+														</div>
+													</div>
+												
+													<div class="col-md-6 col-12 mb-20">
+														<label for="zip_code">Zip Code</label>
+														<input type="text" name="zip_code" placeholder="Zip Code" class="additional-field">
+													</div>
+												
+													<div class="col-12 mb-20">
+														<div class="check-box">
+															<input type="checkbox" value="save_address" name="save-address" id="shiping_address" data-shipping>
+															<label for="shiping_address">Save The Address</label>
+														</div>
+													</div>
+												</div>
+                                            
+                                            
+
+										</div>
+
+									</div>
+
+								</div>
+
+								<div class="col-lg-5">
+									<div class="row">
+
+										<!-- Cart Total -->
+										<div class="col-12 mb-60">
+
+											<h4 class="checkout-title">Cart Total</h4>
+
+											<div class="checkout-cart-total">
+
+												<h4>Product <span>Total</span></h4>
+
+												<ul>
+													{% for product, quantity in products_with_quantity.items %}
+													<li>{{product.product_name}}<i>*({{ quantity }})</i><span>₹{{product.price}}</span></li>
+													{% endfor %}
+												</ul>
+
+												<p>Sub Total <span>₹{{total}}</span></p>
+												<p>Shipping Fee <span>₹{{shippping_fee}}</span></p>
+												<p>GST <i>2%</i><span>₹{{tax}}</span></p>
+
+												<h4>Grand Total <span>₹{{grand_total}}</span></h4>
+
+											</div>
+
+										</div>
+
+										<!-- Payment Method -->
+										<div class="col-12">
+
+											<h4 class="checkout-title">Payment Method</h4>
+											
+												<div class="checkout-payment-method">
+													<div class="single-method">
+														<input type="radio" id="payment_check" name="payment-method" value="check">
+														<label for="payment_check">Check Payment</label>
+														<p data-method="check">Please send a Check to Store name with Store Street, Store Town, Store
+															State, Store Postcode, Store Country.</p>
+													</div>
+	
+													<div class="single-method">
+														<input type="radio" id="payment_bank" name="payment-method" value="bank">
+														<label for="payment_bank">Direct Bank Transfer</label>
+														<p data-method="bank">Please send a Check to Store name with Store Street, Store Town, Store
+															State, Store Postcode, Store Country.</p>
+													</div>
+	
+													<div class="single-method">
+														<input type="radio" id="payment_cash" name="payment-method" value="cash">
+														<label for="payment_cash">Cash on Delivery</label>
+														<p data-method="cash">Please send a Check to Store name with Store Street, Store Town, Store
+															State, Store Postcode, Store Country.</p>
+													</div>
+	
+													<div class="single-method">
+														<input type="radio" id="payment_paypal" name="payment-method" value="paypal">
+														<label for="payment_paypal">Paypal</label>
+														<p data-method="paypal">Please send a Check to Store name with Store Street, Store Town, Store
+															State, Store Postcode, Store Country.</p>
+													</div>
+	
+													<div class="single-method">
+														<input type="radio" id="payment_payoneer" name="payment-method" value="payoneer">
+														<label for="payment_payoneer">Payoneer</label>
+														<p data-method="payoneer">Please send a Check to Store name with Store Street, Store Town,
+															Store State, Store Postcode, Store Country.</p>
+													</div>
+	
+													<div class="single-method">
+														<input type="checkbox" id="accept_terms" value="accept_terms">
+														<label for="accept_terms">I’ve read and accept the terms & conditions</label>
+													</div>
+	
+													{% include 'includes/alerts.html' %}
+												
+												</div>
+
+												<button class="lezada-button lezada-button--medium mt-30">Place order</button>
+												
+										</div>
+
+									</div>
+								</div>
+
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--=====  End of checkout page content  ======-->
+
+
+	<!--=============================================
+	=            footer area         =
+	=============================================-->
+
+	<div class="footer-container footer-one pt-100 pb-50">
+		<div class="container wide">
+			<div class="row">
+				<div class="col footer-single-widget">
+					<!--=======  copyright text  =======-->
+					<!--=======  logo  =======-->
+
+					<div class="logo">
+						<img src="{% static 'images/logo.png' %}" class="img-fluid" alt="">
+					</div>
+
+					<!--=======  End of logo  =======-->
+
+					<!--=======  copyright text  =======-->
+
+					<div class="copyright-text">
+						<p> &copy; 2021 lezada. <span>All Rights Reserved</span></p>
+					</div>
+
+					<!--=======  End of copyright text  =======-->
+
+					<!--=======  End of copyright text  =======-->
+				</div>
+				<div class="col footer-single-widget">
+					<!--=======  single widget  =======-->
+					<h5 class="widget-title">ABOUT</h5>
+
+					<!--=======  footer navigation container  =======-->
+
+					<div class="footer-nav-container">
+						<nav>
+							<ul>
+								<li><a href="#">About us</a></li>
+								<li><a href="#">Store location</a></li>
+								<li><a href="#">Contact</a></li>
+								<li><a href="#">Orders tracking</a></li>
+							</ul>
+						</nav>
+					</div>
+
+					<!--=======  End of footer navigation container  =======-->
+
+					<!--=======  single widget  =======-->
+				</div>
+				<div class="col footer-single-widget">
+					<!--=======  single widget  =======-->
+					<h5 class="widget-title">USEFUL LINKS</h5>
+
+					<!--=======  footer navigation container  =======-->
+
+					<div class="footer-nav-container">
+						<nav>
+							<ul>
+								<li><a href="#">Returns</a></li>
+								<li><a href="#">Support Policy</a></li>
+								<li><a href="#">Size guide</a></li>
+								<li><a href="#">FAQs</a></li>
+							</ul>
+						</nav>
+					</div>
+
+					<!--=======  End of footer navigation container  =======-->
+
+					<!--=======  single widget  =======-->
+				</div>
+
+				<div class="col footer-single-widget">
+					<!--=======  single widget  =======-->
+					<h5 class="widget-title">FOLLOW US ON</h5>
+
+					<!--=======  footer navigation container  =======-->
+
+					<div class="footer-nav-container footer-social-links">
+						<nav>
+							<ul>
+								<li><a href="http://twitter.com/"><i class="fa fa-twitter"></i> Twitter</a></li>
+								<li><a href="http://facebook.com/"> <i class="fa fa-facebook"></i> Facebook</a></li>
+								<li><a href="http://instagram.com/"><i class="fa fa-instagram"></i> Instagram</a></li>
+								<li><a href="http://youtube.com/"> <i class="fa fa-youtube"></i> Youtube</a></li>
+							</ul>
+						</nav>
+					</div>
+
+					<!--=======  End of footer navigation container  =======-->
+
+
+					<!--=======  single widget  =======-->
+				</div>
+				<div class="col footer-single-widget">
+					<!--=======  single widget  =======-->
+
+					<div class="footer-subscription-widget">
+						<h2 class="footer-subscription-title">Subscribe.</h2>
+						<p class="subscription-subtitle">Subscribe to our newsletter to receive news on update.</p>
+
+						<!--=======  subscription form  =======-->
+
+						<div class="subscription-form">
+							<form id="mc-form" class="mc-form">
+								<input type="email" placeholder="Your email address" required>
+								<button type="submit"><i class="ion-ios-arrow-thin-right"></i></button>
+							</form>
+						</div>
+
+						<!--=======  End of subscription form  =======-->
+
+						<!-- mailchimp-alerts Start -->
+
+						<div class="mailchimp-alerts">
+							<div class="mailchimp-submitting"></div><!-- mailchimp-submitting end -->
+							<div class="mailchimp-success"></div><!-- mailchimp-success end -->
+							<div class="mailchimp-error"></div><!-- mailchimp-error end -->
+						</div><!-- mailchimp-alerts end -->
+
+					</div>
+
+					<!--=======  End of single widget  =======-->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--=====  End of footer area  ======-->
+
+	<!--=============================================
+	=            overlay items         =
+	=============================================-->
+
+	<!--=======  about overlay  =======-->
+
+	<div class="header-offcanvas about-overlay" id="about-overlay">
+		<div class="overlay-close inactive"></div>
+		<div class="overlay-content">
+
+			<!--=======  close icon  =======-->
+
+			<span class="close-icon" id="about-close-icon">
+				<a href="javascript:void(0)">
+					<i class="ti-close"></i>
+				</a>
+			</span>
+
+			<!--=======  End of close icon  =======-->
+
+			<!--=======  overlay content container  =======-->
+
+			<div class="overlay-content-container d-flex flex-column justify-content-between h-100">
+				<!--=======  widget wrapper  =======-->
+
+				<div class="widget-wrapper">
+					<!--=======  single widget  =======-->
+
+					<div class="single-widget">
+						<h2 class="widget-title">About Us</h2>
+						<p>At Lezada, we put a strong emphasis on simplicity, quality and usefulness of fashion products over other
+							factors. Our fashion items never get outdated. They are not short-lived as normal fashion clothes.</p>
+					</div>
+
+					<!--=======  End of single widget  =======-->
+				</div>
+
+				<!--=======  End of widget wrapper  =======-->
+
+				<!--=======  contact widget  =======-->
+
+				<div class="contact-widget">
+					<p class="email"><a href="mailto:contact@lezada.com">contact@lezada.com</a></p>
+					<p class="phone">(+00) 123 567990</p>
+
+					<div class="social-icons">
+						<ul>
+							<li><a href="http://www.twitter.com/" data-tippy="Twitter" data-tippy-inertia="true"
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-twitter"></i></a></li>
+							<li><a href="http://www.facebook.com/" data-tippy="Facebook" data-tippy-inertia="true"
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-facebook"></i></a></li>
+							<li><a href="http://www.instagram.com/" data-tippy="Instagram" data-tippy-inertia="true"
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-instagram"></i></a></li>
+							<li><a href="http://www.youtube.com/" data-tippy="Youtube" data-tippy-inertia="true"
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-youtube-play"></i></a></li>
+						</ul>
+					</div>
+				</div>
+
+				<!--=======  End of contact widget  =======-->
+			</div>
+
+			<!--=======  End of overlay content container  =======-->
+		</div>
+	</div>
+
+	<!--=======  End of about overlay  =======-->
+
+	<!--=======  wishlist overlay  =======-->
+
+	<div class="wishlist-overlay" id="wishlist-overlay">
+		<div class="wishlist-overlay-close inactive"></div>
+		<div class="wishlist-overlay-content">
+			<!--=======  close icon  =======-->
+
+			<span class="close-icon" id="wishlist-close-icon">
+				<a href="javascript:void(0)">
+					<i class="ion-android-close"></i>
+				</a>
+			</span>
+
+			<!--=======  End of close icon  =======-->
+
+			<!--=======  offcanvas wishlist content container  =======-->
+
+			<div class="offcanvas-cart-content-container">
+				<h3 class="cart-title">Wishlist</h3>
+
+				<div class="cart-product-wrapper">
+					<div class="cart-product-container  ps-scroll">
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
+								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Dining Chair</a></h5>
+								<p><span class="main-price discounted">$300.00</span> <span class="discounted-price">$220.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
+								<p><span class="main-price discounted">$100.00</span> <span class="discounted-price">$80.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
+								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
+								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+					</div>
+
+					<!--=======  cart buttons  =======-->
+
+					<div class="cart-buttons">
+						<a href="shop-wishlist.html">view wishlist</a>
+					</div>
+
+					<!--=======  End of cart buttons  =======-->
+				</div>
+			</div>
+
+			<!--=======  End of offcanvas wishlist content container   =======-->
+		</div>
+	</div>
+
+	<!--=======  End of wishlist overlay  =======-->
+
+	<!--=======  cart overlay  =======-->
+
+	<div class="cart-overlay" id="cart-overlay">
+		<div class="cart-overlay-close inactive"></div>
+		<div class="cart-overlay-content">
+			<!--=======  close icon  =======-->
+
+			<span class="close-icon" id="cart-close-icon">
+				<a href="javascript:void(0)">
+					<i class="ion-android-close"></i>
+				</a>
+			</span>
+
+			<!--=======  End of close icon  =======-->
+
+			<!--=======  offcanvas cart content container  =======-->
+
+			<div class="offcanvas-cart-content-container">
+				<h3 class="cart-title">Cart</h3>
+
+				<div class="cart-product-wrapper">
+					<div class="cart-product-container  ps-scroll">
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
+								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Dining Chair</a></h5>
+								<p><span class="cart-count">2 x </span> <span class="discounted-price">$220.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
+								<p><span class="cart-count">2 x </span> <span class="discounted-price">$80.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
+								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+						<!--=======  single cart product  =======-->
+
+						<div class="single-cart-product">
+							<span class="cart-close-icon">
+								<a href="#"><i class="ti-close"></i></a>
+							</span>
+							<div class="image">
+								<a href="shop-product-basic.html">
+									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
+								</a>
+							</div>
+							<div class="content">
+								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
+								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
+
+							</div>
+						</div>
+
+						<!--=======  End of single cart product  =======-->
+					</div>
+
+					<!--=======  subtotal calculation  =======-->
+
+					<p class="cart-subtotal">
+						<span class="subtotal-title">Subtotal:</span>
+						<span class="subtotal-amount">$200.00</span>
+					</p>
+
+					<!--=======  End of subtotal calculation  =======-->
+
+					<!--=======  cart buttons  =======-->
+
+					<div class="cart-buttons">
+						<a href="{% url 'cart' %}">view cart</a>
+						<a href="{% url 'order_checkout' %}">checkout</a>
+					</div>
+
+					<!--=======  End of cart buttons  =======-->
+
+					<!--=======  free shipping text  =======-->
+
+					<p class="free-shipping-text">
+						Free Shipping on All Orders Over $100!
+					</p>
+
+					<!--=======  End of free shipping text  =======-->
+				</div>
+			</div>
+
+			<!--=======  End of offcanvas cart content container   =======-->
+		</div>
+	</div>
+
+	<!--=======  End of cart overlay  =======-->
+
+
+	<!--=======  search overlay  =======-->
+
+	<div class="search-overlay" id="search-overlay">
+
+		<!--=======  close icon  =======-->
+
+		<span class="close-icon search-close-icon">
+			<a href="javascript:void(0)" id="search-close-icon">
+				<i class="ti-close"></i>
+			</a>
+		</span>
+
+		<!--=======  End of close icon  =======-->
+
+		<!--=======  search overlay content  =======-->
+
+		<div class="search-overlay-content">
+			<div class="input-box">
+				<form action="https://htmldemo.net/lezada/lezada/index.html">
+					<input type="search" placeholder="Search Products...">
+				</form>
+			</div>
+			<div class="search-hint">
+				<span># Hit enter to search or ESC to close</span>
+			</div>
+		</div>
+
+		<!--=======  End of search overlay content  =======-->
+	</div>
+
+	<!--=======  End of search overlay  =======-->
+
+	<!--=====  End of overlay items  ======-->
+
+	<!-- scroll to top  -->
+	<a href="#" class="scroll-top"></a>
+	<!-- end of scroll to top -->
+
+	<!-- JS
+	============================================ -->
+	<!-- jQuery JS -->
+	<script src="{% static 'js/vendor/jquery.min.js' %}"></script>
+
+	<!-- Popper JS -->
+	<script src="{% static 'js/popper.min.js' %}"></script>
+
+	<!-- Bootstrap JS -->
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+	<!-- Plugins JS -->
+	<script src="{% static 'js/plugins.js' %}"></script>
+
+	<!-- Main JS -->
+	<script src="{% static 'js/main.js' %}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- <script>
+		$(document).ready(function () {
+			// Add an event listener to the address dropdown
+			$('#id_address').change(function () {
+				// Get the selected address ID
+				var selectedAddressId = $(this).val();
+		
+				// Make an AJAX request to retrieve the address details
+				$.ajax({
+					url: `/checkout/get_address_details/order/`,
+					type: 'GET',
+					success: function (data) {
+						// Update the address fields with the retrieved details
+						$('#id_address_line').val(data.address_line);
+						$('#id_street_name').val(data.street_name);
+						$('#id_city').val(data.city);
+						$('#id_state').val(data.state);
+						$('#id_country').val(data.country);
+						$('#id_zip_code').val(data.zip_code);
+					},
+					error: function (error) {
+						console.log(error);
+					}
+				});
+			});
+		});
+		</script> -->
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var differentAddressCheckbox = document.getElementById('different_address');
+			var additionalFieldsDiv = document.getElementById('additionalFields');
+			var additionalFields = document.querySelectorAll('.additional-field');
+	
+			differentAddressCheckbox.addEventListener('change', function () {
+				additionalFieldsDiv.style.display = differentAddressCheckbox.checked ? 'block' : 'none';
+				
+				if (!differentAddressCheckbox.checked) {
+					// If the checkbox is unchecked, clear the values and hide the fields
+					additionalFields.forEach(function (field) {
+						field.value = '';
+					});
+				}
+			});
+		});
+	</script>
+    
+
+</body>
+
+
+<!-- Mirrored from htmldemo.net/lezada/lezada/shop-checkout.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Jun 2022 10:53:15 GMT -->
+</html>
+
+{% endblock %}

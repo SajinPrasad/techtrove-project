@@ -41,7 +41,8 @@
                     <div class="m-2 myaccount-content">
                             <h3>Primary Address</h3>
                         <address>
-                            <p><strong>{{ address.street_address }}</strong></p>
+                            <p>{{ address.address_line }}</p>
+							<p>{{street_name}}</p>
                             <p>{{ address.city }}</p>
                             <p>{{ address.zip_code }}</p>
                             <p>{{ address.state }}</p>
@@ -60,9 +61,10 @@
             {% else %}
                 <div class="col-lg-4">
                     <div class="m-2 myaccount-content">
-                            <h3>Address {{ forloop.counter0 }}</h3>
+                            <h3>Address {{ forloop.counter }}</h3>
                         <address>
-                            <p><strong>{{ address.street_address }}</strong></p>
+                            <p>{{ address.address_line }}</p>
+							<p>{{street_name}}</p>
                             <p>{{ address.city }}</p>
                             <p>{{ address.zip_code }}</p>
                             <p>{{ address.state }}</p>
@@ -75,6 +77,7 @@
                 {% endif %}
             {% endfor %}
         </div>
+		{% include 'includes/alerts.html' %}
     </div>
 </div>
 

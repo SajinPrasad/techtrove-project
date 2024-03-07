@@ -1,6 +1,7 @@
 from django.db import models
 from products.models import Product
 from user_accounts.models import Account
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 
@@ -15,7 +16,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     product         = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart            = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    quantity        = models.IntegerField()
+    quantity        = models.IntegerField(validators=[MinValueValidator(1)])
     is_active       = models.BooleanField(default=True)
 
     def __str__(self):

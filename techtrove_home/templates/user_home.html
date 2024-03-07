@@ -203,12 +203,26 @@
 										<!--=======  End of single product image  =======-->
 										<!--=======  single product content  =======-->
 										<div class="single-product__content">
+											{% if product.stock > 0 %}
+											<form method="post" action="{% url 'add_to_cart' product.id %}" id="form_{{ product.id }}">
+												{% csrf_token %}
+												<div class="title">
+													<h3>
+														<a href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">
+															{{ product.product_name }}
+														</a>
+													</h3>
+													<button type="submit" class="btn product-btn btn-link btn-lg text-decoration-none add-to-cart-btn" style="font-size: small;" id="addToCartBtn_{{ product.id }}">+Add to Cart</button>
+												</div>
+											</form>
+											{% else %}
 											<div class="title">
-												<h3><a href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">{{ product.product_name }}</a></h3>
-												<a href="#">Add to cart</a>
+												<a href="#">Out of stock</a>
 											</div>
+											{% endif %}
 											<div class="price">
-												<span class="main-price discounted">${{ product.price }}</span>
+												<span class="main-price discounted">₹{{ product.price }}</span>
+												<span class="discounted-price">$₹{{ product.price }}</span>
 											</div>
 										</div>
 										<!--=======  End of single product content  =======-->
@@ -725,9 +739,9 @@
 					<!--=======  cart buttons  =======-->
 
 					<div class="cart-buttons">
-						<a href="shop-cart.html">view cart</a>
-						<a href="shop-checkout.html">checkout</a>
-					</div>
+						<a href="{% url 'cart' %}">view cart</a>
+						<a href="{% url 'order_checkout' %}">checkout</a>
+					  </div>
 
 					<!--=======  End of cart buttons  =======-->
 
@@ -889,6 +903,12 @@
 
 	<!-- Main JS -->
 	<script src="{% static 'js/main.js' %}"></script>
+
+	<script>
+		function submitForm(productId) {
+			document.getElementById("form_" + productId).submit();
+		}
+	</script>
 
 
 <!-- Mirrored from htmldemo.net/lezada/lezada/ by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Jun 2022 10:50:54 GMT -->

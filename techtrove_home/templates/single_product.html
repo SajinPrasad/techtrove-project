@@ -145,6 +145,12 @@
 										<span class="discounted-price">₹{{single.price}}</span>
 									</div>
 
+									{% if user.is_superuser %}
+									<div class="mb-5 shop-product__price mb-30">
+										<span class="discounted-price">Stock available :{{single.stock}}</span>
+									</div>
+									{% endif %}
+
 									<!--=======  End of shop product price  =======-->
 
 									<!--=======  shop product short description  =======-->
@@ -193,18 +199,29 @@
 
 									<!--=======  shop product quantity block  =======-->
 
-									<div class="shop-product__block shop-product__block--quantity mb-40">
-										<div class="shop-product__block__title">Quantity: </div>
-										<div class="shop-product__block__value">
+									
+									
+											{% if single.stock > 0 %}
+											<div class="shop-product__block shop-product__block--quantity mb-40">
+												<div class="shop-product__block__title">Quantity: </div>
+												<div class="shop-product__block__value">
 											<form method="post" action="{% url 'add_to_cart' single.id %}">
 												{% csrf_token %}
+												
 												<div class="pro-qty d-inline-block mx-0 pt-0">
 													<input type="text" value="1" id="quantityInput" name="quantity">
 												</div>
+
 												<div class="mt-2">
 													<button type="submit" class="lezada-button lezada-button--medium mt-2">Add to Cart</button>
 												</div>
+												{% else %}
+													<div class="mt-2" style="border: 1px solid red; color: red; padding: 5px;">
+														The product is out of stock.
+													</div>
+												{% endif %}
 											</form>
+											{% include 'includes/alerts.html' %}
 										</div>
 									</div>
 									<!--=======  End of shop product quantity block  =======-->
@@ -217,11 +234,6 @@
 											<i class="ion-ios-shuffle"></i>
 										</a>
 									</div>
-									
-									{% if user.is_superuser %}
-									<button type="button" class="btn btn-secondary"><a href="{% url 'editproduct' single.id %}">Edit product</a></button>
-									<button type="button" class="btn btn-danger"><a href="{% url 'deleteproduct' single.id %}">Delete product</a></button>
-									{% endif %}
 
 									<!--=======  End of shop product buttons  =======-->
 

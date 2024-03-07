@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager, Group, Permission
 import uuid
+from django_otp.models import ThrottlingMixin
+from django_otp.plugins.otp_totp.models import TOTPDevice as BaseTOTPDevice
 
 # Create your models here.
 
@@ -49,6 +51,28 @@ class Account(AbstractUser):
     def __str__(self):
         return self.email
 
-    
+   
+
+class OTPModel(ThrottlingMixin):
+    key = models.CharField(max_length=40, unique=True, editable=False)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    confirmed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.key}"
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        super().save(*args, **kwargs)
+
+
+class TOTPDevice(BaseTOTPDevice):
+    def generate_otp(self):
+        """
+        Generate a time-based one-time password (TOTP).
+        """
+        return self.token_generator.generate_token(self)
+
 
 

@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html class="no-js" lang="zxx">
 
@@ -39,12 +40,21 @@
   <!-- Modernizer JS -->
   <script src="{% static 'js/vendor/modernizr-2.8.3.min.js' %}"></script>
 
+  <style>
+    .info-container {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    /* Add any other styling you desire */
+}
+  </style>
+
 </head>
 
 {% include 'includes/header.html' %}
 
 {% block content %}
-
+{% include 'includes/alerts.html' %}
 
   <!--=======  breadcrumb area =======-->
 
@@ -87,7 +97,7 @@
                 <a href="{% url 'add_address' %}">Add address</a>
                 <a href="{% url 'list_address' %}">List Address</a>
                 <a href="#orders" data-toggle="tab"> Orders</a>
-                <a href="#download" data-toggle="tab"> Download</a>
+                <a href="#download" data-toggle="tab">Download</a>
                 <a href="#payment-method" data-toggle="tab"> Payment
                   Method</a>
                 <a href="shop-customer-login.html"> Logout</a>
@@ -102,21 +112,25 @@
                   <div class="myaccount-content">
                     <h3>Dashboard</h3>
                     <div class="welcome">
-                      <p>Hello, <strong>Alex Tuntuni</strong> (If Not <strong>Tuntuni !</strong><a
-                          href="shop-customer-login.html" class="logout"> Logout</a>)</p>
-                    </div>
-
-                    <div class="profile-section">
-                      <h2>User Details</h2>
-                      <div class="details-section">
-                          <div class="detail">
-                              <label>Name:</label>
-                              <input type="text" value="{{user.first_name}}" readonly>
-                              <a href="#" class="edit-link">Edit</a>
+                      <div class="col-lg-12">
+                        <div class="col-lg-4 text-center mx-auto single-input-item">
+                          <div class="single-review text-center mx-auto">
+                            <div class="single-review text-center mx-auto">
+                              {% if user_profile.profile_pic %}
+                                <div class="single-review__image text-center mx-auto">
+                                  <img src="{{ user_profile.profile_pic.url }}" class="img-fluid" alt="{{ user_profile.user.first_name }}">
+                                </div>
+                              {% else %}
+                                    <p>No profile picture uploaded</p>
+                              {% endif %}
+                            </div>
                           </div>
-                          <!-- Add similar details with edit link for other fields like email, address, etc. -->
+                          <p>Hello, <strong>{{user_profile.user.first_name}}</strong> <strong>{{user_profile.user.last_name}}</strong><a
+                            href="shop-customer-login.html" class="logout"> </a> You can edit your profile details, change password, add addresses and see order details here.</p>
+                        </div>
                       </div>
-                  </div>
+                      
+                    </div>
                   </div>
                 </div>
                 <!-- Single Tab Content End -->
@@ -129,6 +143,7 @@
                         <thead class="thead-light">
                           <tr>
                             <th>Order</th>
+                            <th>Billing Name</th>
                             <th>Date</th>
                             <th>Status</th>
                             <th>Total</th>
@@ -136,29 +151,31 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>1</td>
-                            <td>Aug 22, 2018</td>
-                            <td>Pending</td>
-                            <td>$3000</td>
-                            <td><a href="shop-cart.html" class="check-btn sqr-btn ">View</a></td>
-                          </tr>
-                          <tr>
-                            <td>2</td>
-                            <td>July 22, 2018</td>
-                            <td>Approved</td>
-                            <td>$200</td>
-                            <td><a href="shop-cart.html" class="check-btn sqr-btn ">View</a></td>
-                          </tr>
-                          <tr>
-                            <td>3</td>
-                            <td>June 12, 2017</td>
-                            <td>On Hold</td>
-                            <td>$990</td>
-                            <td><a href="shop-cart.html" class="check-btn sqr-btn ">View</a></td>
-                          </tr>
+                          {% for order in orders %}
+                            <tr>
+                              <td>{{order.order_number}}</td>
+                              <td>{{order.full_name}}</td>
+                              <td>{{order.created_at}}</td>
+                              
+                              {% if order.status == 'Accepted' %}
+                              <td class="text-primary">{{order.status}}</td>
+                              {% elif order.status == 'Pending' %}
+                              <td class="text-warning">{{order.status}}</td>
+                              {% elif order.status == 'Cancelled' %}
+                              <td class="text-danger">{{order.status}}</td>
+                              {% elif order.status == 'Delivered' %}
+                              <td class="text-success">{{order.status}}</td>
+                              {% else %}
+                              <td class="text-dark">{{order.status}}</td>
+                              {% endif %}
+                              
+                              <td>₹{{order.order_total}}</td>
+                              <td><a href="{% url 'order_details' order.order_id %}" class="text-primary">View</a></td>
+                            </tr>
+                          {% endfor %}
                         </tbody>
                       </table>
+                      {% include 'includes/alerts.html' %}
                     </div>
                   </div>
                 </div>
@@ -211,84 +228,109 @@
                   <div class="myaccount-content">
                     <h3>Account Details</h3>
                     <div class="account-details-form">
-                      <form method="post">
+                      <form method="post" enctype="multipart/form-data" action="{% url 'user_profile' %}">
                         {% csrf_token %}
                         <div class="row">
+                          <div class="col-lg-12">
+                            <div class="col-lg-4 text-center mx-auto single-input-item">
+                              <div class="single-review text-center mx-auto">
+                                {% if user_profile.profile_pic %}
+                                  <div class="single-review__image text-center mx-auto">
+                                    <img src="{{ user_profile.profile_pic.url }}" class="img-fluid" alt="{{ user_profile.user.first_name }}">
+                                  </div>
+                                {% else %}
+                                      <p>No profile picture uploaded</p>
+                                {% endif %}
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-6">
+                            <label for="profile-pic" class="required">Profile Picture</label>
+                            {{ user_profile_form.profile_pic }}
+                          </div>
                           <div class="col-lg-6">
                             <div class="single-input-item">
-                              <label for="first-name" class="required">First Name</label>
-                              <input type="text" placeholder="{{ user.first_name }}" readonly id="first-name" class="editable" />
+                              <label for="first-name" class="required">First Name : <strong>{{user_profile.user.first_name}}</strong></label>
+                              {{account_form.first_name}}
                             </div>
                           </div>
                           <div class="col-lg-6">
                             <div class="single-input-item">
-                              <label for="last-name" class="required">Last Name</label>
-                              <input type="text" placeholder="{{ user.last_name }}" readonly id="last-name" class="editable" />
+                              <label for="last-name" class="required">Last Name : <strong>{{user_profile.user.last_name}}</strong> </label>
+                              {{account_form.last_name}}
                             </div>
                           </div>
                           <div class="col-lg-6">
                             <div class="single-input-item">
-                              <label for="display-name" class="required">Username</label>
-                              <input type="text" placeholder="{{ user.username }}" id="display-name" readonly class="editable" />
+                              <label for="display-name" class="required">Username : <strong>{{user_profile.user.username}}</strong></label>
+                              {{account_form.username}}
                             </div>
                           </div>
                           <div class="col-lg-6">
                             <div class="single-input-item">
-                              <label for="email" class="required">Email Addres</label>
-                              <input type="email" placeholder="{{ user.email }}" readonly id="email" class="editable" />
+                              <label for="email" class="required">Email : <strong>{{user_profile.user.email}}</strong></label>
+                              <input type="email" name="email" placeholder="{{user.email}}">
                             </div>
                           </div>
                           <div class="col-lg-6">
                             <div class="single-input-item">
-                              <label for="email" class="required">Phone Number</label>
-                              <input placeholder="{{ user.phone_number }}" readonly id="phone-number" class="editable" />
+                              <label for="email" class="required">Pnone : <strong>{{user_profile.user.phone_number}}</strong></label>
+                              {{account_form.phone_number}}
                             </div>
                           </div>
                           <div class="col-lg-6">
                             <div class="single-input-item">
-                                <label for="email" class="required">Birth Date</label>
-                                <input  placeholder="{{ up.birthdate|date:'Y-m-d' }}" readonly id="birth-date" class="editable" />
+                                <label for="birthdate" class="required">Date of Birth<strong>{{user_profile.user.birthdate}} - </strong><i class="text-lowercase">yyy/mm/dd</i></label>
+                                {{user_profile_form.birthdate}}
                             </div>
                           </div>
                           <div class="col-lg-6">
                             <!-- Gender -->
-                            <div class="single-input-item">
-                                <label for="gender" class="required">Gender</label>
-                                <input placeholder="{{ up.gender }}" readonly id="gender" class="editable" />
-                            </div>
+                            <div class="single-input-item d-flex align-items-center">
+                              <label for="gender" class="required mr-2"> Gender : <strong>{{user_profile.gender}}</strong></label>
+                              <div class="form-group">
+                                  {{ user_profile_form.gender }}
+                              </div>
+                          </div>
                         </div>
                         </div>
                         <div class="single-input-item">
-                          <button type="submit" class="check-btn sqr-btn btn-primary">Save Changes</button>
+                          <a href="update_user_data"><button type="submit" class="check-btn sqr-btn btn-primary">Save Changes</button></a>
                         </div>
-                        <div class="single-input-item">
+                        <!-- <div class="single-input-item">
                           <button class=" sqr-btn edit-btn">Edit</button>
-                        </div>
+                        </div> -->
+                      </form>
+                      <form class="mt-5" action="{% url 'change_password' %}" method="post">
+                        {% csrf_token %}
                         <fieldset>
                           <legend>Password change</legend>
                           <div class="single-input-item">
                             <label for="current-pwd" class="required">Current Password</label>
-                            <input type="password" id="current-pwd" />
+                            <input type="password" name="current_password" id="current-pwd" />
                           </div>
                           <div class="row">
                             <div class="col-lg-6">
                               <div class="single-input-item">
                                 <label for="new-pwd" class="required">New Password</label>
-                                <input type="password" id="new-pwd" />
+                                <input type="password" name="new_password" id="new-pwd" />
                               </div>
                             </div>
                             <div class="col-lg-6">
                               <div class="single-input-item">
                                 <label for="confirm-pwd" class="required">Confirm Password</label>
-                                <input type="password" id="confirm-pwd" />
+                                <input type="password" name="confirm_password" id="confirm-pwd" />
                               </div>
                             </div>
                           </div>
                         </fieldset>
                         <div class="single-input-item">
-                          <button class="check-btn sqr-btn ">Save Changes</button>
+                          <button type="submit" class="check-btn sqr-btn ">Save Changes</button>
                         </div>
                       </form>
+                      <div class="info-container">
+                        {% include 'includes/alerts.html' %}
+                      </div>
                     </div>
                   </div>
                 </div> <!-- Single Tab Content End -->
@@ -556,7 +598,7 @@
           <div class="cart-product-container  ps-scroll">
             <!--=======  single cart product  =======-->
 
-            <div class="single-cart-product">
+            <!-- <div class="single-cart-product">
               <span class="cart-close-icon">
                 <a href="#"><i class="ti-close"></i></a>
               </span>
@@ -570,12 +612,12 @@
                 <p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
 
               </div>
-            </div>
+            </div> -->
 
             <!--=======  End of single cart product  =======-->
             <!--=======  single cart product  =======-->
 
-            <div class="single-cart-product">
+            <!-- <div class="single-cart-product">
               <span class="cart-close-icon">
                 <a href="#"><i class="ti-close"></i></a>
               </span>
@@ -589,12 +631,12 @@
                 <p><span class="cart-count">2 x </span> <span class="discounted-price">$220.00</span></p>
 
               </div>
-            </div>
+            </div> -->
 
             <!--=======  End of single cart product  =======-->
             <!--=======  single cart product  =======-->
 
-            <div class="single-cart-product">
+            <!-- <div class="single-cart-product">
               <span class="cart-close-icon">
                 <a href="#"><i class="ti-close"></i></a>
               </span>
@@ -608,12 +650,12 @@
                 <p><span class="cart-count">2 x </span> <span class="discounted-price">$80.00</span></p>
 
               </div>
-            </div>
+            </div> -->
 
             <!--=======  End of single cart product  =======-->
             <!--=======  single cart product  =======-->
 
-            <div class="single-cart-product">
+            <!-- <div class="single-cart-product">
               <span class="cart-close-icon">
                 <a href="#"><i class="ti-close"></i></a>
               </span>
@@ -627,12 +669,12 @@
                 <p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
 
               </div>
-            </div>
+            </div> -->
 
             <!--=======  End of single cart product  =======-->
             <!--=======  single cart product  =======-->
 
-            <div class="single-cart-product">
+            <!-- <div class="single-cart-product">
               <span class="cart-close-icon">
                 <a href="#"><i class="ti-close"></i></a>
               </span>
@@ -646,7 +688,7 @@
                 <p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
 
               </div>
-            </div>
+            </div> -->
 
             <!--=======  End of single cart product  =======-->
           </div>
@@ -663,8 +705,8 @@
           <!--=======  cart buttons  =======-->
 
           <div class="cart-buttons">
-            <a href="shop-cart.html">view cart</a>
-            <a href="shop-checkout.html">checkout</a>
+            <a href="{% url 'cart' %}">view cart</a>
+            <a href="{% url 'order_checkout' %}">checkout</a>
           </div>
 
           <!--=======  End of cart buttons  =======-->
@@ -743,9 +785,9 @@
 
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<script>
+<!-- <script>
   $(document).ready(function () {
-    // Clicking the 'Edit' button
+    // Clicking the 'Edit' button 
     $(".edit-btn").click(function () {
         // Enable editing for all input fields with 'editable' class
         $(".editable").prop("readonly", false);
@@ -812,7 +854,7 @@
 
     // Rest of your script...
   });
-</script>
+</script> -->
 
 
 </body>
