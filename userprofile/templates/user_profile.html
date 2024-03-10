@@ -97,7 +97,7 @@
                 <a href="{% url 'add_address' %}">Add address</a>
                 <a href="{% url 'list_address' %}">List Address</a>
                 <a href="#orders" data-toggle="tab"> Orders</a>
-                <a href="#download" data-toggle="tab">Download</a>
+                <a href="#download" data-toggle="tab">Wallet</a>
                 <a href="#payment-method" data-toggle="tab"> Payment
                   Method</a>
                 <a href="shop-customer-login.html"> Logout</a>
@@ -181,37 +181,23 @@
                 </div>
                 <!-- Single Tab Content End -->
                 <!-- Single Tab Content Start -->
-                <div class="tab-pane fade" id="download" role="tabpanel">
-                  <div class="myaccount-content">
-                    <h3>Downloads</h3>
-                    <div class="myaccount-table table-responsive text-center">
-                      <table class="table table-bordered">
-                        <thead class="thead-light">
-                          <tr>
-                            <th>Product</th>
-                            <th>Date</th>
-                            <th>Expire</th>
-                            <th>Download</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>Haven - Free Real Estate PSD Template</td>
-                            <td>Aug 22, 2018</td>
-                            <td>Yes</td>
-                            <td><a href="#" class="check-btn sqr-btn "><i class="fa fa-cloud-download"></i> Download
-                                File</a></td>
-                          </tr>
-                          <tr>
-                            <td>HasTech - Profolio Business Template</td>
-                            <td>Sep 12, 2018</td>
-                            <td>Never</td>
-                            <td><a href="#" class="check-btn sqr-btn "><i class="fa fa-cloud-download"></i> Download
-                                File</a></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                <div class="tab-pane text-center fade" id="download" role="tabpanel">
+                  <div class="myaccount-content text-center">
+                      <h3>Wallet balance</h3>
+                      <div class="myaccount-table table-responsive text-center">
+                          <div class="col-lg-4 mx-auto">
+                              {% if wallet.balance == 0.00 %}
+                              <div class="m-2 myaccount-content">
+                                <h5>Your wallet is empty</h5>
+                              <p><strong><a class="text-dark" href="{% url 'shop_view' %}">Click here to start shoping!</a></strong></p>
+                              </div>
+                              {% else %}
+                              <div class="m-2 myaccount-content">
+                                <h4>₹{{wallet.balance}}</h4>
+                              </div>
+                              {% endif %}
+                          </div>
+                      </div>
                   </div>
                 </div>
                 <!-- Single Tab Content End -->

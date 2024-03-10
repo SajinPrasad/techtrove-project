@@ -209,7 +209,11 @@
 												<div class="title">
 													<h3>
 														<a href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">
-															{{ product.product_name }}
+															{% if product.product_name|length > 35 %}
+																{{ product.product_name|slice:":35" }}...
+															{% else %}
+																{{ product.product_name }}
+															{% endif %}
 														</a>
 													</h3>
 													<button type="submit" class="btn product-btn btn-link btn-lg text-decoration-none add-to-cart-btn" style="font-size: small;" id="addToCartBtn_{{ product.id }}">+Add to Cart</button>

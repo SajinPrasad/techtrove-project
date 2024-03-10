@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-TX8t27EcRE3e/ihU7zmzJsHcOBVqSSl8UA7r1c2ECA7thmDZmbQKlO2g1TTRl/B" crossorigin="anonymous">
+    <!-- Include Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .success-icon {
+            color: #28a745;
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        .success-message {
+            font-size: 2rem;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <i class="fas fa-check-circle success-icon"></i>
+        <h1 class="display-4 mb-4">Payment Successful</h1>
+        <p class="lead success-message">Thank you for your purchase!</p>
+        <!-- You can customize and add more content as needed -->
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-J8dJQ9PEkoFfsJY1DsGce7vmJZ7R9M1nJ6ViwGtnbNlTsrKxqIdT3yPVlMZcc9a" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-pzjw8+7viKtuW4ZTOieQK9M5ZlX5bNM68A+u6uEOLBmg/PJd5U/CVp5UJjQV+3w9" crossorigin="anonymous"></script>
+</body>
+<script type="text/javascript">
+    function RefreshParent() {
+        if (window.opener != null && !window.opener.closed) {
+            // Set a flag in localStorage to indicate that the parent needs to be refreshed
+            window.opener.location.reload();
+        }
+    }
+
+    window.onbeforeunload = RefreshParent;
+</script>
+</html>

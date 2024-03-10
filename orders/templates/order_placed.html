@@ -76,7 +76,9 @@
             <p><strong>Email : </strong> {{ order.email }}</p>
             <p><strong>Phone : </strong> {{ order.phone }}</p>
             <p><strong>Email : </strong> {{ order.email }}</p>
+            <p><strong>Order Status : </strong> {{ order.status }}</p>
             <p><strong>Payment Method : </strong> {{ order.payment.payment_method }}</p>
+            <p><strong>Payment Status : </strong> {{ order.payment.status }}</p>
             <p><strong>Tax : </strong>  ₹{{ order.tax }}</p>
             <p><strong>Shipping Fee : </strong>  ₹{{ order.shipping_fee }}</p>
             <p><strong>Grand Total : </strong>  ₹{{ order.order_total }}</p>
@@ -113,7 +115,8 @@
                 </div>
             </div>
     </div>
-    <a href="{% url 'generate_invoice_pdf' order_id=order.order_id %}">Download Invoice PDF</a>
+    <a class="text-danger" href="{% url 'generate_invoice_pdf' order_id=order.order_id %}">Download Invoice PDF</a>
+    <p><strong><a class="text-dark" href="{% url 'shop_view' %}">Click here to shop more!</a></strong></p>
 </div>
 
 {% endblock %}

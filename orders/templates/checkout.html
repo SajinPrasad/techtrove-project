@@ -167,20 +167,11 @@
 											<h4 class="checkout-title">Payment Method</h4>
 											
 												<div class="checkout-payment-method">
-													<div class="single-method">
-														<input type="radio" id="payment_check" name="payment-method" value="check">
-														<label for="payment_check">Check Payment</label>
-														<p data-method="check">Please send a Check to Store name with Store Street, Store Town, Store
-															State, Store Postcode, Store Country.</p>
+													{% if wallet_msg %}
+													<div class="w-100 mb-5 text-center">
+														<p class="text-danger mb-5"><i>{{wallet_msg}}</i></p>
 													</div>
-	
-													<div class="single-method">
-														<input type="radio" id="payment_bank" name="payment-method" value="bank">
-														<label for="payment_bank">Direct Bank Transfer</label>
-														<p data-method="bank">Please send a Check to Store name with Store Street, Store Town, Store
-															State, Store Postcode, Store Country.</p>
-													</div>
-	
+													{% endif %}								
 													<div class="single-method">
 														<input type="radio" id="payment_cash" name="payment-method" value="cash">
 														<label for="payment_cash">Cash on Delivery</label>
@@ -196,14 +187,13 @@
 													</div>
 	
 													<div class="single-method">
-														<input type="radio" id="payment_payoneer" name="payment-method" value="payoneer">
-														<label for="payment_payoneer">Payoneer</label>
-														<p data-method="payoneer">Please send a Check to Store name with Store Street, Store Town,
-															Store State, Store Postcode, Store Country.</p>
+														<input type="radio" id="payment_payoneer" name="payment-method" value="Wallet">
+														<label for="payment_payoneer">Wallet</label>
+														<p data-method="payoneer">Your wallet balance is, ₹{{wallet.balance}}</p>
 													</div>
 	
 													<div class="single-method">
-														<input type="checkbox" id="accept_terms" value="accept_terms">
+														<input type="checkbox" id="accept_terms" name="accept-terms" value="accept_terms">
 														<label for="accept_terms">I’ve read and accept the terms & conditions</label>
 													</div>
 	
@@ -588,116 +578,49 @@
 					<div class="cart-product-container  ps-scroll">
 						<!--=======  single cart product  =======-->
 
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
+						<div class="cart-product-wrapper">
+							<div class="cart-product-container  ps-scroll">
+								<!--=======  single cart product  =======-->
+								{% for cart_item in cart_items %}
+								<div class="single-cart-product">
+									<span class="cart-close-icon">
+										<a href="#"><i class="ti-close"></i></a>
+									</span>
+									<div class="image">
+										<a href="shop-product-basic.html">
+											<img src="{{ cart_item.product.image_set.first.image.url }}" class="img-fluid" alt="">
+										</a>
+									</div>
+									<div class="content">
+										<h5><a href="shop-product-basic.html">{{ cart_item.product.product_name }}</a></h5>
+										{% if cart_item.product.is_available %}
+										<p><span class="cart-count">{{ cart_item.quantity }} x </span> <span class="discounted-price">₹{{ cart_item.product.price }}</span></p>
+										{% else %}
+										<p><span class="discounted-price text-danger">Not available</span></p>
+										{% endif %}
+			
+									</div>
+								</div>
+								{% endfor %}
+			
+								<!--=======  End of single cart product  =======-->
 							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
+			
+							<!--=======  subtotal calculation  =======-->
+			
+							<p class="cart-subtotal">
+								<span class="subtotal-title">Subtotal:</span>
+								<span class="subtotal-amount">₹{{total}}</span>
+							</p>
+			
+							<!--=======  End of subtotal calculation  =======-->
+			
+							<!--=======  cart buttons  =======-->
+			
+							<div class="cart-buttons">
+								<a href="{% url 'cart' %}">view cart</a>
+								<a href="{% url 'order_checkout' %}">checkout</a>
 							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dining Chair</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$220.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$80.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-					</div>
-
-					<!--=======  subtotal calculation  =======-->
-
-					<p class="cart-subtotal">
-						<span class="subtotal-title">Subtotal:</span>
-						<span class="subtotal-amount">$200.00</span>
-					</p>
-
-					<!--=======  End of subtotal calculation  =======-->
-
-					<!--=======  cart buttons  =======-->
-
-					<div class="cart-buttons">
-						<a href="{% url 'cart' %}">view cart</a>
-						<a href="{% url 'order_checkout' %}">checkout</a>
-					</div>
 
 					<!--=======  End of cart buttons  =======-->
 

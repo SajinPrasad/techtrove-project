@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 
-from user_accounts.models import Account
+from orders.models import Wallet
 from . models import Address
 from .forms import AddressForm, AccountForm, UserProfileForm
 from .models import UserProfile
@@ -33,6 +33,7 @@ def save_new_email(user, new_email):
 @login_required(login_url='register')
 def user_profile(request):
     user_profile = UserProfile.objects.get(user=request.user)
+    wallet, create = Wallet.objects.get_or_create(user=request.user)
 
     try:
         orders = Order.objects.filter(user=user_profile.user).order_by('-created_at')
@@ -78,6 +79,7 @@ def user_profile(request):
         'account_form': account_form,
         'orders': orders,
         'user_profile': user_profile,
+        'wallet' : wallet,
     }
 
     return render(request, 'user_profile.html', context)

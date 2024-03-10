@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'orders',
     'django_otp',
     'django_otp.plugins.otp_totp',
+    'paypal_payments',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'techtrove.urls'
@@ -116,6 +119,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "https://www.sandbox.paypal.com",
+    # Add other necessary origins
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -142,6 +150,11 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/photos/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'photos')
+
+PAYPAL_CLIENT_ID = 'AegV4jdwpguvPZaGFthgRFbNKZ-F7SsYAm0MomkehiL-BLyaOdEiZfbPw0dUxTn0tGs1gIQ8gKQJXv8x'
+PAYPAL_SECRET = 'EL8V2TiDZSPQXMV9AyeNCwiiX8vptVfMOn4OW6buC5IePch_eMQU2j_ZT1j6OZKOL72NV-tO9LgLtk0k'
+
+PAYPAL_MODE = 'sandbox'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

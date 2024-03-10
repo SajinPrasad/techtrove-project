@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.core.mail import send_mail
 from reportlab.pdfgen import canvas
 from django.middleware.csrf import get_token
@@ -13,7 +13,7 @@ from django.views.decorators.cache import cache_control
 
 from cart.models import Cart, CartItem
 from .forms import OrderForm, OrderStatusForm, PaymentStatusForm
-from .models import Order, Payment, OrderProduct
+from .models import Order, Payment, OrderProduct, Wallet
 from userprofile.models import Address
 from userprofile.forms import AddressForm
 
@@ -22,7 +22,10 @@ from userprofile.forms import AddressForm
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')
 def order_checkout(request):
-    user = request.user
+    user            = request.user
+    wallet_msg      = None
+    wallet, create  = Wallet.objects.get_or_create(user=user)
+
     try:
         cart = Cart.objects.get(user=user)
         cart_items = CartItem.objects.filter(cart=cart)
@@ -41,8 +44,8 @@ def order_checkout(request):
     products_with_quantity = {}
 
     for cart_item in cart_items:
-        product = cart_item.product
-        quantity = cart_item.quantity
+        product     = cart_item.product
+        quantity    = cart_item.quantity
         products_with_quantity[product] = quantity
 
     try:
@@ -53,8 +56,8 @@ def order_checkout(request):
     count = cart_items.count()
 
     grand_total = Decimal(0)
-    total = Decimal(0)
-    tax = Decimal(0)
+    total       = Decimal(0)
+    tax         = Decimal(0)
     shipping_fee = Decimal(30)
 
     for cart_item in cart_items:
@@ -88,34 +91,33 @@ def order_checkout(request):
 
             if selected_address_id:
                 # selected_address = Address.objects.get(pk=selected_address_id)
-                data.address = selected_address_id
-                selected_address = str(f'{selected_address_id.address_line}, {selected_address_id.street_name}, {selected_address_id.city}, {selected_address_id.state}, {selected_address_id.country}, {selected_address_id.country}, {selected_address_id.zip_code}')
+                data.address        = selected_address_id
+                selected_address    = str(f'{selected_address_id.address_line}, {selected_address_id.street_name}, {selected_address_id.city}, {selected_address_id.state}, {selected_address_id.country}, {selected_address_id.country}, {selected_address_id.zip_code}')
                 
                 data.billing_address = selected_address
 
             elif diff_address:
-                address_line=request.POST.get('address_line')
-                street_name=request.POST.get('street_name')
-                city=request.POST.get('city')
-                state=request.POST.get('state')
-                country=request.POST.get('country')
-                zip_code=request.POST.get('zip_code')
+                address_line        = request.POST.get('address_line')
+                street_name         = request.POST.get('street_name')
+                city                = request.POST.get('city')
+                state               = request.POST.get('state')
+                country             = request.POST.get('country')
+                zip_code            = request.POST.get('zip_code')
 
                 data.billing_address = str(f'{address_line}, {street_name}, {city}, {state}, {country}, {zip_code}')
 
-            elif save_address:
-                new_address = Address.objects.create(
-                    user=user,
-                    address_line=request.POST.get('address_line'),
-                    street_name=request.POST.get('street_name'),
-                    city=request.POST.get('city'),
-                    state=request.POST.get('state'),
-                    country=request.POST.get('country'),
-                    zip_code=request.POST.get('zip_code'),
-                )
+                if save_address:
+                    new_address         = Address.objects.create(
+                        user            = user,
+                        address_line    = request.POST.get('address_line'),
+                        street_name     = request.POST.get('street_name'),
+                        city            = request.POST.get('city'),
+                        state           = request.POST.get('state'),
+                        country         = request.POST.get('country'),
+                        zip_code        = request.POST.get('zip_code'),
+                    )
 
-                data.address = new_address
-                data.billing_address = str(f'{new_address.address_line}, {new_address.street_name}, {new_address.city}, {new_address.state}, {new_address.country}, {new_address.country}, {new_address.zip_code}')
+                    data.address = new_address
             
             data.order_total    = grand_total
             data.tax            = tax
@@ -126,11 +128,36 @@ def order_checkout(request):
 
             payment_method = request.POST.get('payment-method', '')
 
-            if payment_method == 'cash':
+            terms_and_conditions   = request.POST.get('accept-terms', '')
+
+            if payment_method == 'cash'and terms_and_conditions:
                 payment = Payment.objects.create(
                     user            = user,
                     payment_method  = 'Cash on delivery',
                     amount          = grand_total,
+                    status          = 'Pending'
+                )
+                data.payment        = payment
+                data.status         = 'Pending'
+                data.save()
+
+                for cart_item in cart_items:
+                    OrderProduct.objects.create(
+                        order=data,
+                        product=cart_item.product,
+                        quantity=cart_item.quantity,
+                    )
+                
+                cart.delete()
+
+                return HttpResponseRedirect(reverse('order_confirmation', args=[data.order_id]))
+            
+            elif payment_method == 'paypal'and terms_and_conditions:
+                payment = Payment.objects.create(
+                    user            = user,
+                    payment_method  = 'paypal',
+                    amount          = grand_total,
+                    status          = 'Pending'
                 )
                 data.payment        = payment
                 data.status         = 'Pending'
@@ -146,6 +173,34 @@ def order_checkout(request):
                 cart.delete()
 
                 return HttpResponseRedirect(reverse('order_confirmation', args=[data.order_id]))
+            
+            elif payment_method == 'Wallet'and terms_and_conditions:
+
+                if wallet.balance >= grand_total:
+                    payment = Payment.objects.create(
+                        user            = user,
+                        payment_method  = 'Wallet',
+                        amount          = grand_total,
+                        status          = 'Pending'
+                    )
+
+                    data.payment        = payment
+                    data.status         = 'Pending'
+                    data.save()
+
+                    for cart_item in cart_items:
+                        OrderProduct.objects.create(
+                            order       = data,
+                            product     = cart_item.product,
+                            quantity    = cart_item.quantity,
+                        )
+                    
+                    cart.delete()
+
+                    return HttpResponseRedirect(reverse('order_confirmation', args=[data.order_id]))
+                
+                else:
+                    wallet_msg = f'Your wallet balance is only ₹{wallet.balance}, so chose other options.'
 
     else:
         form = OrderForm(user=request.user)
@@ -165,6 +220,8 @@ def order_checkout(request):
         'shippping_fee' : shipping_fee,
         'products_with_quantity': products_with_quantity,
         'csrf_token': get_token(request),
+        'wallet_msg' : wallet_msg,
+        'wallet' : wallet,
     }
 
     return render(request, 'checkout.html', context)
@@ -173,6 +230,7 @@ def order_checkout(request):
 @login_required(login_url='register')
 def order_confirmation(request, order_id):
     order = Order.objects.get(order_id=order_id)
+    
     try:
         # Try to get the OrderProduct object using get()
         order_products = OrderProduct.objects.filter(order_id=order_id)
@@ -185,32 +243,75 @@ def order_confirmation(request, order_id):
 
     products = [product.product for product in order_products]
 
+    for order_product in order_products:
+        total = order_product.quantity * order_product.product.price
+
     for item in products:
         if not item.is_available:
             messages.success(request, f'{item.product_name} is not available right now.')
             return redirect('order_checkout')
+        
+    context = {
+        'order_products': order_products,
+        'products': products,
+        'order' : order,
+        'total' : total,
+    }
 
+    payment_status = order.payment.status
+    
+    if payment_status == 'Completed':
+        return render(request, 'order_placed.html', context)
+        
     if request.method == 'POST':
         payment_type = order.payment.payment_method
 
         if payment_type == 'Cash on delivery':
             order.status = 'Accepted'
             order.is_ordered = True
-
             order.save()
+
+            order.payment.status = 'Completed'
+            order.payment.save()
 
             context = {
                 'order_products': order_products,
                 'products': products,
-                'order' : order
+                'order' : order,
+                'total' : total,
             }
 
             return render(request, 'order_placed.html', context)
+        
+        elif payment_type == 'paypal':
+            return HttpResponseRedirect(reverse('create_payment', args=[order.order_id]))
 
+        elif payment_type == 'Wallet':
+            wallet = Wallet.objects.get(user=request.user)
+            wallet.balance -= order.order_total
+            wallet.save()
+
+            order.status = 'Accepted'
+            order.is_ordered = True
+            order.save()
+
+            order.payment.status = 'Completed'
+            order.payment.save()
+
+            context = {
+                'order_products': order_products,
+                'products': products,
+                'order' : order,
+                'total' : total,
+            }
+
+            return render(request, 'order_placed.html', context)
+        
     context = {
         'order_products': order_products,
         'products': products,
-        'order' : order
+        'order' : order,
+        'total' : total,
     }
 
     return render(request, 'order_confirmation.html', context)
@@ -318,10 +419,17 @@ def cancel_order(request, order_id):
         messages.info(request, 'You dont have any orders yet.')
 
     if request.method == "POST":
-        order.status = 'Cancelled'
-        order.save()
-        order.payment.status = 'Cancelled'
-        order.payment.save()
+        if order.payment.payment_method == 'Cash on delivery':
+            order.status = 'Cancelled'
+            order.save()
+            order.payment.status = 'Cancelled'
+            order.payment.save()
+        
+        elif order.payment.payment_method == 'paypal':
+            order.status = 'Cancelled'
+            order.save()
+
+            return HttpResponseRedirect(reverse('process_refund', args=[order.order_id]))
 
         # Send cancellation mail
         send_mail("Order cancellation: ", f"Your order:{order.order_number}- for {order.full_name} is cancelled", settings.EMAIL_HOST_USER, [email], fail_silently=False)
@@ -390,6 +498,4 @@ def admin_order_detailed_view(request, order_id):
 
     return render(request, 'admin_order_update.html', context)
 
-def admin_order_update(request, order_id):
-    pass
 

@@ -60,6 +60,7 @@ def cart_view(request):
         'total': total,
         'quantity': quantity,
         'zipped_data': zipped_data,
+        'cart_items' : cart_items,
     }
 
     return render(request, 'cart.html', context)
