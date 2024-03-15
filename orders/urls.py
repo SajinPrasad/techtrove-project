@@ -9,5 +9,8 @@ urlpatterns = [
     path('cancel/cancel_order/<int:order_id>/', views.cancel_order, name='cancel_order'),
     path('techtrove_admin/orders/admin_order_details/', views.admin_order_details, name='admin_order_details'),
     path('checkout/admin_order_update/<int:order_id>/', views.admin_order_detailed_view, name='admin_order_detailed_view'),
-    # path('update_payment_status/', views.update_payment_status, name='update_payment_status'),
+    path('generate/sales/report/', views.generate_sales_report, name='generate_sales_report'),
+    path('generate/sales/report/pdf/sales_report/', views.generate_sales_report_pdf, name='generate_sales_report_pdf'),
+    path('generate/sales/report/excel/', views.generate_sales_report_excel, name='generate_sales_report_excel'),
+
 ]

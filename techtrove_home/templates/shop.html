@@ -538,13 +538,15 @@
 											<img src="{{ product.image_set.last.image.url }}" class="img-fluid fixed-size-single-img" alt="">
 										</a>
 
-										<!-- <div class="single-product__floating-badges">
-											<span class="onsale">-10%</span>
-											<span class="hot">hot</span>
-										</div> -->
+										{% if product in producs_product_offers or product in products_category_offers %}
+											<div class="single-product__floating-badges">
+												<span class="onsale">offer</span> 
+												<span class="hot">hot</span>
+											</div>
+										{% endif %}
 
 										<div class="single-product__floating-icons">
-											<span class="wishlist"><a href="#" data-tippy="Add to wishlist" data-tippy-inertia="true"
+											<span class="wishlist"><a href="{% url 'add_to_wishlist' product.id %}" data-tippy="Add to wishlist" data-tippy-inertia="true"
 													data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
 													data-tippy-theme="sharpborder" data-tippy-placement="left"><i
 														class="ion-android-favorite-outline"></i></a></span>

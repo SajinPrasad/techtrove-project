@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
+from django.utils import timezone
 from product_category.models import Category
 from products.models import Product
 from datetime import date
@@ -8,7 +9,7 @@ from django.contrib import messages
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.db.models import Q
-from orders.models import OrderProduct
+from offers.models import ProductOffer, CategoryOffer
 
 # Create your views here.
 
@@ -52,10 +53,37 @@ def shop_view(request):
     products = Product.objects.filter(is_deleted=False, is_available=True)
     items = Category.objects.all()
     has_products = products.exists()
+    
+    products_category_offers = []
+    producs_product_offers = []
+    for product in products:
+        product_offers = ProductOffer.objects.filter(
+            product=product,
+            is_active=True,
+            valid_from__lte=timezone.now(),
+            valid_to__gte=timezone.now(),
+        )
+
+        category_offers = CategoryOffer.objects.filter(
+            category=product.category,
+            is_active=True,
+            valid_from__lte=timezone.now(),
+            valid_to__gte=timezone.now(),
+        )
+
+        for product_offer in product_offers:
+            producs_product_offers.append(product_offer.products_with_offer(product))
+            
+        for category_offer in category_offers:
+            products_category_offers.append(category_offer.products_with_offer(product))
+
+        
     context = {
         'products': products, 
         'items': items,
         'has_products': has_products,
+        'producs_product_offers' : producs_product_offers,
+        'products_category_offers' : products_category_offers,
     }
     return render(request, 'shop.html', context)
 
@@ -112,18 +140,20 @@ def product_filter(request):
                 messages.info(request, 'No products available')
         elif order_by == 'popularity':
             # Get all products and annotate them with total quantity ordered
-            all_products = Product.objects.all().annotate(total_quantity=Coalesce(Sum('orderproduct__quantity'), 0))
+            all_products = Product.objects.annotate(total_quantity=Coalesce(Sum('orderproduct__quantity'), 0))
             
+            # Filter available and not deleted products
+            available_products = all_products.filter(is_available=True, is_deleted=False)
+
             # Sort products by popularity (total quantity ordered)
-            popular_products = sorted(all_products, key=lambda x: x.total_quantity, reverse=True)
+            popular_products = available_products.order_by('-total_quantity')
 
-            # Separate available and unavailable products
-            available_products = [product for product in popular_products if product.is_available and not product.is_deleted]
+            # Assign popular_products back to available_products if needed
+            available_products = popular_products
 
-            # Display available products first, sorted by popularity
+            # Use available_products for further processing
             products = available_products
-            available_products = products
-
+            
     if 'search' in request.GET:
         products = available_products.filter(Q(product_name__icontains=search_query) | Q(description__icontains=search_query))
 

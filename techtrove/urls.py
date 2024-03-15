@@ -30,6 +30,9 @@ urlpatterns = [
     path('cart/', include('cart.urls')),
     path('order/', include('orders.urls')),
     path('', include('paypal_payments.urls')),
+    path('', include('coupons.urls')),
+    path('', include('offers.urls')),
+    path('', include('wishlist.urls')),
 ]
 
 if settings.DEBUG:

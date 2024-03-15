@@ -74,6 +74,11 @@
                                 <td class="product-name">
                                     <a href="#">{{ cart_item.product.product_name }}</a>
                                     <span class="product-variation">Color: Black</span>
+                                    {% if cart_item.product_offer %}
+                                    <span class="product-variation"><strong><i>{{cart_item.product_offer.title}}</i> Offer applied!</strong></span>
+                                    {% elif cart_item.category_offer %}
+                                    <span class="product-variation"><strong><i>{{cart_item.category_offer.title}}</i> Offer applied!</strong></span>
+                                    {% endif %}
                                 </td>
 
                                 {% if cart_item.product.is_available %}
@@ -126,19 +131,27 @@
                             <!--=======  coupon form  =======-->
 
                             <div class="lezada-form coupon-form">
-                                <form action="#">
+                                <form action="{% url 'apply_coupons' %}" method="post">
+                                    {% csrf_token %}
                                     <div class="row">
-                                        <div class="col-md-7 mb-sm-10">
-                                            <input type="text" placeholder="Enter your coupon code">
-                                        </div>
-                                        <div class="col-md-5">
-                                            <button class="lezada-button lezada-button--medium">apply coupon</button>
-                                        </div>
+                                        {% if coupon_applied %}
+                                            <div class="mt-5">
+                                                <h4>Coupon applied</h4>
+                                            </div>
+                                            <div class="col-md-7 mb-sm-10">
+                                                <a href="{% url 'remove_coupons' coupon_applied %}" class="lezada-button lezada-button--medium">Click to remove coupon</a>
+                                            </div>
+                                        {% else %}
+                                            <div class="col-md-7 mb-sm-10">
+                                                <input type="text" name="code" placeholder="Enter your coupon code">
+                                            </div>
+                                            <div class="col-md-5">
+                                                <button type="submit" class="lezada-button lezada-button--medium">apply coupon</button>                            
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </form>
-                            </div>
-
-                            <!--=======  End of coupon form  =======-->
+                            </div><!--=======  End of coupon form  =======-->
                         </div>
 
                         <div class="col-lg-6 text-left text-lg-right">
@@ -147,6 +160,22 @@
                             <!-- <button class="lezada-button lezada-button--medium">update cart</button> -->
 
                             <!--=======  End of update cart button  =======-->
+                        </div>
+                    </div>
+                    <div class="container m-5 ml-10">
+                        <div class="row justify-content-center">
+                            <div class="col-md-12">
+                                <div class="m-2 myaccount-content">
+                                    <h3>Coupons available</h3>
+                                    {% for coupon in valid_coupons %}    
+                                    <address>
+                                        <p><strong>{{ coupon.name }}</strong></p>
+                                        <p>{{ coupon.description }}</p>
+                                        <p ><i>Copy the couon code </i><br><span class="text-dark">{{ coupon.code }}</span></p>
+                                    </address>
+                                    {% endfor %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -158,13 +187,13 @@
                     <h2 class="mb-40">Cart totals</h2>
 
                     <table class="cart-calculation-table mb-30">
-                        <tr>
+                        <!-- <tr>
                             <th>SUBTOTAL</th>
                             <td class="subtotal">₹{{total}}</td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <th>TOTAL</th>
-                            <td class="total">₹{{total}}</td>
+                            <td class="total">₹{{cart_total}}</td>
                         </tr>
                     </table>
 

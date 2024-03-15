@@ -76,9 +76,26 @@
       <p><strong>Payment Method : </strong> {{ order.payment.payment_method }}</p>
       <p><strong>Tax : </strong>  ₹{{ order.tax }}</p>
       <p><strong>Shipping Fee : </strong>  ₹{{ order.shipping_fee }}</p>
+      {% if order.coupon_applied %}
+        <p><strong>Coupon applied : </strong> {{ order.coupon_applied }}</p>
+        <p><strong>Coupon discount : </strong>  ₹{{ order.coupon_discount }}</p>
+      {% endif %}
+
+      <p><strong>Offers</strong>
+        {% for product in order_products %}
+          {% if product.offer_title %}
+            {% if product.offer_discount_type == 'percentage' %}
+              <p><span>{{ product.offer_title }} for <i>{{product.product.product_name}}</i> - </span><span>  {{ product.offer_discount_value }}%</span></p>
+            {% else %}
+              <p><span>{{ product.offer_title }} for <i>{{product.product.product_name}}</i>  </span><span>  ₹{{ product.offer_discount_value }}</span></p>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
       <p><strong>Grand Total : </strong>  ₹{{ order.order_total }}</p>
       <p><strong>Status : </strong> {{ order.status }}</p>
       <p><strong>Payment Status : </strong> {{ order.payment.status }}</p>
+
 
     </div>
 
@@ -96,47 +113,56 @@
 
   <h4 class="mb-4">Ordered Products</h4>
 
-    <div class="ordered-products">
-      {% for order_product in order_products %}
-      <div class="card mb-3">
-          <div class="card-body d-flex">
-          <div class="product-details">
-              <h5 class="card-title">{{ order_product.product.product_name }}</h5>
-              <p class="card-text"><strong>Price : </strong> ₹{{ order_product.product.price }}</p>
-              <p><strong>Quantity : </strong> {{ order_product.quantity }}</p>
-          </div>
-          <img src="{{ order_product.product.image_set.first.image.url }}" class="product-image" alt="">
-      </div>
-        {% endfor %}
-    </div>
+  <div class="ordered-products">
+    {% for order_product in order_products %}
+    <div class="card mb-3">
+        <div class="card-body d-flex">
+        <div class="product-details">
+            <h5 class="card-title">{{ order_product.product.product_name }}</h5>
+            <p class="card-text"><strong>Price : </strong> ₹{{ order_product.product.price }}</p>
 
+            {% if order_product.offer_title %}
+              {% if order_product.offer_discount_type == 'percentage' %}
+              <p class="card-text text-secondary"><strong>Offer : </strong>{{ order_product.offer_title }} -  <span>{{ order_product.offer_discount_value }}%</span></p>
+              {% else %}
+              <p class="card-text text-secondary"><strong>Offer : </strong>{{ order_product.offer_title }} -  <span>₹{{ order_product.offer_discount_value }}</span></p>
+              {% endif %}
+            {% endif %}
+            
+            <p><strong>Quantity : </strong> {{ order_product.quantity }}</p>
+        </div>
+        <img src="{{ order_product.product.image_set.first.image.url }}" class="product-image" alt="">
     </div>
-    <form method="post" action="{% url 'cancel_order' order_id=order.order_id %}">
-        {% csrf_token %}
-        {% if order.status == 'Cancelled' %}
-        <div class="text-center">
-            <h5 class="text-danger">This order has been cancelled</h5>
-            <p class="text-secondary"><strong><a href="{% url 'shop_view' %}">Let's shop more</a></strong></p>
-        </div> 
-        {% elif order.status == 'Pending' %}
-        <div class="text-center">
-          <p><strong><a href="{% url 'order_confirmation' order_id=order.order_id %}">Click here to go to confirmation the order</a></strong></p>
-        </div>
-        <div class="text-center">
-          <button type="submit" class="lezada-button lezada-button--medium mt-30">Cancel Order</button>
-        </div>
-        {% elif order.status == 'Delivered' %}
-        <div class="text-center">
-          <p class="text-success"><strong>Thank you for shopping with us!</strong></p>
-          <a class="btn btn-secondary" href="{% url 'shop_view' %}">Shop more</a>
-        </div>    
-        {% else %}
-        <div class="text-center">
-            <button type="submit" class="lezada-button lezada-button--medium mt-30">Cancel Order</button>
-        </div>
-        {% endif %}
-    </form>
+    {% endfor %}
   </div>
+
+    <div>
+      <form method="post" action="{% url 'cancel_order' order_id=order.order_id %}">
+          {% csrf_token %}
+          {% if order.status == 'Cancelled' %}
+          <div class="text-center">
+              <h5 class="text-danger">This order has been cancelled</h5>
+              <p class="text-secondary"><strong><a href="{% url 'shop_view' %}">Let's shop more</a></strong></p>
+          </div> 
+          {% elif order.status == 'Pending' %}
+          <div class="text-center">
+            <p><strong><a href="{% url 'order_confirmation' order_id=order.order_id %}">Click here to go to confirmation the order</a></strong></p>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="lezada-button lezada-button--medium mt-30">Cancel Order</button>
+          </div>
+          {% elif order.status == 'Delivered' %}
+          <div class="text-center">
+            <p class="text-success"><strong>Thank you for shopping with us!</strong></p>
+            <a class="btn btn-secondary" href="{% url 'shop_view' %}">Shop more</a>
+          </div>    
+          {% else %}
+          <div class="text-center">
+              <button type="submit" class="lezada-button lezada-button--medium mt-30">Cancel Order</button>
+          </div>
+          {% endif %}
+      </form>
+    </div>
 </div>
 
 {% endblock %}

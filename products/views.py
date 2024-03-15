@@ -44,8 +44,8 @@ def add_product(request):
 
                 messages.success(request, 'Added new product')
                 return redirect('listproduct')
+            
         except IntegrityError as e:
-            # Handle integrity error and display a custom message
             messages.error(request, 'Integrity error: Please select a valid category.')
 
     else:

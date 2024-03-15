@@ -51,6 +51,9 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',
     'paypal_payments',
     'corsheaders',
+    'coupons',
+    'offers',
+    'wishlist',
 ]
 
 MIDDLEWARE = [

@@ -137,7 +137,7 @@
 									<div class="row">
 
 										<!-- Cart Total -->
-										<div class="col-12 mb-60">
+										<!-- <div class="col-12 mb-60">
 
 											<h4 class="checkout-title">Cart Total</h4>
 
@@ -151,9 +151,58 @@
 													{% endfor %}
 												</ul>
 
-												<p>Sub Total <span>₹{{total}}</span></p>
 												<p>Shipping Fee <span>₹{{shippping_fee}}</span></p>
 												<p>GST <i>2%</i><span>₹{{tax}}</span></p>
+												{% if coupon_applied %}
+												<p>Coupon Name <span>{{coupon_applied}}</span></p>
+												<p>Coupon Discount <span>₹{{coupon_discount}}</span></p>
+												<p>Sub Total <span>₹{{cart_total}}</span></p>
+												{% endif %}
+
+												<h4>Grand Total <span>₹{{grand_total}}</span></h4>
+
+											</div>
+
+										</div> -->
+
+										<div class="col-12 mb-60">
+
+											<h4 class="checkout-title">Cart Total</h4>
+
+											<div class="checkout-cart-total">
+
+												<h4>Product <span>Total</span></h4>
+
+												<ul>
+													{% for product in cart_items %}
+													
+													{% if product.product_offer %}
+													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+														{% if product.product_offer.discount_type == 'fixed_amount' %}
+														<li style="margin-top: -16px; color: black"><small>{{product.product_offer.title}} discount applied<span>₹{{product.product_offer.discount_value}}</span></small></li>
+														{% elif product.product_offer.discount_type == 'percentage' %}
+														<li style="margin-top: -16px; color: black"><small>{{product.product_offer.title}} discount applied<span>{{product.product_offer.discount_value}}%</span></small></li>
+														{% endif %}
+													{% elif product.category_offer %}
+													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+														{% if product.category_offer.discount_type == 'fixed_amount' %}
+														<li style="margin-top: -16px; color: black"><small>{{product.category_offer.title}} Offer discount applied<span>₹{{product.category_offer.discount_value}}</span></small></li>
+														{% elif product.category_offer.discount_type == 'percentage' %}
+														<li style="margin-top: -16px; color: black"><small>{{product.category_offer.title}} Offer discount applied<span>{{product.category_offer.discount_value}}%</span></small></li>
+														{% endif %}
+													{% else %}
+													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+													{% endif %}
+													{% endfor %}
+												</ul>
+
+												<p>Shipping Fee <span>₹{{shippping_fee}}</span></p>
+												<p>GST <i>2%</i><span>₹{{tax}}</span></p>
+												{% if coupon_applied %}
+												<p>Coupon Name <span>{{coupon_applied}}</span></p>
+												<p>Coupon Discount <span>₹{{coupon_discount}}</span></p>
+												<p>Sub Total <span>₹{{cart_total}}</span></p>
+												{% endif %}
 
 												<h4>Grand Total <span>₹{{grand_total}}</span></h4>
 

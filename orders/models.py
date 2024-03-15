@@ -45,9 +45,12 @@ class Order(models.Model):
     email           = models.EmailField()
     billing_address = models.CharField(max_length=255, blank=True, null=True)
     address         = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
-    order_total     = models.DecimalField(max_digits=12, decimal_places=2)
+    order_total     = models.DecimalField(max_digits=16, decimal_places=2)
     tax             = models.DecimalField(max_digits=10, decimal_places=2)
     shipping_fee    = models.DecimalField(max_digits=5, decimal_places=2)
+    coupon_applied  = models.CharField(max_length=50, null=True, blank=True)
+    coupon_discount = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    coupon_code     = models.CharField(max_length=50, null=True, blank=True)
     status          = models.CharField(max_length=15, choices=STATUS, default='New')
     is_ordered      = models.BooleanField(default=False)  
     created_at      = models.DateTimeField(auto_now_add=True)
@@ -68,6 +71,9 @@ class OrderProduct(models.Model):
     quantity        = models.PositiveIntegerField()
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
+    offer_title     = models.CharField(max_length=100, null=True, blank=True)
+    offer_discount_type   = models.CharField(max_length=20, choices=(('percentage', 'Percentage'), ('fixed_amount', 'Fixed Amount')), null=True, blank=True)
+    offer_discount_value  = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
 
 class Wallet(models.Model):

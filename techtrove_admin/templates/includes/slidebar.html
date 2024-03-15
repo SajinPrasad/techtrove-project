@@ -143,6 +143,52 @@
                   </li>
                 </ul>
               </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fas fa-gift"></i>
+                  <p>
+                    Coupons
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{% url 'add_coupons' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Add coupons</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'list_coupons' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>List coupons</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fas fa-gift"></i>
+                  <p>
+                    Offers
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{% url 'create_offer' %}" class="nav-link">
+                      <i class="fad fa-badge"></i>
+                      <p>Create offers</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'list_offers' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>List offers</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
             </ul>
             
       </nav>
