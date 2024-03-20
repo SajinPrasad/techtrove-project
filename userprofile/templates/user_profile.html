@@ -1,60 +1,7 @@
+{% extends 'profile_base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html class="no-js" lang="zxx">
-
-
-<!-- Mirrored from htmldemo.net/lezada/lezada/my-account.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Jun 2022 10:53:31 GMT -->
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Lezada - Multipurpose eCommerce Bootstrap4 Template</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Favicon -->
-  <link rel="icon" href="images/favicon.ico">
-
-  <!-- CSS
-	============================================ -->
-  <!-- Bootstrap CSS -->
-  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-
-  <!-- FontAwesome CSS -->
-  <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
-
-  <!-- Ionicons CSS -->
-  <link href="{% static 'css/ionicons.min.css' %}" rel="stylesheet">
-
-  <!-- Themify CSS -->
-  <link href="{% static 'css/themify-icons.css' %}" rel="stylesheet">
-
-  <!-- Plugins CSS -->
-  <link href="{% static 'css/plugins.css' %}" rel="stylesheet">
-
-  <!-- Helper CSS -->
-  <link href="{% static 'css/helper.css' %}" rel="stylesheet">
-
-  <!-- Main CSS -->
-  <link href="{% static 'css/main.css' %}" rel="stylesheet">
-
-  <!-- Modernizer JS -->
-  <script src="{% static 'js/vendor/modernizr-2.8.3.min.js' %}"></script>
-
-  <style>
-    .info-container {
-    padding: 10px;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-    /* Add any other styling you desire */
-}
-  </style>
-
-</head>
-
-{% include 'includes/header.html' %}
-
 {% block content %}
-{% include 'includes/alerts.html' %}
 
   <!--=======  breadcrumb area =======-->
 
@@ -95,12 +42,9 @@
                   Dashboard</a>
                 <a href="#account-info" data-toggle="tab"> Account Details</a>
                 <a href="{% url 'add_address' %}">Add address</a>
-                <a href="{% url 'list_address' %}">List Address</a>
                 <a href="#orders" data-toggle="tab"> Orders</a>
                 <a href="#download" data-toggle="tab">Wallet</a>
-                <a href="#payment-method" data-toggle="tab"> Payment
-                  Method</a>
-                <a href="shop-customer-login.html"> Logout</a>
+                <a href="#payment-method" data-toggle="tab">List Address</a>
               </div>
             </div>
             <!-- My Account Tab Menu End -->
@@ -175,7 +119,6 @@
                           {% endfor %}
                         </tbody>
                       </table>
-                      {% include 'includes/alerts.html' %}
                     </div>
                   </div>
                 </div>
@@ -204,8 +147,53 @@
                 <!-- Single Tab Content Start -->
                 <div class="tab-pane fade" id="payment-method" role="tabpanel">
                   <div class="myaccount-content">
-                    <h3>Payment Method</h3>
-                    <p class="saved-message">You Can't Saved Your Payment Method yet.</p>
+                    <div class="login-area mb-130">
+                      <div class="container">
+                          <div class="row">
+                              {% for address in addresses %}
+                              {% if address.is_primary %}
+                                  <div class="col-lg-4">
+                                      <div class="m-2 myaccount-content">
+                                              <h3>Primary Address</h3>
+                                          <address>
+                                              <p>{{ address.address_line }}</p>
+                                              <p>{{street_name}}</p>
+                                              <p>{{ address.city }}</p>
+                                              <p>{{ address.zip_code }}</p>
+                                              <p>{{ address.state }}</p>
+                                              <p>{{ address.country }}</p>
+                                          </address>
+                                          <a href="{% url 'edit_address' address.pk %}" class="check-btn sqr-btn"><i class="fa fa-edit"></i> Edit Address</a><br>
+                                          <a href="{% url 'delete_address' address.pk %}" class="check-btn sqr-btn"><i class="fa fa-trash"></i> Delete Address</a>
+                                      </div>
+                                  </div>
+                                  {% endif %}
+                                  {% endfor %}
+                              
+                              {% for address in addresses %}
+                              {% if address.is_primary %}
+                              
+                              {% else %}
+                                  <div class="col-lg-4">
+                                      <div class="m-2 myaccount-content">
+                                              <h3>Address {{ forloop.counter }}</h3>
+                                          <address>
+                                              <p>{{ address.address_line }}</p>
+                                              <p>{{street_name}}</p>
+                                              <p>{{ address.city }}</p>
+                                              <p>{{ address.zip_code }}</p>
+                                              <p>{{ address.state }}</p>
+                                              <p>{{ address.country }}</p>
+                                          </address>
+                                          <a href="{% url 'edit_address' address.pk %}" class="check-btn sqr-btn"><i class="fa fa-edit"></i> Edit Address</a><br>
+                                          <a href="{% url 'delete_address' address.pk %}" class="check-btn sqr-btn"><i class="fa fa-trash"></i> Delete Address</a>
+                                      </div>
+                                  </div>
+                                  {% endif %}
+                              {% endfor %}
+                          </div>
+                      </div>
+                  </div>
                   </div>
                 </div>
                 <!-- Single Tab Content End -->
@@ -314,12 +302,10 @@
                           <button type="submit" class="check-btn sqr-btn ">Save Changes</button>
                         </div>
                       </form>
-                      <div class="info-container">
-                        {% include 'includes/alerts.html' %}
-                      </div>
                     </div>
                   </div>
                 </div> <!-- Single Tab Content End -->
+                
               </div>
             </div> <!-- My Account Tab Content End -->
           </div>
@@ -335,203 +321,14 @@
 	=            footer area         =
 	=============================================-->
 
-  <div class="footer-container footer-one pt-100 pb-50">
-    <div class="container wide">
-      <div class="row">
-        <div class="col footer-single-widget">
-          <!--=======  copyright text  =======-->
-          <!--=======  logo  =======-->
-
-          <div class="logo">
-            <img src="{% static 'images/logo.png' %}" class="img-fluid" alt="">
-          </div>
-
-          <!--=======  End of logo  =======-->
-
-          <!--=======  copyright text  =======-->
-
-          <div class="copyright-text">
-            <p> &copy; 2021 lezada. <span>All Rights Reserved</span></p>
-          </div>
-
-          <!--=======  End of copyright text  =======-->
-
-          <!--=======  End of copyright text  =======-->
-        </div>
-        <div class="col footer-single-widget">
-          <!--=======  single widget  =======-->
-          <h5 class="widget-title">ABOUT</h5>
-
-          <!--=======  footer navigation container  =======-->
-
-          <div class="footer-nav-container">
-            <nav>
-              <ul>
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Store location</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="#">Orders tracking</a></li>
-              </ul>
-            </nav>
-          </div>
-
-          <!--=======  End of footer navigation container  =======-->
-
-          <!--=======  single widget  =======-->
-        </div>
-        <div class="col footer-single-widget">
-          <!--=======  single widget  =======-->
-          <h5 class="widget-title">USEFUL LINKS</h5>
-
-          <!--=======  footer navigation container  =======-->
-
-          <div class="footer-nav-container">
-            <nav>
-              <ul>
-                <li><a href="#">Returns</a></li>
-                <li><a href="#">Support Policy</a></li>
-                <li><a href="#">Size guide</a></li>
-                <li><a href="#">FAQs</a></li>
-              </ul>
-            </nav>
-          </div>
-
-          <!--=======  End of footer navigation container  =======-->
-
-          <!--=======  single widget  =======-->
-        </div>
-
-        <div class="col footer-single-widget">
-          <!--=======  single widget  =======-->
-          <h5 class="widget-title">FOLLOW US ON</h5>
-
-          <!--=======  footer navigation container  =======-->
-
-          <div class="footer-nav-container footer-social-links">
-            <nav>
-              <ul>
-                <li><a href="http://twitter.com/"><i class="fa fa-twitter"></i> Twitter</a></li>
-                <li><a href="http://facebook.com/"> <i class="fa fa-facebook"></i> Facebook</a></li>
-                <li><a href="http://instagram.com/"><i class="fa fa-instagram"></i> Instagram</a></li>
-                <li><a href="http://youtube.com/"> <i class="fa fa-youtube"></i> Youtube</a></li>
-              </ul>
-            </nav>
-          </div>
-
-          <!--=======  End of footer navigation container  =======-->
-
-
-          <!--=======  single widget  =======-->
-        </div>
-        <div class="col footer-single-widget">
-          <!--=======  single widget  =======-->
-
-          <div class="footer-subscription-widget">
-            <h2 class="footer-subscription-title">Subscribe.</h2>
-            <p class="subscription-subtitle">Subscribe to our newsletter to receive news on update.</p>
-
-            <!--=======  subscription form  =======-->
-
-            <div class="subscription-form">
-              <form id="mc-form" class="mc-form">
-                <input type="email" placeholder="Your email address" required>
-                <button type="submit"><i class="ion-ios-arrow-thin-right"></i></button>
-              </form>
-            </div>
-
-            <!--=======  End of subscription form  =======-->
-
-            <!-- mailchimp-alerts Start -->
-
-            <div class="mailchimp-alerts">
-              <div class="mailchimp-submitting"></div><!-- mailchimp-submitting end -->
-              <div class="mailchimp-success"></div><!-- mailchimp-success end -->
-              <div class="mailchimp-error"></div><!-- mailchimp-error end -->
-            </div><!-- mailchimp-alerts end -->
-
-          </div>
-
-          <!--=======  End of single widget  =======-->
-        </div>
-      </div>
-    </div>
-  </div>
-
+  
   <!--=====  End of footer area  ======-->
 
   <!--=============================================
 	=            overlay items         =
 	=============================================-->
 
-  <!--=======  about overlay  =======-->
-
-  <div class="header-offcanvas about-overlay" id="about-overlay">
-    <div class="overlay-close inactive"></div>
-    <div class="overlay-content">
-
-      <!--=======  close icon  =======-->
-
-      <span class="close-icon" id="about-close-icon">
-        <a href="javascript:void(0)">
-          <i class="ti-close"></i>
-        </a>
-      </span>
-
-      <!--=======  End of close icon  =======-->
-
-      <!--=======  overlay content container  =======-->
-
-      <div class="overlay-content-container d-flex flex-column justify-content-between h-100">
-        <!--=======  widget wrapper  =======-->
-
-        <div class="widget-wrapper">
-          <!--=======  single widget  =======-->
-
-          <div class="single-widget">
-            <h2 class="widget-title">About Us</h2>
-            <p>At Lezada, we put a strong emphasis on simplicity, quality and usefulness of fashion products over other
-              factors. Our fashion items never get outdated. They are not short-lived as normal fashion clothes.</p>
-          </div>
-
-          <!--=======  End of single widget  =======-->
-        </div>
-
-        <!--=======  End of widget wrapper  =======-->
-
-        <!--=======  contact widget  =======-->
-
-        <div class="contact-widget">
-          <p class="email"><a href="mailto:contact@lezada.com">contact@lezada.com</a></p>
-          <p class="phone">(+00) 123 567990</p>
-
-          <div class="social-icons">
-            <ul>
-              <li><a href="http://www.twitter.com/" data-tippy="Twitter" data-tippy-inertia="true"
-                  data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-                  data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-twitter"></i></a></li>
-              <li><a href="http://www.facebook.com/" data-tippy="Facebook" data-tippy-inertia="true"
-                  data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-                  data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-facebook"></i></a></li>
-              <li><a href="http://www.instagram.com/" data-tippy="Instagram" data-tippy-inertia="true"
-                  data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-                  data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-instagram"></i></a></li>
-              <li><a href="http://www.youtube.com/" data-tippy="Youtube" data-tippy-inertia="true"
-                  data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-                  data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-youtube-play"></i></a></li>
-            </ul>
-          </div>
-        </div>
-
-        <!--=======  End of contact widget  =======-->
-      </div>
-
-      <!--=======  End of overlay content container  =======-->
-    </div>
-  </div>
-
-  <!--=======  End of about overlay  =======-->
-
-  <!--=======  wishlist overlay  =======-->
+   <!--=======  wishlist overlay  =======-->
 
   <div class="wishlist-overlay" id="wishlist-overlay">
     <div class="wishlist-overlay-close inactive"></div>
@@ -548,11 +345,41 @@
 
       <!--=======  offcanvas wishlist content container  =======-->
 
-        <div class="offcanvas-cart-content-container">
-            <h3 class="cart-title">Wishlist</h3>
+      <div class="offcanvas-cart-content-container">
+        <h3 class="cart-title">Wishlist</h3>
 
-        
+        <div class="cart-product-wrapper">
+            {% for item in wishlist_items %}
+            <div class="cart-product-container  ps-scroll">
+                <!--=======  single cart product  =======-->
+
+                <div class="single-cart-product">
+                  <span class="cart-close-icon">
+                    <a href="{% url 'delete_item_wishlist' item.id %}"><i class="ti-close"></i></a>
+                  </span>
+                    <div class="image">
+                        <a href="shop-product-basic.html">
+                            <img src="{{ item.product.image_set.first.image.url }}" class="img-fluid" alt="">
+                        </a>
+                    </div>
+                    <div class="content">
+                        <h5><a href="shop-product-basic.html">{{item.product.product_name}}</a></h5>
+                        <p><span class="main-price discounted"></span> <span class="discounted-price">₹{{item.product.price}}</span></p>
+
+                    </div>
+                </div>
+                <!--=======  End of single cart product  =======-->
+            </div>
+            {% endfor %}
+            <!--=======  cart buttons  =======-->
+
+            <div class="cart-buttons">
+                <a href="{% url 'wishlist' %}">view wishlist</a>
+            </div>
+
+            <!--=======  End of cart buttons  =======-->
         </div>
+    </div>
 
       <!--=======  End of offcanvas wishlist content container   =======-->
     </div>
@@ -565,149 +392,77 @@
   <div class="cart-overlay" id="cart-overlay">
     <div class="cart-overlay-close inactive"></div>
     <div class="cart-overlay-content">
-      <!--=======  close icon  =======-->
+        <!--=======  close icon  =======-->
 
-      <span class="close-icon" id="cart-close-icon">
-        <a href="javascript:void(0)">
-          <i class="ion-android-close"></i>
-        </a>
-      </span>
+        <span class="close-icon" id="cart-close-icon">
+            <a href="javascript:void(0)">
+                <i class="ion-android-close"></i>
+            </a>
+        </span>
 
-      <!--=======  End of close icon  =======-->
+        <!--=======  End of close icon  =======-->
 
-      <!--=======  offcanvas cart content container  =======-->
+        <!--=======  offcanvas cart content container  =======-->
+        <div class="offcanvas-cart-content-container">
+            <h3 class="cart-title">Cart</h3>
 
-      <div class="offcanvas-cart-content-container">
-        <h3 class="cart-title">Cart</h3>
+            <div class="cart-product-wrapper">
+                <div class="cart-product-container  ps-scroll">
+                    <!--=======  single cart product  =======-->
+                    {% for cart_item in cart_items %}
+                    <div class="single-cart-product">
+                      <span class="cart-close-icon">
+                        <a href="{% url 'delete_cart_item' cart_item.id %}"><i class="ti-close"></i></a>
+                    </span>
+                        <div class="image">
+                            <a href="shop-product-basic.html">
+                                <img src="{{ cart_item.product.image_set.first.image.url }}" class="img-fluid" alt="">
+                            </a>
+                        </div>
+                        <div class="content">
+                            <h5><a href="shop-product-basic.html">{{ cart_item.product.product_name }}</a></h5>
+                            {% if cart_item.product.is_available %}
+                            <p><span class="cart-count">{{ cart_item.quantity }} x </span> <span class="discounted-price">₹{{ cart_item.product.price }}</span></p>
+                            {% else %}
+                            <p><span class="discounted-price text-danger">Not available</span></p>
+                            {% endif %}
 
-        <div class="cart-product-wrapper">
-          <div class="cart-product-container  ps-scroll">
-            <!--=======  single cart product  =======-->
+                        </div>
+                    </div>
+                    {% endfor %}
 
-            <!-- <div class="single-cart-product">
-              <span class="cart-close-icon">
-                <a href="#"><i class="ti-close"></i></a>
-              </span>
-              <div class="image">
-                <a href="shop-product-basic.html">
-                  <img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-                </a>
-              </div>
-              <div class="content">
-                <h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-                <p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
+                    <!--=======  End of single cart product  =======-->
+                </div>
 
-              </div>
-            </div> -->
+                <!--=======  subtotal calculation  =======-->
 
-            <!--=======  End of single cart product  =======-->
-            <!--=======  single cart product  =======-->
+                <p class="cart-subtotal">
+                    <span class="subtotal-title">Subtotal:</span>
+                    <span class="subtotal-amount">₹{{cart_total}}</span>
+                </p>
 
-            <!-- <div class="single-cart-product">
-              <span class="cart-close-icon">
-                <a href="#"><i class="ti-close"></i></a>
-              </span>
-              <div class="image">
-                <a href="shop-product-basic.html">
-                  <img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-                </a>
-              </div>
-              <div class="content">
-                <h5><a href="shop-product-basic.html">Dining Chair</a></h5>
-                <p><span class="cart-count">2 x </span> <span class="discounted-price">$220.00</span></p>
+                <!--=======  End of subtotal calculation  =======-->
 
-              </div>
-            </div> -->
+                <!--=======  cart buttons  =======-->
 
-            <!--=======  End of single cart product  =======-->
-            <!--=======  single cart product  =======-->
+                <div class="cart-buttons">
+                    <a href="{% url 'cart' %}">view cart</a>
+                    <a href="{% url 'order_checkout' %}">checkout</a>
+                </div>
 
-            <!-- <div class="single-cart-product">
-              <span class="cart-close-icon">
-                <a href="#"><i class="ti-close"></i></a>
-              </span>
-              <div class="image">
-                <a href="shop-product-basic.html">
-                  <img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
-                </a>
-              </div>
-              <div class="content">
-                <h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-                <p><span class="cart-count">2 x </span> <span class="discounted-price">$80.00</span></p>
+                <!--=======  End of cart buttons  =======-->
 
-              </div>
-            </div> -->
+                <!--=======  free shipping text  =======-->
 
-            <!--=======  End of single cart product  =======-->
-            <!--=======  single cart product  =======-->
+                <p class="free-shipping-text">
+                    Free Shipping on All Orders Over $100!
+                </p>
 
-            <!-- <div class="single-cart-product">
-              <span class="cart-close-icon">
-                <a href="#"><i class="ti-close"></i></a>
-              </span>
-              <div class="image">
-                <a href="shop-product-basic.html">
-                  <img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-                </a>
-              </div>
-              <div class="content">
-                <h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-                <p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-              </div>
-            </div> -->
-
-            <!--=======  End of single cart product  =======-->
-            <!--=======  single cart product  =======-->
-
-            <!-- <div class="single-cart-product">
-              <span class="cart-close-icon">
-                <a href="#"><i class="ti-close"></i></a>
-              </span>
-              <div class="image">
-                <a href="shop-product-basic.html">
-                  <img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-                </a>
-              </div>
-              <div class="content">
-                <h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-                <p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-              </div>
-            </div> -->
-
-            <!--=======  End of single cart product  =======-->
-          </div>
-
-          <!--=======  subtotal calculation  =======-->
-
-          <p class="cart-subtotal">
-            <span class="subtotal-title">Subtotal:</span>
-            <span class="subtotal-amount">$200.00</span>
-          </p>
-
-          <!--=======  End of subtotal calculation  =======-->
-
-          <!--=======  cart buttons  =======-->
-
-          <div class="cart-buttons">
-            <a href="{% url 'cart' %}">view cart</a>
-            <a href="{% url 'order_checkout' %}">checkout</a>
-          </div>
-
-          <!--=======  End of cart buttons  =======-->
-
-          <!--=======  free shipping text  =======-->
-
-          <p class="free-shipping-text">
-            Free Shipping on All Orders Over $100!
-          </p>
-
-          <!--=======  End of free shipping text  =======-->
+                <!--=======  End of free shipping text  =======-->
+            </div>
         </div>
-      </div>
 
-      <!--=======  End of offcanvas cart content container   =======-->
+        <!--=======  End of offcanvas cart content container   =======-->
     </div>
   </div>
 

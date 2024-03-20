@@ -43,6 +43,12 @@ class ProductOffer(Offer):
         else:
             return None
         
+    def get_the_offer_for_product(self, product):
+        if product == self.product:
+            return self
+        else:
+            return None
+        
     def products_with_offer(self, product):
         if product == self.product:
             return product
@@ -71,6 +77,12 @@ class CategoryOffer(Offer):
     
     def get_the_offer(self, cart_item):
         if cart_item.product.category == self.category:
+            return self
+        else:
+            return None
+        
+    def get_the_offer_for_product(self, product):
+        if product.category == self.category:
             return self
         else:
             return None

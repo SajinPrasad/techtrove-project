@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from django import forms
 from .models import Coupon
 import secrets
 import string
@@ -7,6 +8,15 @@ class CouponForm(ModelForm):
     class Meta:
         model = Coupon
         fields = ['name', 'description', 'discount_type', 'discount_value', 'minimum_order_value', 'is_active', 'valid_from', 'valid_to', 'applies_to_all_users', 'max_usage_count', ]
+
+        widgets = {
+            'valid_from': forms.DateInput(
+                attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (Valid From)', 'class': 'form-control'}
+            ),
+            'valid_to': forms.DateInput(
+                attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (Valid To)', 'class': 'form-control'}
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         super(CouponForm, self).__init__(*args, **kwargs)

@@ -74,23 +74,21 @@ def offer_edit(request, pk, type):
         messages.warning(request, 'You are not authorized to view this page')
         return redirect('adminlogin')
 
-    if type == 'product':
-        try:
-            offer = ProductOffer.objects.get(pk=pk)
-        except ProductOffer.DoesNotExist:
-            messages.error(request, "Offer doesn't exitst")
-    elif type == 'category':
-        try:
-            offer = CategoryOffer.objects.get(pk=pk)
-        except CategoryOffer.DoesNotExist:
-            messages.error(request, "Offer doesn't exitst")
-        
+         
     if request.POST:
         offer_type = request.POST.get('offer_type', '')
 
-        if type == 'product':
+        if offer_type == 'product':
+            try:
+                offer = ProductOffer.objects.get(pk=pk)
+            except ProductOffer.DoesNotExist:
+                messages.error(request, "Offer doesn't exitst")
             form_class = ProductOfferForm(request.POST, instance=offer)
-        elif type == 'category':
+        elif offer_type == 'category':
+            try:
+                offer = CategoryOffer.objects.get(pk=pk)
+            except CategoryOffer.DoesNotExist:
+                messages.error(request, "Offer doesn't exitst")
             form_class = CategoryOfferForm(request.POST, instance=offer)
         else:
             messages.error(request, 'Invalid offer type selection')

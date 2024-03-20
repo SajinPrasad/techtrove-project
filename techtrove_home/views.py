@@ -15,7 +15,22 @@ from offers.models import ProductOffer, CategoryOffer
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def landing_page(request):
-    products = Product.objects.filter(is_deleted=False, is_available=True)
+    if request.user.is_authenticated:
+        return redirect('userhome')
+    
+    all_products = Product.objects.annotate(total_quantity=Coalesce(Sum('orderproduct__quantity'), 0))
+            
+    # Filter available and not deleted products
+    available_products = all_products.filter(is_available=True, is_deleted=False)
+
+    # Sort products by popularity (total quantity ordered)
+    popular_products = available_products.order_by('-total_quantity')
+
+    available_products = popular_products
+
+    # Use available_products for further processing
+    products = available_products
+
     items = Category.objects.all()
     context = {
         'products':products, 
@@ -26,7 +41,19 @@ def landing_page(request):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='landingpage')
 def user_home(request):
-    products = Product.objects.filter(is_deleted=False, is_available=True)
+    all_products = Product.objects.annotate(total_quantity=Coalesce(Sum('orderproduct__quantity'), 0))
+            
+    # Filter available and not deleted products
+    available_products = all_products.filter(is_available=True, is_deleted=False)
+
+    # Sort products by popularity (total quantity ordered)
+    popular_products = available_products.order_by('-total_quantity')
+
+    available_products = popular_products
+
+    # Use available_products for further processing
+    products = available_products
+
     items = Category.objects.all()
     context = {
         'products':products, 
@@ -36,14 +63,32 @@ def user_home(request):
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def single_product(request, category_slug, product_slug):
-    items = Category.objects.all()
     try:
         single = Product.objects.get(category__slug=category_slug, slug=product_slug)
     except Exception as e:
         raise e
+    
+    # Check for product-specific offer
+    product_offer = ProductOffer.objects.filter(
+        product=single,
+        is_active=True,
+        valid_from__lte=timezone.now(),
+        valid_to__gte=timezone.now(),
+    ).first()
+
+
+    # Check for category-specific offer (if applicable)
+    category_offer = CategoryOffer.objects.filter(
+        category=single.category,
+        is_active=True,
+        valid_from__lte=timezone.now(),
+        valid_to__gte=timezone.now(),
+    ).first()
+
     context = {
-        'single':single,
-        'items':items,
+        'single' : single,
+        'product_offer' : product_offer,
+        'category_offer' : category_offer,
     }
     return render(request, 'single_product.html', context)
 
@@ -53,38 +98,22 @@ def shop_view(request):
     products = Product.objects.filter(is_deleted=False, is_available=True)
     items = Category.objects.all()
     has_products = products.exists()
+
+    # Get all products and annotate them with total quantity ordered
+    all_products = Product.objects.annotate(total_quantity=Coalesce(Sum('orderproduct__quantity'), 0))
     
-    products_category_offers = []
-    producs_product_offers = []
-    for product in products:
-        product_offers = ProductOffer.objects.filter(
-            product=product,
-            is_active=True,
-            valid_from__lte=timezone.now(),
-            valid_to__gte=timezone.now(),
-        )
+    # Filter available and not deleted products
+    available_products = all_products.filter(is_available=True, is_deleted=False)
 
-        category_offers = CategoryOffer.objects.filter(
-            category=product.category,
-            is_active=True,
-            valid_from__lte=timezone.now(),
-            valid_to__gte=timezone.now(),
-        )
-
-        for product_offer in product_offers:
-            producs_product_offers.append(product_offer.products_with_offer(product))
+    # Sort products by popularity (total quantity ordered)
+    popular_products = available_products.order_by('-total_quantity')
             
-        for category_offer in category_offers:
-            products_category_offers.append(category_offer.products_with_offer(product))
-
-        
     context = {
         'products': products, 
         'items': items,
         'has_products': has_products,
-        'producs_product_offers' : producs_product_offers,
-        'products_category_offers' : products_category_offers,
-    }
+        'popular_products' : popular_products,
+        }
     return render(request, 'shop.html', context)
 
 # Views for filtering the categories
@@ -106,8 +135,17 @@ def product_filter(request):
     selected_category = request.GET.get('category', None)
     order_by = request.GET.get('order_by', None)
     search_query = request.GET.get('search', None)
-
+    
     products = Product.objects.filter(is_deleted=False, is_available=True)
+
+    all_products = Product.objects.annotate(total_quantity=Coalesce(Sum('orderproduct__quantity'), 0))
+            
+    # Filter available and not deleted products
+    available_products = all_products.filter(is_available=True, is_deleted=False)
+
+    # Sort products by popularity (total quantity ordered)
+    popular_products = available_products.order_by('-total_quantity')
+    
 
     if selected_category:
         products = products.filter(category=selected_category)
@@ -115,9 +153,6 @@ def product_filter(request):
     else:
         products = Product.objects.filter(is_deleted=False, is_available=True)
         available_products = products
-
-    # if 'search' in request.GET:
-    #     products = available_products.filter(Q(product_name__icontains=search_query) | Q(description__icontains=search_query))
             
     if order_by:
         if order_by == 'low_to_high':
@@ -163,7 +198,8 @@ def product_filter(request):
         'products': products,
         'selected_category': selected_category, 
         'selected_order': order_by,
-        'has_products' : has_products,      
+        'has_products' : has_products,
+        'popular_products' : popular_products,
     }
 
     return render(request, 'shop.html', context)

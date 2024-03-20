@@ -29,17 +29,20 @@ def apply_coupons(request):
             discounted_amount = cart_total - coupon.discount_value
         elif coupon.discount_type == 'percentage' and cart_total >= coupon.minimum_order_value:
             discounted_amount = cart_total - coupon.discount_value * (cart_total / 100)
+        elif cart_total == 0:
+            messages.warning(request, f'No items in the cart to apply coupon :()')
+            return redirect('cart')
         else:
             messages.warning(request, f'This coupon is only applicable for orders worth rupees {coupon.minimum_order_value}')
             return redirect('cart')
+        
+        print(cart_total)
 
         cart.cart_total = discounted_amount
         cart.coupon_name = coupon.name
         cart.coupon_code = coupon.code
         cart.save()
         
-        print("Cart total 2 : ", cart.cart_total)
-
         coupon.used_count += 1
         coupon.save()
 

@@ -8,5 +8,4 @@ urlpatterns = [
     path('delete_product/<pk>', views.soft_delete_product, name='deleteproduct'),
     path('list_product/', views.list_product, name='listproduct'),
     path('product_detail/<str:cat_slug>/<str:prod_slug>/techtrove/', views.single_product_admin, name='singleproductadmin'),
-    path('product/update/<int:pk>/product/', views.ProductUpdateView.as_view(), name='product_update'),
 ]

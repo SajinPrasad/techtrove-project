@@ -63,7 +63,18 @@ def category_list(request):
     if not request.user.is_superuser:
         messages.error(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
-    categories = Category.objects.filter(is_deleted=False)
+    
+    search = request.GET.get('search')
+
+    if search:
+        categories = Category.objects.filter(
+            is_deleted = False,
+            category_name__icontains = search,
+            description__icontains = search,
+        )
+    else:
+        categories = Category.objects.filter(is_deleted=False)
+        
     context = {
         'categories':categories
     }

@@ -1,13 +1,27 @@
 {% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-      <div class="alert {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}alert-success{% endif %}
-                       {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}alert-danger{% endif %}
-                       {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}alert-warning{% endif %}
-                       {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}alert-info{% endif %}"
-           role="alert">
+  <div class="messages text-center">  {% for message in messages %}
+      <div class="alert alert-{{ message.level }} text-center" role="alert">
         {{ message }}
       </div>
     {% endfor %}
   </div>
 {% endif %}
+
+<style>
+  .alert-success {
+    background-color: #28a745; /* Green for success */
+    color: white;
+  }
+  .alert-danger {
+    background-color: #dc3545; /* Red for danger */
+    color: white;
+  }
+  .alert-warning {
+    background-color: #ffc107; /* Yellow for warning */
+    color: black;
+  }
+  .alert-info {
+    background-color: #17a2b8; /* Blue for info */
+    color: white;
+  }
+</style>

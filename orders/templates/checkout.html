@@ -177,7 +177,13 @@
 													{% for product in cart_items %}
 													
 													{% if product.product_offer %}
-													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+													<li>
+														{% if product.product.product_name|length > 30 %}
+														{{ product.product.product_name|slice:":30" }}...
+														{% else %}
+														{{ product.product.product_name }}
+														{% endif %}
+														<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
 														{% if product.product_offer.discount_type == 'fixed_amount' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.product_offer.title}} discount applied<span>₹{{product.product_offer.discount_value}}</span></small></li>
 														{% elif product.product_offer.discount_type == 'percentage' %}
@@ -197,14 +203,14 @@
 												</ul>
 
 												<p>Shipping Fee <span>₹{{shippping_fee}}</span></p>
-												<p>GST <i>2%</i><span>₹{{tax}}</span></p>
+												<p>GST <i>2%</i><span>₹{{tax|floatformat:"2"}}</span></p>
 												{% if coupon_applied %}
 												<p>Coupon Name <span>{{coupon_applied}}</span></p>
 												<p>Coupon Discount <span>₹{{coupon_discount}}</span></p>
 												<p>Sub Total <span>₹{{cart_total}}</span></p>
 												{% endif %}
 
-												<h4>Grand Total <span>₹{{grand_total}}</span></h4>
+												<h4>Grand Total <span>₹{{grand_total|floatformat:"2"}}</span></h4>
 
 											</div>
 
@@ -224,21 +230,19 @@
 													<div class="single-method">
 														<input type="radio" id="payment_cash" name="payment-method" value="cash">
 														<label for="payment_cash">Cash on Delivery</label>
-														<p data-method="cash">Please send a Check to Store name with Store Street, Store Town, Store
-															State, Store Postcode, Store Country.</p>
+														<p data-method="cash">Not available for orders worth morethan ₹1000/-</p>
 													</div>
 	
 													<div class="single-method">
 														<input type="radio" id="payment_paypal" name="payment-method" value="paypal">
 														<label for="payment_paypal">Paypal</label>
-														<p data-method="paypal">Please send a Check to Store name with Store Street, Store Town, Store
-															State, Store Postcode, Store Country.</p>
+														<p data-method="paypal"></p>
 													</div>
 	
 													<div class="single-method">
 														<input type="radio" id="payment_payoneer" name="payment-method" value="Wallet">
 														<label for="payment_payoneer">Wallet</label>
-														<p data-method="payoneer">Your wallet balance is, ₹{{wallet.balance}}</p>
+														<p data-method="payoneer">Your wallet balance is, {{wallet.balance}}</p>
 													</div>
 	
 													<div class="single-method">

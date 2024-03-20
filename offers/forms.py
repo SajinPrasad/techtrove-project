@@ -8,6 +8,15 @@ class OfferForm(forms.ModelForm):
     class Meta:
         model = Offer
         fields = '__all__'
+    
+        widgets = {
+            'valid_from': forms.DateInput(
+                attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (Valid From)', 'class': 'form-control'}
+            ),
+            'valid_to': forms.DateInput(
+                attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (Valid To)', 'class': 'form-control'}
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         super(OfferForm, self).__init__(*args, **kwargs)

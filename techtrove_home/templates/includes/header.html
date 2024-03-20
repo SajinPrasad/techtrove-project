@@ -42,27 +42,24 @@
 							<nav class="site-nav center-menu">
 								<ul>
 									<li class="menu-item-has-children"><a href=#>Explore</a>
-										<ul class="sub-menu mega-menu mega-menu-column-5" >
-											<li><a href="javascript:void(0)" class="mega-column-title">Category list</a>
-												<ul class="mega-sub-menu">
+										<ul class="sub-menu mega-menu mega-menu-column-5">
+											<li>
+												<a href="javascript:void(0)" class="mega-column-title">Category list</a>
+												<ul id="category-list" class="mega-sub-menu category-list">
 													{% for category in items %}
 													<li><a href="{% url 'category_filter_shop' category.id %}">{{category.category_name}}</a>
 														<img src="{{ category.cat_image.url }}" class="img-fluid" alt="{{ category.category_name }}"></li>
 													{% endfor %}
 												</ul>
 											</li>
-											<li><a href="javascript:void(0)" class="mega-column-title">Navigate</a>
+											<li>
+												<a href="javascript:void(0)" class="mega-column-title">Navigate</a>
 												<ul class="mega-sub-menu">
-													<li><a href="{% url 'userhome' %}">Home </a><img src="{% static 'images/home-preview/06.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="{% url 'shop_view' %}">Shop</a><img src="{% static 'images/home-preview/07.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="{% url 'cart' %}">Cart</a><img src="{% static 'images/home-preview/08.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="{% url 'user_profile' %}">Dashboard</a><img src="{% static 'images/home-preview/09.jpg' %}"
-															class="img-fluid" alt=""></li>
-													<li><a href="{% url 'wishlist' %}">Wishlist</a><img
-															src="{% static 'images/home-preview/10.jpg' %}" class="img-fluid" alt=""></li>
+													<li><a href="{% url 'userhome' %}">Home </a><img src="{% static 'images/home-preview/06.jpg' %}" class="img-fluid" alt=""></li>
+													<li><a href="{% url 'shop_view' %}">Shop</a><img src="{% static 'images/home-preview/07.jpg' %}" class="img-fluid" alt=""></li>
+													<li><a href="{% url 'cart' %}">Cart</a><img src="{% static 'images/home-preview/08.jpg' %}" class="img-fluid" alt=""></li>
+													<li><a href="{% url 'user_profile' %}">Dashboard</a><img src="{% static 'images/home-preview/09.jpg' %}" class="img-fluid" alt=""></li>
+													<li><a href="{% url 'wishlist' %}">Wishlist</a><img src="{% static 'images/home-preview/10.jpg' %}" class="img-fluid" alt=""></li>
 												</ul>
 											</li>
 
@@ -106,6 +103,51 @@
 												</div>
 											</li> -->
 										</ul>
+										<style>
+											.category-list {
+												display: grid;
+												grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+												grid-gap: 10px;
+												list-style: none;
+												padding: 0;
+											}
+
+											/* Define styles for the items in the category list */
+											.category-list li {
+												margin-bottom: -2px;
+											}
+
+											/* Define styles for the images */
+											.category-list img {
+												width: 100%;
+												height: auto;
+											}
+										</style>
+										<script>
+											document.addEventListener('DOMContentLoaded', function() {
+											var categoryList = document.getElementById('category-list');
+											var categories = categoryList.children;
+											var halfLength = Math.ceil(categories.length / 2);
+
+											var firstColumn = document.createElement('ul');
+											var secondColumn = document.createElement('ul');
+
+											for (var i = 0; i < categories.length; i++) {
+												if (i < halfLength) {
+													firstColumn.appendChild(categories[i].cloneNode(true));
+												} else {
+													secondColumn.appendChild(categories[i].cloneNode(true));
+												}
+											}
+
+											// Clear the original category list
+											categoryList.innerHTML = '';
+
+											// Append the new columns to the category list
+											categoryList.appendChild(firstColumn);
+											categoryList.appendChild(secondColumn);
+										});
+										</script>
 									</li>
 									<!-- <li class="menu-item-has-children"><a href="{% url 'shop_view' %}">Go To Shop</a></li> -->
 								</ul>
@@ -168,7 +210,7 @@
 							<div class="single-icon wishlist">
 								<a href="javascript:void(0)" id="offcanvas-wishlist-icon">
 									<i class="ion-android-favorite-outline"></i>
-									<span class="count">2</span>
+									<span class="count">{{wishlist_count}}</span>
 								</a>
 							</div>
 
@@ -178,7 +220,7 @@
 							<div class="single-icon cart">
 								<a href="javascript:void(0)" id="offcanvas-cart-icon">
 									<i class="ion-ios-cart"></i>
-									<span class="count">3</span>
+									<span class="count">{{cart_count}}</span>
 								</a>
 							</div>
 							<!--=======  End of single-icon  =======-->

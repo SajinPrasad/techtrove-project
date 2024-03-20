@@ -144,38 +144,42 @@ def order_checkout(request):
             terms_and_conditions   = request.POST.get('accept-terms', '')
 
             if payment_method == 'cash'and terms_and_conditions:
-                payment = Payment.objects.create(
-                    user            = user,
-                    payment_method  = 'Cash on delivery',
-                    amount          = grand_total,
-                    status          = 'Pending'
-                )
-                data.payment        = payment
-                data.status         = 'Pending'
-                data.save()
-
-                for cart_item in cart_items:
-                    offer = None  # Initialize offer as None
-
-                    # Check for ProductOffer first (assuming priority)
-                    if cart_item.product_offer:
-                        offer = cart_item.product_offer
-                    else:
-                        # Check for CategoryOffer if ProductOffer not found
-                        offer = cart_item.category_offer
-
-                    OrderProduct.objects.create(
-                        order           = data,
-                        product         = cart_item.product,
-                        quantity        = cart_item.quantity,
-                        offer_title     = offer.title if offer else None,
-                        offer_discount_type  = offer.discount_type if offer else None,
-                        offer_discount_value = offer.discount_value if offer else None,
+                if grand_total >= 1000:
+                    messages.warning(request, 'Not available for orders worth morethan ₹1000/-')
+                    return redirect('order_checkout')
+                else:
+                    payment = Payment.objects.create(
+                        user            = user,
+                        payment_method  = 'Cash on delivery',
+                        amount          = grand_total,
+                        status          = 'Pending'
                     )
-                
-                cart.delete()
+                    data.payment        = payment
+                    data.status         = 'Pending'
+                    data.save()
 
-                return HttpResponseRedirect(reverse('order_confirmation', args=[data.order_id]))
+                    for cart_item in cart_items:
+                        offer = None  # Initialize offer as None
+
+                        # Check for ProductOffer first (assuming priority)
+                        if cart_item.product_offer:
+                            offer = cart_item.product_offer
+                        else:
+                            # Check for CategoryOffer if ProductOffer not found
+                            offer = cart_item.category_offer
+
+                        OrderProduct.objects.create(
+                            order           = data,
+                            product         = cart_item.product,
+                            quantity        = cart_item.quantity,
+                            offer_title     = offer.title if offer else None,
+                            offer_discount_type  = offer.discount_type if offer else None,
+                            offer_discount_value = offer.discount_value if offer else None,
+                        )
+                    
+                    cart.delete()
+
+                    return HttpResponseRedirect(reverse('order_confirmation', args=[data.order_id]))
             
             elif payment_method == 'paypal'and terms_and_conditions:
                 payment = Payment.objects.create(
@@ -367,67 +371,28 @@ def order_confirmation(request, order_id):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')
 def generate_invoice_pdf(request, order_id):
-    order = Order.objects.get(order_id=order_id)
-    try:
-        # Try to get the OrderProduct object using get()
-        order_products = OrderProduct.objects.filter(order_id=order_id)
+    # Get the order and related order products
+    order = get_object_or_404(Order, order_id=order_id)
+    order_products = OrderProduct.objects.filter(order=order)
+    
+    # Get the Django template
+    template_path = 'invoice_template.html'
+    template = get_template(template_path)
 
-        if not order_products:
-            raise Http404("Order product not found")
-    except OrderProduct.DoesNotExist:
-        # If no object is found, raise a specific error message
-        raise Http404("Order product not found")
+    # Render the template with the context data
+    context = {'order': order, 'order_products': order_products}
+    rendered_template = template.render(context)
 
-    products = [product.product for product in order_products]
-
+    # Create a PDF response
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
 
-    # Create a PDF object, using the response object as its "file."
-    p = canvas.Canvas(response)
+    # Generate PDF from rendered template
+    pisa_status = pisa.CreatePDF(rendered_template, dest=response)
 
-    # Draw the invoice header
-    p.setFont("Helvetica-Bold", 16)
-    p.drawString(100, 800, "Invoice")
-    p.drawString(100, 780, "TechTrove")
-
-    # Draw customer information and shipping address
-    p.setFont("Helvetica", 12)
-    p.drawString(100, 760, f"Customer: {order.full_name}")
-    p.drawString(100, 740, f"Order Number: {order.order_number}")
-
-    # Draw additional customer information based on your requirements
-    # ...
-
-    p.drawString(100, 720, "Shipping Address:")
-    p.drawString(120, 700, order.address.address_line)
-    p.drawString(120, 680, order.address.street_name)
-    p.drawString(120, 660, order.address.city)
-    p.drawString(120, 640, order.address.state)
-    p.drawString(120, 620, order.address.country)
-    p.drawString(120, 600, order.address.zip_code)
-
-    # Draw a line separator
-    p.line(100, 580, 500, 580)
-
-    # Draw ordered products
-    p.drawString(100, 560, "Ordered Products:")
-    y_position = 540
-
-    for product in products:
-        p.drawString(120, y_position, f"Product: {product.product_name}")
-        p.drawString(120, y_position - 20, f"Price: ₹{product.price}")
-        # Add more product details based on your requirements
-        # ...
-
-        y_position -= 40
-
-    # Draw total and other summary information
-    # ...
-
-    # Close the PDF object cleanly, and we're done.
-    p.showPage()
-    p.save()
+    # Check if PDF generation was successful
+    if pisa_status.err:
+        return HttpResponse('PDF generation error occurred.')
 
     return response
 
@@ -492,7 +457,11 @@ def cancel_order(request, order_id):
             return HttpResponseRedirect(reverse('process_refund', args=[order.order_id]))
 
         # Send cancellation mail
-        send_mail("Order cancellation: ", f"Your order:{order.order_number}- for {order.full_name} is cancelled", settings.EMAIL_HOST_USER, [email], fail_silently=False)
+        try:
+            send_mail("Order cancellation: ", f"Your order:{order.order_number}- for {order.full_name} is cancelled", settings.EMAIL_HOST_USER, [email], fail_silently=False)
+        except Exception:
+            messages.error(request, 'Failed to send cancellation email')
+
         messages.success(request, 'Your order succesfully cancelled!!')
     
     return redirect('user_profile')
@@ -558,6 +527,8 @@ def admin_order_detailed_view(request, order_id):
 
     return render(request, 'admin_order_update.html', context)
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
 def generate_sales_report(request):
     if not request.user.is_superuser:
         messages.warning(request, 'You are not authorized to this page')
@@ -634,6 +605,8 @@ def generate_sales_report(request):
 
     return render(request, 'sales_report.html', context)
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
 def render_to_pdf(template_path, context_dict):
     template = get_template(template_path)
     html = template.render(context_dict)
@@ -722,6 +695,8 @@ def generate_sales_report_pdf(request):
     return render_to_pdf('sales_report_pdf.html', context)
 
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
 def generate_sales_report_excel(request):
     start_date_str = request.POST.get('start_date')
     end_date_str = request.POST.get('end_date')

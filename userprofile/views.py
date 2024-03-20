@@ -45,6 +45,7 @@ def user_profile(request):
         account_form = AccountForm(request.POST, instance=user_profile.user)
 
         if user_profile_form.is_valid() and account_form.is_valid():
+            messages.success(request, 'Profile updated successfully.')
             user_profile_form.save()
             account_form.save()
 
@@ -73,6 +74,8 @@ def user_profile(request):
     else:
         user_profile_form = UserProfileForm(instance=user_profile)
         account_form = AccountForm(instance=user_profile.user)
+    
+    addresses = Address.objects.filter(user=request.user)
 
     context = {
         'user_profile_form': user_profile_form,
@@ -80,6 +83,7 @@ def user_profile(request):
         'orders': orders,
         'user_profile': user_profile,
         'wallet' : wallet,
+        'addresses':addresses
     }
 
     return render(request, 'user_profile.html', context)
@@ -161,15 +165,6 @@ def add_address(request):
     }
 
     return render(request, 'add_address.html', context)
-
-@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
-@login_required(login_url='register')
-def list_address(request):
-    addresses = Address.objects.filter(user=request.user)
-    context = {
-        'addresses':addresses
-    }
-    return render(request, 'list_address.html', context)
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')

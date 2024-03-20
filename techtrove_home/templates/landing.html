@@ -59,7 +59,7 @@
                             Computers
 						</div>
 
-						<a href="shop-left-sidebar.html" class="lezada-button lezada-button--medium">shop now</a>
+						<a href="{% url 'shop_view' %}" class="lezada-button lezada-button--medium">shop now</a>
 					</div>
 
 					<!--=======  End of slider content  =======-->
@@ -92,7 +92,7 @@
 							Laptops
 						</div>
 
-						<a href="shop-left-sidebar.html" class="lezada-button lezada-button--medium">shop now</a>
+						<a href="{% url 'shop_view' %}" class="lezada-button lezada-button--medium">shop now</a>
 					</div>
 
 					<!--=======  End of slider content  =======-->
@@ -124,7 +124,7 @@
 							Mother boards
 						</div>
 
-						<a href="shop-left-sidebar.html" class="lezada-button lezada-button--medium">shop now</a>
+						<a href="{% url 'shop_view' %}" class="lezada-button lezada-button--medium">shop now</a>
 					</div>
 
 					<!--=======  End of slider content  =======-->
@@ -180,24 +180,18 @@
 											<a class="image-wrap" href="{% url 'singleproduct' category_slug=product.category.slug product_slug=product.slug %}">
 												<img src="{{ product.image_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
 											</a>
+											{% if product in producs_product_offers or product in products_category_offers %}
 											<div class="single-product__floating-badges">
-												{% if product.is_available %}
-												<span class="onsale">-15%</span>
-												{% endif %}
+												<span class="onsale">offer</span> 
+												<span class="hot">hot</span>
 											</div>
+											{% endif %}
 											<div class="single-product__floating-icons">
 												<span class="wishlist"><a href="#" data-tippy="Add to wishlist" data-tippy-inertia="true"
 														data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
 														data-tippy-theme="sharpborder" data-tippy-placement="left"><i
 															class="ion-android-favorite-outline"></i></a></span>
-												<span class="compare"><a href="#" data-tippy="Compare" data-tippy-inertia="true"
-														data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-														data-tippy-theme="sharpborder" data-tippy-placement="left"><i
-															class="ion-ios-shuffle-strong"></i></a></span>
-												<span class="quickview"><a class="cd-trigger" href="#qv-1" data-tippy="Quick View"
-														data-tippy-inertia="true" data-tippy-animation="shift-away" data-tippy-delay="50"
-														data-tippy-arrow="true" data-tippy-theme="sharpborder" data-tippy-placement="left"><i
-															class="ion-ios-search-strong"></i></a></span>
+																							
 											</div>
 										</div>
 										<!--=======  End of single product image  =======-->
@@ -251,128 +245,7 @@
 
 	<!--=====  End of tab product list area  ======-->
 
-
-	<!--=============================================
-	=            footer banner section area        =
-	=============================================-->
-
-	<div class="footer-banner-section-area mb-100 mb-md-80 mb-sm-80">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 offset-lg-2">
-					<!--=======  ad section  =======-->
-
-					<div class="footer-banner-section text-center">
-						<!--=======  ad section image  =======-->
-
-						<div class="footer-banner-section-image mb-35">
-							<img src="{% static 'images/banners/cabinet.jpg' %}" class="img-fluid" alt="">
-						</div>
-
-						<!--=======  End of ad section image  =======-->
-
-						<!--=======  ad tags  =======-->
-
-						<div class="footer-banner-tags mb-35">
-							<ul>
-								<li><a href="#">#summer</a></li>
-								<li><a href="#">#shelf</a></li>
-								<li><a href="#">#sale</a></li>
-							</ul>
-						</div>
-
-						<!--=======  End of ad tags  =======-->
-
-						<!--=======  ad-content  =======-->
-
-						<div class="footer-banner-content">
-							<h2 class="mb-30">Up To 40% Off Final Sale Items. Caught in the moment!</h2>
-							<a href="shop-left-sidebar.html" class="lezada-button lezada-button--medium">shop now</a>
-						</div>
-
-						<!--=======  End of ad-content  =======-->
-					</div>
-
-					<!--=======  End of ad section  =======-->
-
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!--=====  End of ad section area ======-->
-
-	<!--=============================================
-	=            footer three         =
-	=============================================-->
-
-	<div class="footer footer--three pt-90 pb-100">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-9 col-md-12 footer-single-widget mb-md-50 mb-sm-50">
-					<!--=======  footer navigation  =======-->
-
-					<div class="footer-nav-container footer-nav-container--horizontal mb-20">
-						<nav>
-							<ul>
-								<li><a href="#">ABOUT US</a></li>
-								<li><a href="#">STORE LOCATION</a></li>
-								<li><a href="#">CONTACT</a></li>
-								<li><a href="#">SUPPORT</a></li>
-								<li><a href="#">POLICY</a></li>
-								<li><a href="#">FAQS</a></li>
-							</ul>
-						</nav>
-					</div>
-
-					<!--=======  End of footer navigation  =======-->
-
-					<!--=======  copyright text  =======-->
-
-					<div class="footer__copyright-text">
-						<p>&copy; 2021 lezada. All Rights Reserved | <span>(+00) 123 567990</span> | contact@lezada.com</p>
-					</div>
-
-					<!--=======  End of copyright text  =======-->
-				</div>
-				<div class="col-lg-3 col-md-12 footer-single-widget text-left text-lg-right">
-
-					<!--=======  social icons  =======-->
-
-					<div class="social-icons--footer mb-20">
-						<ul>
-							<li><a href="http://www.twitter.com/" data-tippy="Twitter" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-twitter"></i></a></li>
-							<li><a href="http://www.facebook.com/" data-tippy="Facebook" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-facebook"></i></a></li>
-							<li><a href="http://www.instagram.com/" data-tippy="Instagram" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-instagram"></i></a></li>
-							<li><a href="http://www.youtube.com/" data-tippy="Youtube" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
-									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-youtube-play"></i></a></li>
-						</ul>
-					</div>
-
-					<!--=======  End of social icons  =======-->
-
-					<!--=======  payment icon  =======-->
-
-					<div class="payment-icon">
-						<img src="{% static 'images/icons/pay.png' %}" class="img-fluid" alt="">
-					</div>
-
-					<!--=======  End of payment icon  =======-->
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!--=====  End of footer three  ======-->
-
-
+	{% include 'includes/home_footer.html' %}
 
 	<!--=============================================
 	=            overlay items         =
@@ -501,112 +374,36 @@
 
 			<div class="offcanvas-cart-content-container">
 				<h3 class="cart-title">Wishlist</h3>
-
+	
 				<div class="cart-product-wrapper">
+					{% for item in wishlist_items %}
 					<div class="cart-product-container  ps-scroll">
 						<!--=======  single cart product  =======-->
-
+	
 						<div class="single-cart-product">
 							<span class="cart-close-icon">
 								<a href="#"><i class="ti-close"></i></a>
 							</span>
 							<div class="image">
 								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
+									<img src="{{ item.product.image_set.first.image.url }}" class="img-fluid" alt="">
 								</a>
 							</div>
 							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
-
+								<h5><a href="shop-product-basic.html">{{item.product.product_name}}</a></h5>
+								<p><span class="main-price discounted"></span> <span class="discounted-price">₹{{item.product.price}}</span></p>
+	
 							</div>
 						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dining Chair</a></h5>
-								<p><span class="main-price discounted">$300.00</span> <span class="discounted-price">$220.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="main-price discounted">$100.00</span> <span class="discounted-price">$80.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="main-price discounted">$200.00</span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
 						<!--=======  End of single cart product  =======-->
 					</div>
-
+					{% endfor %}
 					<!--=======  cart buttons  =======-->
-
+	
 					<div class="cart-buttons">
-						<a href="shop-wishlist.html">view wishlist</a>
+						<a href="{% url 'wishlist' %}">view wishlist</a>
 					</div>
-
+	
 					<!--=======  End of cart buttons  =======-->
 				</div>
 			</div>
@@ -623,147 +420,75 @@
 		<div class="cart-overlay-close inactive"></div>
 		<div class="cart-overlay-content">
 			<!--=======  close icon  =======-->
-
+	
 			<span class="close-icon" id="cart-close-icon">
 				<a href="javascript:void(0)">
 					<i class="ion-android-close"></i>
 				</a>
 			</span>
-
+	
 			<!--=======  End of close icon  =======-->
-
+	
 			<!--=======  offcanvas cart content container  =======-->
-
 			<div class="offcanvas-cart-content-container">
 				<h3 class="cart-title">Cart</h3>
-
+	
 				<div class="cart-product-wrapper">
 					<div class="cart-product-container  ps-scroll">
 						<!--=======  single cart product  =======-->
-
+						{% for cart_item in cart_items %}
 						<div class="single-cart-product">
 							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
+								<a href="{% url 'delete_cart_item' cart_item.id %}"><i class="ti-close"></i></a>
 							</span>
 							<div class="image">
 								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
+									<img src="{{ cart_item.product.image_set.first.image.url }}" class="img-fluid" alt="">
 								</a>
 							</div>
 							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
+								<h5><a href="shop-product-basic.html">{{ cart_item.product.product_name }}</a></h5>
+								{% if cart_item.product.is_available %}
+								<p><span class="cart-count">{{ cart_item.quantity }} x </span> <span class="discounted-price">₹{{ cart_item.product.price }}</span></p>
+								{% else %}
+								<p><span class="discounted-price text-danger">Not available</span></p>
+								{% endif %}
+	
 							</div>
 						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dining Chair</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$220.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/03.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$80.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/01.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Dark Brown Leather Watch</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
-						<!--=======  End of single cart product  =======-->
-						<!--=======  single cart product  =======-->
-
-						<div class="single-cart-product">
-							<span class="cart-close-icon">
-								<a href="#"><i class="ti-close"></i></a>
-							</span>
-							<div class="image">
-								<a href="shop-product-basic.html">
-									<img src="{% static 'images/cart-product-image/02.jpg' %}" class="img-fluid" alt="">
-								</a>
-							</div>
-							<div class="content">
-								<h5><a href="shop-product-basic.html">Creative Wooden Stand</a></h5>
-								<p><span class="cart-count">2 x </span> <span class="discounted-price">$180.00</span></p>
-
-							</div>
-						</div>
-
+						{% endfor %}
+	
 						<!--=======  End of single cart product  =======-->
 					</div>
-
+	
 					<!--=======  subtotal calculation  =======-->
-
+	
 					<p class="cart-subtotal">
 						<span class="subtotal-title">Subtotal:</span>
-						<span class="subtotal-amount">$200.00</span>
+						<span class="subtotal-amount">₹{{cart_total}}</span>
 					</p>
-
+	
 					<!--=======  End of subtotal calculation  =======-->
-
+	
 					<!--=======  cart buttons  =======-->
-
+	
 					<div class="cart-buttons">
 						<a href="{% url 'cart' %}">view cart</a>
 						<a href="{% url 'order_checkout' %}">checkout</a>
 					</div>
-
+	
 					<!--=======  End of cart buttons  =======-->
-
+	
 					<!--=======  free shipping text  =======-->
-
+	
 					<p class="free-shipping-text">
 						Free Shipping on All Orders Over $100!
 					</p>
-
+	
 					<!--=======  End of free shipping text  =======-->
 				</div>
 			</div>
-
+	
 			<!--=======  End of offcanvas cart content container   =======-->
 		</div>
 	</div>
@@ -810,86 +535,7 @@
 	    =            quick view         =
 	    =============================================-->
 
-	<div id="qv-1" class="cd-quick-view">
-		<div class="cd-slider-wrapper">
-			<ul class="cd-slider">
-				<li class="selected"><img src="{% static 'images/products/furniture-1-1-600x800.jpg' %}" alt="Product 2"></li>
-				<li><img src="{% static 'images/products/furniture-1-2-600x800.jpg' %}" alt="Product 1"></li>
-			</ul> <!-- cd-slider -->
-
-			<ul class="cd-slider-pagination">
-				<li class="active"><a href="#0">1</a></li>
-				<li><a href="#1">2</a></li>
-			</ul> <!-- cd-slider-pagination -->
-
-			<ul class="cd-slider-navigation">
-				<li><a class="cd-prev" href="#0">Prev</a></li>
-				<li><a class="cd-next" href="#0">Next</a></li>
-			</ul> <!-- cd-slider-navigation -->
-		</div> <!-- cd-slider-wrapper -->
-
-		<div class="lezada-item-info cd-item-info ps-scroll">
-
-			<h2 class="item-title">Wooden round table</h2>
-			<p class="price">
-				<span class="main-price discounted">$360.00</span>
-				<span class="discounted-price">$300.00</span>
-			</p>
-
-			<p class="description">Hurley Dry-Fit Chino Short. Men's chino short. Outseam Length: 19 Dri-FIT Technology helps
-				keep you dry and comfortable. Made with sweat-wicking fabric. Fitted waist with belt loops. Button waist with
-				zip fly provides a classic look and feel .</p>
-
-			<span class="quickview-title">Quantity:</span>
-			<div class="pro-qty d-inline-block mb-40">
-				<input type="text" value="1">
-			</div>
-
-			<div class="add-to-cart-btn mb-25">
-
-				<button class="lezada-button lezada-button--medium">add to cart</button>
-			</div>
-
-			<div class="quick-view-other-info">
-				<table>
-					<tr class="single-info">
-						<td class="quickview-title">SKU: </td>
-						<td class="quickview-value">12345</td>
-					</tr>
-					<tr class="single-info">
-						<td class="quickview-title">Categories: </td>
-						<td class="quickview-value">
-							<a href="#">Fashion</a>,
-							<a href="#">Men</a>,
-							<a href="#">Sunglasses</a>
-						</td>
-					</tr>
-					<tr class="single-info">
-						<td class="quickview-title">Tags: </td>
-						<td class="quickview-value">
-							<a href="#">Fashion</a>,
-							<a href="#">Men</a>
-						</td>
-					</tr>
-					<tr class="single-info">
-						<td class="quickview-title">Share on: </td>
-						<td class="quickview-value">
-							<ul class="quickview-social-icons">
-								<li><a href="#"><i class="fa fa-facebook"></i></a></li>
-								<li><a href="#"><i class="fa fa-twitter"></i></a></li>
-								<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-								<li><a href="#"><i class="fa fa-pinterest"></i></a></li>
-							</ul>
-						</td>
-					</tr>
-				</table>
-			</div>
-
-
-		</div> <!-- cd-item-info -->
-		<a href="#0" class="cd-close">Close</a>
-	</div>
-
+	
 	<!--=====  End of quick view  ======-->
 
 	<!-- scroll to top  -->

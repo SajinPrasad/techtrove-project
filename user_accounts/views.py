@@ -14,6 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.core.cache import cache
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from django.contrib.auth.hashers import make_password
 
 from .models import Account
 from .forms import RegistrationForm, UserEditForm
@@ -39,8 +40,9 @@ def register(request):
             phone_number = frm.cleaned_data['phone_number']
             email = frm.cleaned_data['email']
             password = frm.cleaned_data['password']
-            #username = email.split("@")[0]
             username = email.split('@')[0] or slugify(email.split('@')[0])
+
+            hashed_password = make_password(password)
 
             if Account.objects.filter(email=email).exists():
                 messages.error('This email is already registered, try another one.')
@@ -50,7 +52,7 @@ def register(request):
                 first_name=first_name, 
                 last_name=last_name, 
                 email=email, 
-                password=password, 
+                password=hashed_password, 
                 username=username,
                 )
             
@@ -130,7 +132,6 @@ def login_page(request):
         password = request.POST['password']
 
         user = authenticate(email=email, password=password)
-        print(user)
 
         if user is not None and user.is_verified:
             if user.is_blocked:

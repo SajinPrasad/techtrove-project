@@ -13,7 +13,7 @@ class UserProfileForm(forms.ModelForm):
 
         widgets = {
             'gender': forms.Select(attrs={'class': 'form-control'}),
-            'birthdate': forms.DateInput(attrs={'class': 'form-control'}),
+            'birthdate': forms.DateInput(attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (DOB)', 'class': 'form-control'}),
             'profile_pic': ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
@@ -24,24 +24,8 @@ class AccountForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(AccountForm, self).__init__(*args, **kwargs)
-        # Exclude password fields
         self.fields.pop('password', None)
 
-# class CombinedForm(forms.ModelForm):
-#     # Fields from UserProfile model
-#     birthdate = forms.DateField()
-#     profile_pic = forms.ImageField()
-
-#     # Fields from Account model
-#     first_name = forms.CharField()
-#     last_name = forms.CharField()
-#     email = forms.EmailField()
-#     phone_number = forms.CharField()
-#     username = forms.CharField()
-
-#     class Meta:
-#         model = Account  
-#         fields = '__all__'
 
 class AddressForm(forms.ModelForm):
     class Meta:

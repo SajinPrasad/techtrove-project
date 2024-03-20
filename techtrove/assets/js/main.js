@@ -1016,22 +1016,17 @@
 
   $("#price-range").slider({
     range: true,
-    min: 25,
-    max: 350,
-    values: [25, 350],
+    min: 100,
+    max: 200000,
+    values: [100, 200000],
     slide: function (event, ui) {
-      $("#price-amount").val(
-        "Price: " + "$" + ui.values[0] + " - $" + ui.values[1]
-      );
+        $("#price-amount").val(
+            "Price: ₹" + ui.values[0] + " - ₹" + ui.values[1]
+        );
+        $("#min-price").val(ui.values[0]);
+        $("#max-price").val(ui.values[1]);
     }
-  });
-  $("#price-amount").val(
-    "Price: " +
-      "$" +
-      $("#price-range").slider("values", 0) +
-      " - $" +
-      $("#price-range").slider("values", 1)
-  );
+});
 
   /*----------  product view mode  ----------*/
 

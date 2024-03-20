@@ -333,13 +333,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                               </div>
                             {% endif %}
   
-                          {% include 'includes/alerts.html' %}
                         </div>
                       </div>
                       <!--=======  End of shop product quantity block  =======-->
                       
                       <div class="d-flex justify-content-center w-100">
-                        <button type="button" class="btn btn-secondary "><a href="{% url 'product_update' product.id %}" class="text-white">Edit product</a></button>
+                        <button type="button" class="btn btn-secondary "><a href="{% url 'editproduct' product.id %}" class="text-white">Edit product</a></button>
                         <button type="button" class="btn btn-danger  ml-5"><a href="{% url 'deleteproduct' product.id %}" class="text-white">Delete product</a></button>
                       </div>
                       
@@ -352,8 +351,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
       </div><!-- /.container-fluid -->
     </section>
-    
-              {% include 'includes/alerts.html' %}
                 <!-- /.card-body -->
               </div>
           <!-- /.col-md-6 -->

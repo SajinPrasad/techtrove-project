@@ -39,6 +39,10 @@ def cart_view(request):
         coupon_applied = cart.coupon_code
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
+        if not cart_items:
+            cart.cart_total = 0
+            cart.save()
+
         coupons = Coupon.objects.annotate(
             is_user_coupon=Q(user=current_user) | Q(applies_to_all_users=True)
         ).filter(
@@ -67,7 +71,7 @@ def cart_view(request):
 
     # Calculate totals and product-specific totals
     for cart_item in cart_items:
-        discounted_price = 0  # Initialize discount for each product
+        discounted_price = 0
 
         # Check for product-specific offer
         product_offer = ProductOffer.objects.filter(
@@ -158,13 +162,13 @@ def add_to_cart(request, product_id):
         if cart_item is not None:
             if quantity <= product.stock and cart_item.quantity < 5:
                 cart_item.quantity += quantity
+                messages.success(request, f'{quantity} item(s) added to your cart.')
                 cart_item.save()
 
                 product.stock -= quantity
                 product.save()
-
-                messages.success(request, f'{quantity} item(s) added to your cart.')
                 return redirect('cart')
+            
             elif cart_item.quantity == 5:
                 wishlist = request.POST.get('wishlist')
                 messages.warning(request, f'Cart limit already exceeds for this item.')
@@ -184,16 +188,17 @@ def add_to_cart(request, product_id):
                     quantity=quantity,
                     cart=cart
                 )
+
+                messages.success(request, f'{quantity} item(s) added to your cart.')
                 cart_item.save()
 
                 product.stock -= quantity
                 product.save()
 
-                messages.success(request, f'{quantity} item(s) added to your cart.')
                 return redirect('cart')
             else:
                 messages.warning(request, f'Exceeds the available stock for this product. You can only pick {product.stock}')
-                return redirect(reverse('singleproduct', kwargs={'category_slug': product.category.slug, 'product_slug': product.slug}))
+                return redirect('cart')
 
     else:
         max_quantity = min(product.stock, 5)
@@ -224,43 +229,51 @@ def update_cart_item(request, cart_item_id):
         quantity_difference = new_quantity - old_quantity
 
         if new_quantity > 5:
-            messages.info(request, 'You can only add up to 5 units per product.')
+            messages.warning(request, 'You can only add up to 5 units per product.')
+            return redirect('cart')
         elif new_quantity > (product.stock + old_quantity):
             if product.stock > 0:
                 messages.warning(request, f'Only {product.stock} stock available, try within the limit.')
+                return redirect('cart')
             elif product.stock == 0:
                 messages.info(request, 'No stock available for this product')
+                return redirect('cart')
         else:
             # Update cart item quantity
             cart_item.quantity = new_quantity
             cart_item.save()
+            messages.success(request, 'Cart updated.')
 
             # Update product stock based on the quantity difference
             product.stock -= quantity_difference
             if product.stock < 0:
                 product.stock = 0
+            
             product.save()
-
-            messages.info(request, 'Cart updated.')
+            return redirect('cart')
+            
 
     return redirect('cart')
 
 def delete_cart_item(request, cart_item_id):
+    referring_url = request.META.get('HTTP_REFERER', '/')
+    request.session['referring_url'] = referring_url
     try:
         cart_item = CartItem.objects.get(pk=cart_item_id, is_active=True)
         product = cart_item.product
         quantity_to_add_back = cart_item.quantity
 
-        cart_item.delete()  
+        cart_item.delete()
 
         product.stock += quantity_to_add_back
         product.save()
 
-        messages.info(request, 'Item removed from cart')
+        messages.success(request, 'Item removed from cart')
+        
     except CartItem.DoesNotExist:
-        messages.warning(request, 'Cart item not found')
+        messages.error(request, 'Cart item not found')
 
-    return redirect('cart')
+    return redirect(referring_url)
 
 
 

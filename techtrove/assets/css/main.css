@@ -2045,7 +2045,7 @@ nav.site-nav > ul > li ul.mega-menu-column-5 {
   display: -ms-flexbox;
   display: flex;
 
-  width: 100%;
+  width: 40%;
   max-width: 1170px;
 }
 
