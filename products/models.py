@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator
 class Product(models.Model):
     product_name        = models.CharField(max_length=150, unique=True)
     slug                = models.SlugField(max_length=150, unique=True)
-    description         = models.TextField(max_length=500, blank=True)
+    description         = models.TextField(max_length=700, blank=True)
     price               = models.IntegerField(validators=[MinValueValidator(1)])
     stock               = models.IntegerField(validators=[MinValueValidator(0)])
     is_available        = models.BooleanField(default=True)
