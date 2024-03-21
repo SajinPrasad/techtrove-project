@@ -22,9 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-$*kox1geubsnf^95@6^)ftngi6m%9#%$b*3hzvp=84%%(isjs0'
-
 SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -96,16 +93,6 @@ WSGI_APPLICATION = 'techtrove.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME' : 'techtrove',
-#         'HOST' : 'localhost',
-#         'PORT' : '5432',
-#         'USER' : 'postgres',
-#         'PASSWORD' : 'spsajin777',
-#     }
-# }
 
 DATABASES = {
     'default': {
@@ -169,8 +156,6 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/photos/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'photos')
 
-# PAYPAL_CLIENT_ID = 'AegV4jdwpguvPZaGFthgRFbNKZ-F7SsYAm0MomkehiL-BLyaOdEiZfbPw0dUxTn0tGs1gIQ8gKQJXv8x'
-# PAYPAL_SECRET = 'EL8V2TiDZSPQXMV9AyeNCwiiX8vptVfMOn4OW6buC5IePch_eMQU2j_ZT1j6OZKOL72NV-tO9LgLtk0k'
 
 PAYPAL_CLIENT_ID = str(os.getenv('PAYPAL_CLIENT_ID'))
 PAYPAL_SECRET = str(os.getenv('PAYPAL_SECRET'))
