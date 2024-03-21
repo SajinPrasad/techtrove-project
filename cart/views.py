@@ -24,7 +24,6 @@ from offers.models import ProductOffer, CategoryOffer
 
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
-@login_required(login_url='register')
 def cart_view(request):
     if not request.user.is_authenticated:
         messages.info(request, 'Please login to add items to cart')
