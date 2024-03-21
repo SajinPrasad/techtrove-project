@@ -253,43 +253,9 @@
 
 	<!--=============================================
 	=            overlay items         =
+	<!--=============================================
+	=            overlay items         =
 	=============================================-->
-
-	<!--=======  newsletter overlay  =======-->
-
-	<div class="newsletter-overlay-area">
-		<div class="newsletter-content newsletter-content-bg-1" id="newsletter-content">
-
-			<span class="close-icon" id="newsletter-popup-close-icon">
-				<a href="javascript:void(0)">
-					<i class="ion-android-close"></i>
-				</a>
-			</span>
-
-			<h2 class="mb-60">Hello, <span>Sign up</span> & <br>
-				<span>connect</span> to Lezada.
-			</h2>
-
-			<div class="mc-newsletter-form mc-newsletter-form--popup mb-90">
-				<form id="mc-form" class="mc-form">
-					<input type="email" placeholder="Your email address" required>
-					<button type="submit">SUBSCRIBE</button>
-				</form>
-			</div>
-
-			<!-- mailchimp-alerts Start -->
-
-			<div class="mailchimp-alerts">
-				<div class="mailchimp-submitting"></div><!-- mailchimp-submitting end -->
-				<div class="mailchimp-success"></div><!-- mailchimp-success end -->
-				<div class="mailchimp-error"></div><!-- mailchimp-error end -->
-			</div><!-- mailchimp-alerts end -->
-
-			<p>* Be the first to learn about our latest trends and get exclusive offers.</p>
-		</div>
-	</div>
-
-	<!--=======  End of newsletter overlay  =======-->
 
 	<!--=======  about overlay  =======-->
 
@@ -329,23 +295,23 @@
 				<!--=======  contact widget  =======-->
 
 				<div class="contact-widget">
-					<p class="email"><a href="mailto:contact@lezada.com">contact@lezada.com</a></p>
-					<p class="phone">(+00) 123 567990</p>
+					<p class="email"><a href="mailto:contact@lezada.com">sajinprasad52@gmail.com</a></p>
+					<p class="phone">+91 8921082096</p>
 
 					<div class="social-icons">
 						<ul>
 							<li><a href="http://www.twitter.com/" data-tippy="Twitter" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true" target="_blank"><i
-										class="fa fa-twitter"></i></a></li>
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-twitter"></i></a></li>
 							<li><a href="http://www.facebook.com/" data-tippy="Facebook" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true" target="_blank"><i
-										class="fa fa-facebook"></i></a></li>
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-facebook"></i></a></li>
 							<li><a href="http://www.instagram.com/" data-tippy="Instagram" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true" target="_blank"><i
-										class="fa fa-instagram"></i></a></li>
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-instagram"></i></a></li>
 							<li><a href="http://www.youtube.com/" data-tippy="Youtube" data-tippy-inertia="true"
-									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true" target="_blank"><i
-										class="fa fa-youtube-play"></i></a></li>
+									data-tippy-animation="shift-away" data-tippy-delay="50" data-tippy-arrow="true"
+									data-tippy-theme="sharpborder" target="_blank"><i class="fa fa-youtube-play"></i></a></li>
 						</ul>
 					</div>
 				</div>
@@ -365,7 +331,7 @@
 		<div class="wishlist-overlay-close inactive"></div>
 		<div class="wishlist-overlay-content">
 			<!--=======  close icon  =======-->
-			{% for item in wishlist_items %}
+
 			<span class="close-icon" id="wishlist-close-icon">
 				<a href="javascript:void(0)">
 					<i class="ion-android-close"></i>
@@ -380,12 +346,13 @@
 				<h3 class="cart-title">Wishlist</h3>
 	
 				<div class="cart-product-wrapper">
+					{% for item in wishlist_items %}
 					<div class="cart-product-container  ps-scroll">
 						<!--=======  single cart product  =======-->
 	
 						<div class="single-cart-product">
 							<span class="cart-close-icon">
-								<a href="{% url 'delete_item_wishlist' item.id %}"><i class="ti-close"></i></a>
+								<a href="#"><i class="ti-close"></i></a>
 							</span>
 							<div class="image">
 								<a href="shop-product-basic.html">
@@ -400,6 +367,7 @@
 						</div>
 						<!--=======  End of single cart product  =======-->
 					</div>
+					{% endfor %}
 					<!--=======  cart buttons  =======-->
 	
 					<div class="cart-buttons">
@@ -412,7 +380,6 @@
 
 			<!--=======  End of offcanvas wishlist content container   =======-->
 		</div>
-		{% endfor %}
 	</div>
 
 	<!--=======  End of wishlist overlay  =======-->
@@ -450,7 +417,7 @@
 								</a>
 							</div>
 							<div class="content">
-								<h5><a href="shop-product-basic.html">{{ cart_item.product.product_name }}</a></h5>
+								<h5><a href="#">{{ cart_item.product.product_name }}</a></h5>
 								{% if cart_item.product.is_available %}
 								<p><span class="cart-count">{{ cart_item.quantity }} x </span> <span class="discounted-price">₹{{ cart_item.product.price }}</span></p>
 								{% else %}
@@ -485,7 +452,7 @@
 					<!--=======  free shipping text  =======-->
 	
 					<p class="free-shipping-text">
-						Free Shipping on All Orders Over $100!
+						Enjoy shopping!
 					</p>
 	
 					<!--=======  End of free shipping text  =======-->
@@ -517,8 +484,8 @@
 
 		<div class="search-overlay-content">
 			<div class="input-box">
-				<form action="https://htmldemo.net/lezada/lezada/index.html">
-					<input type="search" placeholder="Search Products...">
+				<form method="get" action="{% url 'search_products' %}">
+					<input name="search" type="search" placeholder="Search Products...">
 				</form>
 			</div>
 			<div class="search-hint">

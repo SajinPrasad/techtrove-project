@@ -16,13 +16,6 @@ from offers.models import ProductOffer, CategoryOffer
 
 # Create your views here.
 
-# def _cart_id(request):
-#     cart = request.session.session_key
-#     if not cart:
-#         cart = request.session.create()
-#     return cart
-
-
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def cart_view(request):
     if not request.user.is_authenticated:
@@ -225,6 +218,9 @@ def update_cart_item(request, cart_item_id):
 
         if new_quantity > 5:
             messages.warning(request, 'You can only add up to 5 units per product.')
+            return redirect('cart')
+        elif new_quantity == 0:
+            messages.warning(request, "Quantity can't be zero...")
             return redirect('cart')
         elif new_quantity > (product.stock + old_quantity):
             if product.stock > 0:

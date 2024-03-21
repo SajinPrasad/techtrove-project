@@ -96,6 +96,7 @@
                         </thead>
                         <tbody>
                           {% for order in orders %}
+                            {% if not order.status == 'New' %}
                             <tr>
                               <td>{{order.order_number}}</td>
                               <td>{{order.full_name}}</td>
@@ -116,6 +117,7 @@
                               <td>₹{{order.order_total}}</td>
                               <td><a href="{% url 'order_details' order.order_id %}" class="text-primary">View</a></td>
                             </tr>
+                            {% endif %}
                           {% endfor %}
                         </tbody>
                       </table>

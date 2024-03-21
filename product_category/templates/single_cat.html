@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | UI Ribbons</title>
+  <title>TechTrove Admin</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -103,7 +103,7 @@
                 <div class="row">
                   <!-- Image and Edit Button on the left side -->
                   <div class="col-md- d-flex flex-column px-5">
-                    <img src="{{ single.cat_image.url }}" class="img-fluid mb-3" alt="{{ single.category_name }}">
+                    <img src="{{ single.cat_image.url }}" class="img-fluid mb-3" alt="{{ single.category_name }}" style="width: 200px; height: 200px;">
                     <!-- Edit Button -->
                     <a href="{% url 'editcategory' single.id %}" class="btn btn-primary">Edit Category</a><br><br>
                     <a href="{% url 'deletecategory' single.id %}" class="btn btn-danger mt-1">Delete Category</a>

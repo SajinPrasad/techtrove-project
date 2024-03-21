@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | UI Ribbons</title>
+  <title>TechTrove Admin</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -127,6 +127,7 @@
               </thead>
               <tbody>
                 {% for order in orders %}
+                  {% if not order.status == 'New' %}
                   <tr>
                     <td>{{order.order_number}}</td>
                     <td>{{order.full_name}}</td>
@@ -147,6 +148,7 @@
                     <td>₹{{order.order_total}}</td>
                     <td><a href="{% url 'admin_order_detailed_view' order.order_id %}" class="text-primary">View</a></td>
                   </tr>
+                  {% endif %}
                 {% endfor %}
               </tbody>
             </table>
@@ -156,10 +158,12 @@
   <!-- /.content-wrapper -->
 
   <footer class="main-footer">
-    <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.2.0
+    <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+      Anything you want
     </div>
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+    <!-- Default to the left -->
+    <strong>TechTrove &copy; ITSolutions </strong>
   </footer>
 
   <!-- Control Sidebar -->

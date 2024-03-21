@@ -11,10 +11,10 @@ from products.models import Product
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='landingpage')
 def wishlist_view(request):
-    products = Wishlist.objects.filter(user=request.user)
+    wishlist_items = Wishlist.objects.filter(user=request.user.id)
 
     context = {
-        'products' : products,
+        'wishlist_items' : wishlist_items,
     }
 
     return render(request, 'wishlist.html', context)
