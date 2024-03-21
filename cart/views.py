@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_control
 from django.urls import reverse
 from django.contrib import messages
 from django.db import models
@@ -15,59 +16,55 @@ from offers.models import ProductOffer, CategoryOffer
 
 # Create your views here.
 
-def _cart_id(request):
-    cart = request.session.session_key
-    if not cart:
-        cart = request.session.create()
-    return cart
+# def _cart_id(request):
+#     cart = request.session.session_key
+#     if not cart:
+#         cart = request.session.create()
+#     return cart
 
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='register')
 def cart_view(request):
+    if not request.user.is_authenticated:
+        messages.info(request, 'Please login to add items to cart')
+
+    cart = None
     cart_items = []
     total = 0
     quantity = 0
     product_totals = []
+    coupon_applied = None
+    valid_coupons = []
 
-    # Retrieve cart based on user status
-    if request.user.is_authenticated:
-        current_user = request.user
-        try:
-            cart = Cart.objects.get(user=current_user)
-        except Cart.DoesNotExist:
-            messages.info(request, 'No items in the cart yet')
-            return render(request, 'cart.html')
-        coupon_applied = cart.coupon_code
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+    current_user = request.user.id
+    try:
+        cart = Cart.objects.get(user=current_user)
+    except Cart.DoesNotExist:
+        messages.info(request, 'No items in the cart yet')
+        return render(request, 'cart.html')
+    coupon_applied = cart.coupon_code
+    cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
-        if not cart_items:
-            cart.cart_total = 0
-            cart.save()
+    if not cart_items:
+        cart.cart_total = 0
+        cart.save()
 
-        coupons = Coupon.objects.annotate(
-            is_user_coupon=Q(user=current_user) | Q(applies_to_all_users=True)
-        ).filter(
-            is_active=True,
-            valid_from__lte=timezone.now(),
-            valid_to__gte=timezone.now(),
-            is_user_coupon=True,
-        )
+    coupons = Coupon.objects.annotate(
+        is_user_coupon=Q(user=current_user) | Q(applies_to_all_users=True)
+    ).filter(
+        is_active=True,
+        valid_from__lte=timezone.now(),
+        valid_to__gte=timezone.now(),
+        is_user_coupon=True,
+    )
 
-        valid_coupons = []
+    valid_coupons = []
 
-        for coupon in coupons:
-            user_usage_count = coupon.used_count_for_user(current_user)
-            if user_usage_count < coupon.max_usage_count:
-                valid_coupons.append(coupon)
-
-    else:
-        cart_id = request.session.session_key
-        if cart_id:
-            try:
-                cart = Cart.objects.get(cart_id=cart_id)
-                cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-                
-            except Cart.DoesNotExist:
-                pass 
+    for coupon in coupons:
+        user_usage_count = coupon.used_count_for_user(current_user)
+        if user_usage_count < coupon.max_usage_count:
+            valid_coupons.append(coupon)
 
     # Calculate totals and product-specific totals
     for cart_item in cart_items:
@@ -116,10 +113,9 @@ def cart_view(request):
         if not coupon_applied:
             cart.cart_total = total
             cart.save()
-
-    print("Cart total", cart.cart_total)
-    cart_total = cart.cart_total
-
+        
+        cart_total = cart.cart_total
+        
     zipped_data = zip_longest(cart_items, product_totals, fillvalue=None)
 
     context = {
@@ -133,6 +129,7 @@ def cart_view(request):
 
     return render(request, 'cart.html', context)
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
 
@@ -146,11 +143,8 @@ def add_to_cart(request, product_id):
         if request.user.is_authenticated:
             cart, created = Cart.objects.get_or_create(user=request.user)
         else:
-            try:
-                cart = Cart.objects.get(cart_id=_cart_id(request))
-            except Cart.DoesNotExist:
-                cart = Cart.objects.create(cart_id=_cart_id(request))
-                cart.save()
+            messages.info(request, 'Please login to add items to cart')
+            return redirect('register')
 
         cart_item = None
 
@@ -214,6 +208,8 @@ def add_to_cart(request, product_id):
     return render(request, 'cart.html', context)
 
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='register')
 def update_cart_item(request, cart_item_id):
     if request.method == 'POST':
         quantity_str = request.POST.get('quantity')
@@ -255,6 +251,8 @@ def update_cart_item(request, cart_item_id):
 
     return redirect('cart')
 
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='register')
 def delete_cart_item(request, cart_item_id):
     referring_url = request.META.get('HTTP_REFERER', '/')
     request.session['referring_url'] = referring_url
