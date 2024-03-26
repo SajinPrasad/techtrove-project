@@ -14,7 +14,7 @@ class UserProfileForm(forms.ModelForm):
         widgets = {
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'birthdate': forms.DateInput(attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (DOB)', 'class': 'form-control'}),
-            'profile_pic': ClearableFileInput(attrs={'class': 'form-control'}),
+            'profile_pic': forms.FileInput(attrs={'class': 'form-control', 'id': 'formFile'}),
         }
 
 class AccountForm(forms.ModelForm):

@@ -38,6 +38,7 @@ class RegistrationForm(forms.ModelForm):
         phone_number = cleaned_data.get('phone_number')
         first_name = cleaned_data.get('first_name')
         last_name = cleaned_data.get('last_name')
+        email = cleaned_data.get('email')
 
         if password != confirm_password:
             raise forms.ValidationError('Passwords does not match!')
@@ -63,6 +64,9 @@ class RegistrationForm(forms.ModelForm):
             first_name = self.cleaned_data['last_name'].strip()
             if not first_name:
                 raise forms.ValidationError('Last name cannot be empty or contain only spaces.')
+
+        if Account.objects.filter(email=email).exists():
+            raise forms.ValidationError('This email is already registered, try another one.')
 
         return cleaned_data
     

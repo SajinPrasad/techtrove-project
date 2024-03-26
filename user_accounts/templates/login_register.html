@@ -107,12 +107,13 @@
 							<div class="col-lg-12 mb-50">
 								<label for="regPassword">Rpeat Password <span class="required">*</span> </label>
 								{{frm.confirm_password}}
-								{{frm.confirm_password.errors}}
-								{{ frm.email_errors }}
-                    			{{ frm.non_field_errors }}
-								{% if frm.errors.phone_number %}
+								
+								{% if frm.errors %}
 									<div class="alert alert-danger">
 										{{ frm.errors.phone_number }}
+										{{frm.confirm_password.errors}}
+										{{ frm.email_errors }}
+										{{ frm.non_field_errors }}
 									</div>
 								{% endif %}
 							</div>

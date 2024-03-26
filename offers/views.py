@@ -19,9 +19,9 @@ def create_offer(request):
     if request.method == 'POST':
         offer_type = request.POST.get('offer_type', '')
 
-        if offer_type == 'product':
+        if offer_type == 'PRODUCT':
             form_class = ProductOfferForm(request.POST)
-        elif offer_type == 'category':
+        elif offer_type == 'CATEGORY':
             form_class = CategoryOfferForm(request.POST)
         else:
             messages.error(request, 'Invalid offer type selection')
@@ -73,18 +73,15 @@ def offer_edit(request, pk, type):
     if not request.user.is_superuser:
         messages.warning(request, 'You are not authorized to view this page')
         return redirect('adminlogin')
-
-         
+               
     if request.POST:
-        offer_type = request.POST.get('offer_type', '')
-
-        if offer_type == 'product':
+        if type == 'PRODUCT':
             try:
                 offer = ProductOffer.objects.get(pk=pk)
             except ProductOffer.DoesNotExist:
                 messages.error(request, "Offer doesn't exitst")
             form_class = ProductOfferForm(request.POST, instance=offer)
-        elif offer_type == 'category':
+        elif type == 'CATEGORY':
             try:
                 offer = CategoryOffer.objects.get(pk=pk)
             except CategoryOffer.DoesNotExist:
@@ -106,11 +103,19 @@ def offer_edit(request, pk, type):
                 messages.error(request, f'An unexpected error occurred: {e}')
                 return redirect('create_offer')
     else:
-        try:
-            form_class = ProductOfferForm(instance=offer)
-        except Exception:
-            form_class = CategoryOfferForm(instance=offer)
-
+        if type == 'PRODUCT':
+            try:
+                offer = ProductOffer.objects.get(pk=pk)
+                form_class = ProductOfferForm(instance=offer)
+            except ProductOffer.DoesNotExist:
+                messages.error(request, "Offer doesn't exitst")
+        elif type == 'CATEGORY':
+            try:
+                offer = CategoryOffer.objects.get(pk=pk)
+                form_class = CategoryOfferForm(instance=offer)
+            except CategoryOffer.DoesNotExist:
+                messages.error(request, "Offer doesn't exitst")
+        
     context = {
         'form_class' : form_class,
     }

@@ -355,12 +355,12 @@
 								<a href="#"><i class="ti-close"></i></a>
 							</span>
 							<div class="image">
-								<a href="shop-product-basic.html">
+								<a href="{% url 'singleproduct' category_slug=item.product.category.slug product_slug=item.product.slug %}">
 									<img src="{{ item.product.image_set.first.image.url }}" class="img-fluid" alt="">
 								</a>
 							</div>
 							<div class="content">
-								<h5><a href="shop-product-basic.html">{{item.product.product_name}}</a></h5>
+								<h5><a href="{% url 'singleproduct' category_slug=item.product.category.slug product_slug=item.product.slug %}">{{item.product.product_name}}</a></h5>
 								<p><span class="main-price discounted"></span> <span class="discounted-price">₹{{item.product.price}}</span></p>
 	
 							</div>
@@ -412,7 +412,7 @@
 								<a href="{% url 'delete_cart_item' cart_item.id %}"><i class="ti-close"></i></a>
 							</span>
 							<div class="image">
-								<a href="shop-product-basic.html">
+								<a href="{% url 'singleproduct' category_slug=cart_item.product.category.slug product_slug=cart_item.product.slug %}">
 									<img src="{{ cart_item.product.image_set.first.image.url }}" class="img-fluid" alt="">
 								</a>
 							</div>

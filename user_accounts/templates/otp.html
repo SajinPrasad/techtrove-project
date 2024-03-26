@@ -25,22 +25,24 @@
     </style>
 </head>
 <body>
-    <div class="w-100 text-center mt-3 mb-4">
-        <h2>TechTrove User Verification</h2>
-    </div>
-
-    {% include 'includes/alerts.html' %}
-    <div class="otp-form">
-        <h2 class="text-center mb-4">Enter OTP</h2>
-        
-        <form method="post" action="{% url 'verify' id %}">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="otp">OTP:</label>
-                <input type="text" class="form-control" name="otp" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Verify OTP</button>
-        </form>
+    <div class="d-flex flex-column">
+        <div class="w-100 text-center mt-3 mb-4">
+            <h2>TechTrove User Verification</h2>
+        </div>
+    
+        {% include 'includes/alerts.html' %}
+        <div class="otp-form">
+            <h2 class="text-center mb-4">Enter OTP</h2>
+            
+            <form method="post" action="{% url 'verify' id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="otp">OTP:</label>
+                    <input type="text" class="form-control" name="otp" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Verify OTP</button>
+            </form>
+        </div>
     </div>
 
     <!-- Bootstrap JS and Popper.js -->

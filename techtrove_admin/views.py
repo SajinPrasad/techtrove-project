@@ -43,7 +43,7 @@ def admin_login(request):
 @login_required(login_url='adminlogin')
 def adminhome(request):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access the admin panel.')
+        messages.warning(request, 'You do not have permission to access the admin panel.')
         return redirect('adminlogin')
     
     orders = Order.objects.all().order_by('-created_at')[:5]

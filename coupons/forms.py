@@ -15,13 +15,16 @@ class CouponForm(ModelForm):
             ),
             'valid_to': forms.DateInput(
                 attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (Valid To)', 'class': 'form-control'}
-            )
+            ),
+            'applies_to_all_users': forms.CheckboxInput(attrs={'type': 'checkbox', 'class': 'form-check-input', 'id': "flexCheckDefault"}),
+            'is_active': forms.CheckboxInput(attrs={'type': 'checkbox', 'class': 'form-check-input',  'id': "flexCheckDefault"}),
         }
 
     def __init__(self, *args, **kwargs):
         super(CouponForm, self).__init__(*args, **kwargs)
         for field in self.fields:
-            self.fields[field].widget.attrs['class'] = 'form-control'
+            if field != 'applies_to_all_users' and field != 'is_active':
+                self.fields[field].widget.attrs['class'] = 'form-control'
 
     @staticmethod
     def generate_coupon_code(length=8):

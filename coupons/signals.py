@@ -42,6 +42,7 @@ def generate_coupon_on_order_completion(sender, instance, **kwargs):
                 description         = "Congratulations! You've reached Rs 100,000 in total ordered amount. So enjoy next order with a 100 rupees coupon. (Only applicable for orders worth RS 1000)",
                 discount_type       = 'fixed_amount',
                 discount_value      = 100,
+                minimum_order_value = 1000,
                 applies_to_all_users = False,
                 user                = instance.user,
                 is_active           = True,

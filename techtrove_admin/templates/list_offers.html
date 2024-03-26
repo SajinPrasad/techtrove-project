@@ -213,7 +213,7 @@
                       <td>{{offer.is_active}}</td>
                       <td>{{offer.valid_from}} <i>to</i> {{offer.valid_to}}</td>
                       <td>
-                        <a class="text-warning" href="{% url 'offer_edit' offer.id 'product' %}">Edit</a>
+                        <a class="text-warning" href="{% url 'offer_edit' offer.id offer.offer_type %}">Edit</a>
                         <a class="text-danger" href="{% url 'delete_offer' offer.id 'product' %}">Delete</a>
                       </td>
                     </tr>
@@ -260,7 +260,7 @@
                       <td>{{offer.is_active}}</td>
                       <td>{{offer.valid_from}} <i>to</i> {{offer.valid_to}}</td>
                       <td>
-                        <a class="text-warning" href="{% url 'offer_edit' offer.id 'category' %}">Edit</a>
+                        <a class="text-warning" href="{% url 'offer_edit' offer.id offer.offer_type %}">Edit</a>
                         <a class="text-danger" href="{% url 'delete_offer' offer.id 'category' %}">Delete</a>
                       </td>
                     </tr>

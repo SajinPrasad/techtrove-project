@@ -218,7 +218,12 @@
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="{{ order_form.status.id_for_label }}" class="form-label">Order Status</label>
-                    {{ order_form.status }}
+                    <select class="form-select form-select-lg mb-3" name="order_status" id="">
+                      <option value="Pending">Pending</option>
+                      <option value="Accepted">Accepted</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Update Order Status</button>
             </form>
@@ -241,7 +246,7 @@
                     {{ payment_form.status }}
                 </div>
                 <button type="submit" class="btn btn-primary">Update Payment Status</button>
-            </form>
+              </form>
             
         
             </div>
@@ -278,11 +283,13 @@
   </div>
   <!-- /.content-wrapper -->
 
-  <footer class="main-footer">
-    <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.2.0
+  <footer class="main-footer" style="margin-left: -10px;">
+    <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+      Anything you want
     </div>
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+    <!-- Default to the left -->
+    <strong>TechTrove &copy; ITSolutions </strong>
   </footer>
 
   <!-- Control Sidebar -->

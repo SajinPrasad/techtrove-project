@@ -118,6 +118,7 @@
               <thead class="thead-light">
                 <tr>
                   <th>Order</th>
+                  <th>Ordered By</th>
                   <th>Billing Name</th>
                   <th>Date</th>
                   <th>Status</th>
@@ -130,6 +131,7 @@
                   {% if not order.status == 'New' %}
                   <tr>
                     <td>{{order.order_number}}</td>
+                    <td>{{order.user.username}}</td>
                     <td>{{order.full_name}}</td>
                     <td>{{order.created_at}}</td>
                     

@@ -12,7 +12,7 @@ from .models import Category
 @login_required(login_url='adminlogin')
 def add_category(request):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     if request.POST:
         form = CategoryForm(request.POST, request.FILES)
@@ -28,7 +28,7 @@ def add_category(request):
 @login_required(login_url='adminlogin')
 def edit_category(request, pk):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     item = Category.objects.get(pk=pk)
     if request.POST:
@@ -45,7 +45,7 @@ def edit_category(request, pk):
 @login_required(login_url='adminlogin')
 def category_soft_delete(request, pk):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     try:
         category = Category.objects.get(pk=pk)
@@ -61,7 +61,7 @@ def category_soft_delete(request, pk):
 @login_required(login_url='adminlogin')
 def category_list(request):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     
     search = request.GET.get('search')
@@ -84,7 +84,7 @@ def category_list(request):
 @login_required(login_url='adminlogin')
 def single_category(request, category_slug):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     try:
         single = Category.objects.get(slug=category_slug)

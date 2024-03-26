@@ -19,7 +19,7 @@ from .models import Image, Product
 @login_required(login_url='adminlogin')
 def add_product(request):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
 
     imgform = None
@@ -59,7 +59,7 @@ def add_product(request):
 @login_required(login_url='adminlogin')
 def list_product(request):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     
     search = request.GET.get('search')
@@ -87,7 +87,7 @@ def list_product(request):
 @login_required(login_url='adminlogin')
 def single_product_admin(request, cat_slug, prod_slug):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     
     try:
@@ -105,14 +105,14 @@ def single_product_admin(request, cat_slug, prod_slug):
 @login_required(login_url='adminlogin')
 def edit_product(request, pk):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
 
     try:
         item = Product.objects.get(pk=pk)
         existing_images = Image.objects.filter(product=item)
     except Product.DoesNotExist:
-        messages.error(request, 'Product not found.')
+        messages.warning(request, 'Product not found.')
         return redirect('listproduct')
     except Image.DoesNotExist:
         messages.error(request, 'Image(s) not found')
@@ -123,20 +123,22 @@ def edit_product(request, pk):
         form = ProductForm(request.POST, instance=item)
         imgform = ImageForm(request.POST, request.FILES)
 
-        if form.is_valid() and imgform.is_valid():
+        if form.is_valid():
             form.save()
+        
+        if imgform:
+            if imgform.is_valid():
+                # Delete existing images before saving new ones (optional, depending on your preference)
+                Image.objects.filter(product=item).delete()
 
-            # Delete existing images before saving new ones (optional, depending on your preference)
-            Image.objects.filter(product=item).delete()
+                # Save new images
+                images = imgform.cleaned_data.get('image')
+                if images:
+                    for image in images:
+                        Image.objects.create(product=item, image=image)
 
-            # Save new images
-            images = imgform.cleaned_data.get('image')
-            if images:
-                for image in images:
-                    Image.objects.create(product=item, image=image)
-
-            messages.success(request, 'Product updated successfully.')
-            return redirect('listproduct')
+        messages.success(request, 'Product updated successfully.')
+        return redirect('listproduct')
     else:
         form = ProductForm(instance=item)
         imgform = ImageForm()
@@ -146,14 +148,14 @@ def edit_product(request, pk):
         'imgform': imgform,
         'existing_images' : existing_images
         }
-    return render(request, 'add_product.html', context)
+    return render(request, 'edit_product.html', context)
 
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
 def soft_delete_product(request, pk):
     if not request.user.is_superuser:
-        messages.error(request, 'You do not have permission to access this page.')
+        messages.warning(request, 'You do not have permission to access this page.')
         return redirect('adminlogin')
     try:
         product = Product.objects.get(pk=pk)

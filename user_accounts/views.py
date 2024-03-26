@@ -43,33 +43,27 @@ def register(request):
             username = email.split('@')[0] or slugify(email.split('@')[0])
 
             hashed_password = make_password(password)
-
-            if Account.objects.filter(email=email).exists():
-                messages.error('This email is already registered, try another one.')
             
-            else:
-                user = Account.objects.create_user(
+           
+            user = Account.objects.create_user(
                 first_name=first_name, 
                 last_name=last_name, 
-                email=email, 
-                password=hashed_password, 
+                email=email,
                 username=username,
                 )
             
+            user.password = hashed_password
             user.phone_number = phone_number
             user.is_verified = False
-            user.email_token = otp
+            user.otp = otp
             user.save()
 
             frm = RegistrationForm()
 
-            messages.success(request, 'Account created successfully.')
-
             subject = "Activate your account"
             message = f"Activate your account using this otp: {otp}"
             send_mail(subject, message, settings.EMAIL_HOST_USER, [email], fail_silently=False)
-            messages.success(request, 'You are successfully registered with us please verify OTP ')
-
+            
             red = redirect(f'/user/verify/{user.id}/')
 
             red.set_cookie("can_otp_enter",True,max_age=600)

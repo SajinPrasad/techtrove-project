@@ -96,7 +96,6 @@
                         </thead>
                         <tbody>
                           {% for order in orders %}
-                            {% if not order.status == 'New' %}
                             <tr>
                               <td>{{order.order_number}}</td>
                               <td>{{order.full_name}}</td>
@@ -117,7 +116,6 @@
                               <td>₹{{order.order_total}}</td>
                               <td><a href="{% url 'order_details' order.order_id %}" class="text-primary">View</a></td>
                             </tr>
-                            {% endif %}
                           {% endfor %}
                         </tbody>
                       </table>
@@ -221,7 +219,7 @@
                             </div>
                           </div>
                           <div class="col-lg-6">
-                            <label for="profile-pic" class="required">Profile Picture</label>
+                            <label for="formFile" class="form-label" class="required">Profile Picture</label>
                             {{ user_profile_form.profile_pic }}
                           </div>
                           <div class="col-lg-6">
@@ -360,12 +358,12 @@
                     <a href="{% url 'delete_item_wishlist' item.id %}"><i class="ti-close"></i></a>
                   </span>
                     <div class="image">
-                        <a href="shop-product-basic.html">
+                        <a href="{% url 'singleproduct' category_slug=item.product.category.slug product_slug=item.product.slug %}">
                             <img src="{{ item.product.image_set.first.image.url }}" class="img-fluid" alt="">
                         </a>
                     </div>
                     <div class="content">
-                        <h5><a href="shop-product-basic.html">{{item.product.product_name}}</a></h5>
+                        <h5><a href="{% url 'singleproduct' category_slug=item.product.category.slug product_slug=item.product.slug %}">{{item.product.product_name}}</a></h5>
                         <p><span class="main-price discounted"></span> <span class="discounted-price">₹{{item.product.price}}</span></p>
 
                     </div>
@@ -417,12 +415,12 @@
                         <a href="{% url 'delete_cart_item' cart_item.id %}"><i class="ti-close"></i></a>
                     </span>
                         <div class="image">
-                            <a href="shop-product-basic.html">
+                            <a href="{% url 'singleproduct' category_slug=cart_item.product.category.slug product_slug=cart_item.product.slug %}">
                                 <img src="{{ cart_item.product.image_set.first.image.url }}" class="img-fluid" alt="">
                             </a>
                         </div>
                         <div class="content">
-                            <h5><a href="shop-product-basic.html">{{ cart_item.product.product_name }}</a></h5>
+                            <h5><a href="{% url 'singleproduct' category_slug=cart_item.product.category.slug product_slug=cart_item.product.slug %}">{{ cart_item.product.product_name }}</a></h5>
                             {% if cart_item.product.is_available %}
                             <p><span class="cart-count">{{ cart_item.quantity }} x </span> <span class="discounted-price">₹{{ cart_item.product.price }}</span></p>
                             {% else %}

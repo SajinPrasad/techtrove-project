@@ -15,13 +15,15 @@ class OfferForm(forms.ModelForm):
             ),
             'valid_to': forms.DateInput(
                 attrs={'type': 'date', 'placeholder': 'yyyy-mm-dd (Valid To)', 'class': 'form-control'}
-            )
+            ),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
 
     def __init__(self, *args, **kwargs):
         super(OfferForm, self).__init__(*args, **kwargs)
         for field in self.fields:
-            self.fields[field].widget.attrs['class'] = 'form-control'
+            if field != 'is_active':
+                self.fields[field].widget.attrs['class'] = 'form-control'
 
 class ProductOfferForm(OfferForm):
     product = forms.ModelChoiceField(queryset=Product.objects.all())

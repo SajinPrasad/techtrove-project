@@ -11,10 +11,15 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ['product_name', 'slug', 'description', 'price', 'stock', 'category', 'is_available']
 
+        widgets = {
+            'is_available': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        }
+
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
         for field in self.fields:
-            self.fields[field].widget.attrs['class'] = 'form-control'
+            if field != 'is_available':
+                self.fields[field].widget.attrs['class'] = 'form-control'
 
 ImageFormSet = inlineformset_factory(Product, Image, fields=['image'], extra=1, can_delete=True)
 

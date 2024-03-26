@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib import messages
 from django.http import HttpResponse
 from django.core.mail import send_mail
-from reportlab.pdfgen import canvas
 from django.middleware.csrf import get_token
 from decimal import Decimal
 from django.conf import settings
@@ -22,6 +21,7 @@ from .forms import OrderForm, OrderStatusForm, PaymentStatusForm
 from .models import Order, Payment, OrderProduct, Wallet
 from userprofile.models import Address
 from userprofile.forms import AddressForm
+from .utils import render_to_pdf, send_order_confirmation_email, send_order_cancellation_email
 
 # Create your views here.
 
@@ -135,10 +135,7 @@ def order_checkout(request):
             data.order_total    = grand_total
             data.tax            = tax
             data.shipping_fee   = shipping_fee
-            data.save()
-
-            data.order_number = f"{data.created_at.strftime('%Y%m%d')}-{data.order_id}"
-
+            
             payment_method = request.POST.get('payment-method', '')
 
             terms_and_conditions   = request.POST.get('accept-terms', '')
@@ -156,6 +153,8 @@ def order_checkout(request):
                     )
                     data.payment        = payment
                     data.status         = 'Pending'
+                    data.save()
+                    data.order_number = f"{data.created_at.strftime('%Y%m%d')}-{data.order_id}"
                     data.save()
 
                     for cart_item in cart_items:
@@ -190,6 +189,8 @@ def order_checkout(request):
                 )
                 data.payment        = payment
                 data.status         = 'Pending'
+                data.save()
+                data.order_number = f"{data.created_at.strftime('%Y%m%d')}-{data.order_id}"
                 data.save()
 
                 for cart_item in cart_items:
@@ -227,6 +228,8 @@ def order_checkout(request):
 
                     data.payment        = payment
                     data.status         = 'Pending'
+                    data.save()
+                    data.order_number = f"{data.created_at.strftime('%Y%m%d')}-{data.order_id}"
                     data.save()
 
                     for cart_item in cart_items:
@@ -316,6 +319,10 @@ def order_confirmation(request, order_id):
     payment_status = order.payment.status
     
     if payment_status == 'Completed':
+        try:
+            send_order_confirmation_email(order)
+        except Exception:
+            messages.error(request, 'Failed to send cancellation email')
         return render(request, 'order_placed.html', context)
         
     if request.method == 'POST':
@@ -332,6 +339,11 @@ def order_confirmation(request, order_id):
                 'order' : order,
                 'total' : total,
             }
+
+            try:
+                send_order_confirmation_email(order)
+            except Exception:
+                messages.error(request, 'Failed to send cancellation email')
 
             return render(request, 'order_placed.html', context)
         
@@ -356,6 +368,11 @@ def order_confirmation(request, order_id):
                 'order' : order,
                 'total' : total,
             }
+
+            try:
+                send_order_confirmation_email(order)
+            except Exception:
+                messages.error(request, 'Failed to send cancellation email')
 
             return render(request, 'order_placed.html', context)
         
@@ -458,7 +475,7 @@ def cancel_order(request, order_id):
 
         # Send cancellation mail
         try:
-            send_mail("Order cancellation: ", f"Your order:{order.order_number}- for {order.full_name} is cancelled", settings.EMAIL_HOST_USER, [email], fail_silently=False)
+            send_order_cancellation_email(order)
         except Exception:
             messages.error(request, 'Failed to send cancellation email')
 
@@ -469,6 +486,10 @@ def cancel_order(request, order_id):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
 def admin_order_details(request):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorised to view this page')
+        return redirect('adminlogin') 
+    
     try:
         order_product = OrderProduct.objects.all()
         orders = Order.objects.all().order_by('-created_at')
@@ -491,7 +512,16 @@ def admin_order_details(request):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
 def admin_order_detailed_view(request, order_id):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorised to view this page')
+        return redirect('adminlogin')
+    
     order = Order.objects.get(order_id=order_id)
+    current_order_status = order.status
+    order_status = None
+
+    wallet = Wallet.objects.get(user=order.user)
+
     try:
         # Try to get the OrderProduct object using get()
         order_products = OrderProduct.objects.filter(order_id=order_id)
@@ -505,23 +535,31 @@ def admin_order_detailed_view(request, order_id):
     products = [product.product for product in order_products]
 
     if request.method == 'POST':
-        order_form = OrderStatusForm(request.POST, instance=order)
+        order_status = request.POST.get('order_status')
         payment_form = PaymentStatusForm(request.POST, instance=order.payment)
 
-        if order_form.is_valid():
-            order_form.save()
+        if order_status:
+            if order_status == 'Cancelled' and current_order_status != 'Cancelled' and order.payment.payment_method == 'paypal' or order.payment.payment_method == 'Wallet' and order.payment.status == 'Completed':
+                wallet.balance += order.order_total
+                wallet.save()
+
+                try:
+                    send_mail("TechTrove - Order cancelled: ", f"Your order:{order.order_number}- for {order.full_name} is cancelled.", settings.EMAIL_HOST_USER, [order.email], fail_silently=False)
+                except Exception:
+                    messages.error(request, 'Failed to send cancellation email')
+
+            order.status = order_status
+            order.save()
 
         if payment_form.is_valid():
             payment_form.save()
     else:
-        order_form = OrderStatusForm(instance=order)
         payment_form = PaymentStatusForm(instance=order.payment)
 
     context = {
         'order_products': order_products,
         'products': products,
         'order' : order,
-        'order_form' : order_form,
         'payment_form' : payment_form,
     }
 
@@ -605,22 +643,14 @@ def generate_sales_report(request):
 
     return render(request, 'sales_report.html', context)
 
+
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
-def render_to_pdf(template_path, context_dict):
-    template = get_template(template_path)
-    html = template.render(context_dict)
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename="sales_report.pdf"'
-
-    pisa_status = pisa.CreatePDF(
-        html, dest=response
-    )
-    if pisa_status.err:
-        return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return response
-
 def generate_sales_report_pdf(request):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorised to view this page')
+        return redirect('adminlogin')
+    
     start_date_str = request.POST.get('start_date')
     end_date_str = request.POST.get('end_date')
 
@@ -698,6 +728,10 @@ def generate_sales_report_pdf(request):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='adminlogin')
 def generate_sales_report_excel(request):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorised to view this page')
+        return redirect('adminlogin')
+    
     start_date_str = request.POST.get('start_date')
     end_date_str = request.POST.get('end_date')
 

@@ -22,8 +22,15 @@ def apply_coupons(request):
         try:
             coupon = Coupon.objects.get(code=coupon_code)
         except Coupon.DoesNotExist:
-            messages.error(request, 'Invalid coupon code')
+            messages.warning(request, 'Invalid coupon code')
             return redirect('cart')
+        
+        current_used_count = coupon.used_count_for_user(current_user)
+
+        if current_used_count >= coupon.max_usage_count:
+            messages.warning(request, 'This coupon is no longer applicable, usage limit exceeded.')
+            return redirect('cart')
+
 
         if coupon.discount_type == 'fixed_amount' and cart_total >= coupon.minimum_order_value:
             discounted_amount = cart_total - coupon.discount_value
@@ -122,12 +129,14 @@ def list_coupons(request):
 
     coupons = []
     try:
-        coupons = Coupon.objects.all()
+        coupons = Coupon.objects.filter(applies_to_all_users=True)
+        user_specific_couons = Coupon.objects.filter(applies_to_all_users=False)
     except Coupon.DoesNotExist:
         messages.info(request, 'No coupons found')
 
     context = {
         'coupons' : coupons,
+        'user_specific_couons' : user_specific_couons,
     }
 
     return render(request, 'list_coupons.html', context)

@@ -147,12 +147,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     {% csrf_token %}
                     
                     <label for="offer_type_product">
-                      <input type="radio" id="offer_type_product" name="offer_type" value="product" {% if initial_offer_type == 'product' %}checked{% endif %}>
+                      <input type="radio" id="offer_type_product" name="offer_type" value="PRODUCT" {% if initial_offer_type == 'product' %}checked{% endif %}>
                       Product Offer
                     </label>
                     
                     <label for="offer_type_category">
-                      <input type="radio" id="offer_type_category" name="offer_type" value="category" {% if initial_offer_type == 'category' %}checked{% endif %}>
+                      <input type="radio" id="offer_type_category" name="offer_type" value="CATEGORY" {% if initial_offer_type == 'category' %}checked{% endif %}>
                       Category Offer
                     </label>
                   
@@ -194,7 +194,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           <div class="col-sm-6">
                             <!-- text input -->
                             <div class="form-group">
-                                <div class="form-check">
+                                <div>
                                     <label >
                                         Valid from <i><small>YYYY-MM-DD</small></i>
                                     </label>
@@ -202,45 +202,60 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </div>
                             </div>
                           </div>
-                        <div class="col-sm-6">
-                          <!-- text input -->
-                          <div class="form-group">
-                              <div class="form-check">
-                                  <label >
-                                      Valid to <i><small>YYYY-MM-DD</small></i>
-                                  </label>
-                                  {{ form_class.valid_to }}
-                              </div>
+                          <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <div>
+                                    <label >
+                                        Valid to <i><small>YYYY-MM-DD</small></i>
+                                    </label>
+                                    {{ form_class.valid_to }}
+                                </div>
+                            </div>
                           </div>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <div>
+                                  {% if form_class.product %}
+                                    <label >
+                                      Products
+                                    </label>
+                                    {{ form_class.product }}
+                                  {% elif form_class.category %}
+                                    <label >
+                                      Categories
+                                    </label>
+                                    {{ form_class.category }}
+                                  {% endif %}
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <div class="">
+                                    <label class="">
+                                        Offer type
+                                    </label>
+                                    {{ form_class.offer_type }}
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
                             <!-- text input -->
                             <div class="form-group">
                                 <div class="form-check">
-                                    <label >
+                                    <label class="mr-5 ml-5 ">
                                         Is active
                                     </label>
                                     {{ form_class.is_active }}
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-sm-4">
-                          <!-- text input -->
-                          <div class="form-group">
-                              <div class="form-check">
-                                {% if form_class.product %}
-                                  <label >
-                                    Products
-                                  </label>
-                                  {{ form_class.product }}
-                                {% elif form_class.category %}
-                                  <label >
-                                    Categories
-                                  </label>
-                                  {{ form_class.category }}
-                                {% endif %}
-                              </div>
                           </div>
+                          
                         </div>
                       </div>
                       {% endif %}

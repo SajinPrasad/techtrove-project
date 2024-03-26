@@ -6,6 +6,11 @@ from product_category.models import Category
 # Create your models here.
 
 class Offer(models.Model):
+    CHOICES = (
+        ('PRODUCT', 'Product offer'),
+        ('CATEGORY', 'Category offer')
+    )
+
     title           = models.CharField(max_length=100)
     description     = models.CharField(max_length=250, blank=True)
     discount_type   = models.CharField(max_length=20, choices=(('percentage', 'Percentage'), ('fixed_amount', 'Fixed Amount')))
@@ -13,6 +18,7 @@ class Offer(models.Model):
     valid_from      = models.DateTimeField(default=timezone.now)
     valid_to        = models.DateTimeField()
     is_active       = models.BooleanField(default=True)
+    offer_type      = models.CharField(max_length=15, choices=CHOICES)
 
     class Meta:
         abstract = True

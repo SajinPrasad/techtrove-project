@@ -168,6 +168,10 @@
         <p><strong>Coupon discount : </strong>  ₹{{ order.coupon_discount }}</p>
         {% endif %}
 
+        {% if order.order_note %}
+        <p><strong>Order Note : </strong> {{ order.order_note }}</p>
+        {% endif %}
+
         <p><strong>Offers</strong>
           {% for product in order_products %}
             {% if product.offer_title %}

@@ -13,6 +13,7 @@ from products.models import Product
 from .models import Cart, CartItem
 from coupons.models import Coupon
 from offers.models import ProductOffer, CategoryOffer
+from wishlist.models import Wishlist
 
 # Create your views here.
 
@@ -36,6 +37,20 @@ def cart_view(request):
         messages.info(request, 'No items in the cart yet')
         return render(request, 'cart.html')
     coupon_applied = cart.coupon_code
+    try:
+        coupon_instance = Coupon.objects.get(code=coupon_applied)
+        if cart.cart_total < coupon_instance.minimum_order_value:
+            cart.coupon_code = None
+            cart.save()
+        print('cart total', cart.cart_total)
+        print('minimum', coupon_instance.minimum_order_value)
+        print('coupon applied hi hi', cart.coupon_code)
+    except Coupon.DoesNotExist:
+        coupon_instance = None
+    
+    coupon_applied = cart.coupon_code
+    print('coupon applied hu hu', coupon_applied)
+        
     cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
     if not cart_items:
@@ -106,7 +121,7 @@ def cart_view(request):
             cart.cart_total = total
             cart.save()
         
-        cart_total = cart.cart_total
+    cart_total = cart.cart_total
         
     zipped_data = zip_longest(cart_items, product_totals, fillvalue=None)
 
@@ -146,10 +161,20 @@ def add_to_cart(request, product_id):
             cart_item = None
 
         if cart_item is not None:
+            wishlist = request.POST.get('wishlist')
             if quantity <= product.stock and cart_item.quantity < 5:
                 cart_item.quantity += quantity
+                if cart.cart_total:
+                    cart.cart_total += cart_item.product.price * quantity
+                else:
+                    cart.cart_total = cart_item.product.price * quantity
+                cart.save()
                 messages.success(request, f'{quantity} item(s) added to your cart.')
                 cart_item.save()
+
+                if wishlist:
+                    wishlist_item = Wishlist.objects.get(product=cart_item.product)
+                    wishlist_item.delete()
 
                 product.stock -= quantity
                 product.save()
@@ -167,7 +192,7 @@ def add_to_cart(request, product_id):
                 return redirect(reverse('singleproduct', kwargs={'category_slug': product.category.slug, 'product_slug': product.slug}))
 
         else:
-            # Cart item does not exist
+            wishlist = request.POST.get('wishlist')
             if quantity <= product.stock:
                 cart_item = CartItem.objects.create(
                     product=product,
@@ -175,8 +200,15 @@ def add_to_cart(request, product_id):
                     cart=cart
                 )
 
+                cart.cart_total = cart_item.product.price * quantity
+                cart.save()
+
                 messages.success(request, f'{quantity} item(s) added to your cart.')
                 cart_item.save()
+
+                if wishlist:
+                    wishlist_item = Wishlist.objects.get(product=cart_item.product)
+                    wishlist_item.delete()
 
                 product.stock -= quantity
                 product.save()
@@ -203,6 +235,7 @@ def add_to_cart(request, product_id):
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')
 def update_cart_item(request, cart_item_id):
+    cart = Cart.objects.get(user=request.user)
     if request.method == 'POST':
         quantity_str = request.POST.get('quantity')
         cart_item = get_object_or_404(CartItem, id=cart_item_id)
@@ -232,7 +265,16 @@ def update_cart_item(request, cart_item_id):
         else:
             # Update cart item quantity
             cart_item.quantity = new_quantity
+            diff = abs(old_quantity - new_quantity)
+            if new_quantity < old_quantity:
+                cart.cart_total -= cart_item.product.price * diff
+                cart.save()
+            elif new_quantity > old_quantity:
+                cart.cart_total += cart_item.product.price * diff
+                cart.save()
+                
             cart_item.save()
+            
             messages.success(request, 'Cart updated.')
 
             # Update product stock based on the quantity difference
@@ -252,9 +294,13 @@ def delete_cart_item(request, cart_item_id):
     referring_url = request.META.get('HTTP_REFERER', '/')
     request.session['referring_url'] = referring_url
     try:
+        cart = Cart.objects.get(user=request.user)
         cart_item = CartItem.objects.get(pk=cart_item_id, is_active=True)
         product = cart_item.product
         quantity_to_add_back = cart_item.quantity
+
+        cart.cart_total -= product.price * quantity_to_add_back
+        cart.save()
 
         cart_item.delete()
 
