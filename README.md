@@ -37,7 +37,7 @@ TechTrove is a modern ecommerce web application designed to provide users with a
 
 6. Start the development server:
 
-  python manage.py startserver
+     python manage.py runserver
 
 
 7. Open your web browser and navigate to `http://localhost:8000` to access the TechTrove web app.
