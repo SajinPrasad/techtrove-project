@@ -1,27 +1,48 @@
-{% if messages %}
-  <div class="messages text-center">  {% for message in messages %}
-      <div class="alert alert-{{ message.level }} text-center" role="alert">
-        {{ message }}
-      </div>
-    {% endfor %}
-  </div>
-{% endif %}
+<div class="messages text-center">
+  {% for message in messages %}
+    {% if message.tags %}
+      {% if 'success' in message.tags %}
+        <div class="alert alert-success text-center w-50 mx-auto" role="alert">
+          {{ message }}
+        </div>
+      {% elif 'warning' in message.tags %}
+        <div class="alert alert-warning text-center w-50 mx-auto" role="alert">
+          {{ message }}
+        </div>
+      {% elif 'error' in message.tags %}
+        <div class="alert alert-danger text-center w-50 mx-auto" role="alert">
+          {{ message }}
+        </div>
+      {% elif 'info' in message.tags %}
+        <div class="alert alert-info text-center w-50 mx-auto" role="alert">
+          {{ message }}
+        </div>
+      {% endif %}
+      {% else %}
+        <!-- Default to success style if no specific tag is provided -->
+        <div class="alert alert-success text-center w-50 mx-auto" role="alert">
+          {{ message }}
+        </div>
+      {% endif %}
+  {% endfor %}
+</div>
+<script>
+  // Wait until the page is fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Select all message elements with the 'alert' class
+    var messages = document.querySelectorAll('.alert');
 
-<style>
-  .alert-success {
-    background-color: #28a745; /* Green for success */
-    color: white;
-  }
-  .alert-danger {
-    background-color: #dc3545; /* Red for danger */
-    color: white;
-  }
-  .alert-warning {
-    background-color: #ffc107; /* Yellow for warning */
-    color: black;
-  }
-  .alert-info {
-    background-color: #17a2b8; /* Blue for info */
-    color: white;
-  }
-</style>
+    // Loop through each message element
+    messages.forEach(function(message) {
+      // Set a timeout function to remove the message after 5 seconds (5000 milliseconds)
+      setTimeout(function() {
+        // Fade out the message using Bootstrap's built-in class
+        message.classList.add('fade');
+        // After the fade out animation completes, remove the message from the DOM
+        setTimeout(function() {
+          message.remove();
+        }, 1000); // Wait for the fade out animation to complete (1000 milliseconds)
+      }, 5000); // Wait for 5 seconds (5000 milliseconds) before starting the fade out animation
+    });
+  });
+</script>

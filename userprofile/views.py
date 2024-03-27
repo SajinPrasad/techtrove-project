@@ -129,7 +129,7 @@ def change_password(request):
         user = request.user
 
         if new_password == current_password:
-            messages.error(request, "New password cannot be the same as the current password")
+            messages.warning(request, "New password cannot be the same as the current password")
         elif new_password == confirm_password:
             if user.check_password(current_password):
                 user.set_password(new_password)
@@ -137,9 +137,9 @@ def change_password(request):
                 messages.success(request, 'Password updated successfully')
                 return redirect('user_profile')
             else:
-                messages.error(request, 'Please enter a valid current password')
+                messages.warning(request, 'Please enter a valid current password')
         else:
-            messages.error(request, "Passwords do not match!")
+            messages.warning(request, "Passwords do not match!")
 
     return redirect('user_profile')
     

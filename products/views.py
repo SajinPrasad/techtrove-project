@@ -46,7 +46,8 @@ def add_product(request):
                 return redirect('listproduct')
             
         except IntegrityError as e:
-            messages.error(request, 'Integrity error: Please select a valid category.')
+            messages.warning(request, 'Please select a valid category.')
+            return redirect('addproduct')
 
     else:
         form = ProductForm()

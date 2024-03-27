@@ -228,11 +228,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 {{ imgform.image }}
                                 <!-- <label class="custom-file-label" ></label> -->
                             </div>
-                            {% for image in images %}
-                                <div class="image-box">
-                                    <img src="{{ image.image.url }}" alt="Existing Image" class="img-fluid">
-                                </div>
-                            {% endfor %}
+
+                            {% if form.errors %}
+                              <div class="alert alert-danger">
+                                {{ form.errors }}
+                              </div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="card-footer text-center">
