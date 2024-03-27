@@ -125,7 +125,12 @@
                                           <div class="title">
                                               <div class="single-product__image">
                                                   <a class="image-wrap" href="{% url 'singlecat' category_slug=category.slug %}">
-                                                      <img src="{{ category.cat_image.url }}" class="img-fluid" alt="{{ category.category_name }}" width="260" height="200">
+                                                    {% if category.cat_image %}
+                                                    <img src="{{ category.cat_image.url }}" class="img-fluid" alt="{{ category.category_name }}">
+                                                    {% else %}
+                                                        <!-- Provide a default image or placeholder image -->
+                                                        <h5>No image found for this category</h5>
+                                                    {% endif %}
                                                   </a>
                                               </div>
                                               <h5 class="mt-1"><a  style="color: black;" href="{% url 'singlecat' category_slug=category.slug %}">{{ category.category_name }}</a></h5>

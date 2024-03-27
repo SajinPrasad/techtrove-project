@@ -48,7 +48,12 @@
 												<ul id="category-list" class="mega-sub-menu category-list">
 													{% for category in items %}
 													<li><a href="{% url 'category_filter_shop' category.id %}">{{category.category_name}}</a>
-														<img src="{{ category.cat_image.url }}" class="img-fluid" alt="{{ category.category_name }}"></li>
+														{% if category.cat_image %}
+														<img src="{{ category.cat_image.url }}" class="img-fluid" alt="{{ category.category_name }}">
+														{% else %}
+															<!-- Provide a default image or placeholder image -->
+															<h5>No image found for this category</h5>
+														{% endif %}
 													{% endfor %}
 												</ul>
 											</li>
