@@ -201,7 +201,7 @@
                     </tbody>
                 </table>
                 <h2 class="mt-5">Coupons applied</h2>
-                <table class="table table-striped table-hover">
+                  <table class="table table-striped table-hover">
                     <thead>
                         <tr>
                             <th>Coupon Name</th>
@@ -211,14 +211,16 @@
                     </thead>
                     <tbody>
                         {% for item in coupons_applied %}
-                        <tr>
+                          <tr>
+                            {% if item.coupon_applied %}
                             <td>{{ item.coupon_applied}}</td>
                             <td>{{ item.overall_discount }}</td>
                             <td>{{ item.count  }}</td>
-                        </tr>
+                            {% endif %}
+                          </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+                  </table>
               </div>
               <div class="d-flex">
                 <form class="mx-auto" action="{% url 'generate_sales_report_pdf' %}" method="post" enctype="multipart/form-data">

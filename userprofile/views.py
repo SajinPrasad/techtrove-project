@@ -156,7 +156,7 @@ def add_address(request):
             a_frm = AddressForm()
 
             messages.success(request, 'New address added')
-            return redirect('list_address')
+            return redirect('user_profile')
     else:
         a_frm = AddressForm()
 
@@ -175,7 +175,8 @@ def edit_address(request, pk):
         if a_frm.is_valid():
             a_frm.save()
             a_frm = AddressForm()
-            return redirect('list_address')
+            messages.success(request, 'Address edited successfully.')
+            return redirect('user_profile')
     else:
         a_frm = AddressForm(instance=address)
     
@@ -195,5 +196,5 @@ def delete_address(request, pk):
     context = {
         'addresses': addresses
         }
-    return render(request, 'list_address.html', context)
+    return render(request, 'user_profile.html', context)
     

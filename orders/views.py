@@ -448,7 +448,7 @@ def cancel_order(request, order_id):
     except Order.DoesNotExist:
         messages.info(request, 'You dont have any orders yet.')
     except Wallet.DoesNotExist:
-        messages.info(request, 'Now wallet')
+        messages.info(request, 'No wallet')
 
     if request.method == "POST":
         if order.payment.payment_method == 'Cash on delivery':
@@ -539,14 +539,18 @@ def admin_order_detailed_view(request, order_id):
         payment_form = PaymentStatusForm(request.POST, instance=order.payment)
 
         if order_status:
-            if order_status == 'Cancelled' and current_order_status != 'Cancelled' and order.payment.payment_method == 'paypal' or order.payment.payment_method == 'Wallet' and order.payment.status == 'Completed':
-                wallet.balance += order.order_total
-                wallet.save()
+            if order_status == 'Cancelled' and current_order_status != 'Cancelled':
+                if order.payment.payment_method == 'paypal' or order.payment.payment_method == 'Wallet' and order.payment.status == 'Completed':
+                    wallet.balance += order.order_total
+                    wallet.save()
 
-                try:
-                    send_mail("TechTrove - Order cancelled: ", f"Your order:{order.order_number}- for {order.full_name} is cancelled.", settings.EMAIL_HOST_USER, [order.email], fail_silently=False)
-                except Exception:
-                    messages.error(request, 'Failed to send cancellation email')
+                    try:
+                        send_mail("TechTrove - Order cancelled: ", f"Your order:{order.order_number}- for {order.full_name} is cancelled.", settings.EMAIL_HOST_USER, [order.email], fail_silently=False)
+                    except Exception:
+                        messages.error(request, 'Failed to send cancellation email')
+
+            elif order_status == 'Delivered':
+                messages.success(request, 'Order status changed to delivered')
 
             order.status = order_status
             order.save()
