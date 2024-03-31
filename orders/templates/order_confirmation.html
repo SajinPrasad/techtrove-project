@@ -176,9 +176,9 @@
           {% for product in order_products %}
             {% if product.offer_title %}
               {% if product.offer_discount_type == 'percentage' %}
-                <p><span>{{ product.offer_title }} for <i>{{product.product.product_name}}</i> - </span><span>  {{ product.offer_discount_value }}%</span></p>
+                <p><span>{{ product.offer_title }} for <i>{{product.product_name}}</i> - </span><span>  {{ product.offer_discount_value }}%</span></p>
               {% else %}
-                <p><span>{{ product.offer_title }} for <i>{{product.product.product_name}}</i>  </span><span>  ₹{{ product.offer_discount_value }}</span></p>
+                <p><span>{{ product.offer_title }} for <i>{{product.product_name}}</i>  </span><span>  ₹{{ product.offer_discount_value }}</span></p>
               {% endif %}
             {% endif %}
           {% endfor %}
@@ -206,8 +206,8 @@
           <div class="card mb-3">
               <div class="card-body d-flex">
               <div class="product-details">
-                  <h5 class="card-title">{{ order_product.product.product_name }}</h5>
-                  <p class="card-text"><strong>Price : </strong> ₹{{ order_product.product.price }}</p>
+                  <h5 class="card-title">{{ order_product.product_name }}</h5>
+                  <p class="card-text"><strong>Price : </strong> ₹{{ order_product.price }}</p>
 
                   {% if order_product.offer_title %}
                     {% if order_product.offer_discount_type == 'percentage' %}
@@ -219,7 +219,11 @@
                   
                   <p><strong>Quantity : </strong> {{ order_product.quantity }}</p>
               </div>
-              <img src="{{ order_product.product.image_set.first.image.url }}" class="product-image" alt="">
+              {% if order_product.product_image %}
+              <img src="{{ order_product.product_image.url }}" class="product-image" alt="">
+              {% else %}
+              <p>No image found</p>
+              {% endif %}
           </div>
       </div>
   
@@ -308,6 +312,12 @@
       document.getElementById('paypalForm').target = 'paypalWindow';
       document.getElementById('paypalForm').submit();
   }
+
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.message === 'refresh-success') {
+      window.location.reload();
+    }
+  });
 </script>
 
 {% endblock %}

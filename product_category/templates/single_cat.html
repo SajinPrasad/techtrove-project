@@ -103,7 +103,11 @@
                 <div class="row">
                   <!-- Image and Edit Button on the left side -->
                   <div class="col-md- d-flex flex-column px-5">
+                    {% if single.cat_image %}
                     <img src="{{ single.cat_image.url }}" class="img-fluid mb-3" alt="{{ single.category_name }}" style="width: 200px; height: 200px;">
+                    {% else %}
+                    <h5>No image found</h5>
+                    {% endif %}
                     <!-- Edit Button -->
                     <a href="{% url 'editcategory' single.id %}" class="btn btn-primary">Edit Category</a><br><br>
                     <a href="{% url 'deletecategory' single.id %}" class="btn btn-danger mt-1">Delete Category</a>

@@ -201,6 +201,26 @@
               <p><strong>Tax : </strong>  ₹{{ order.tax }}</p>
               <p><strong>Shipping Fee : </strong>  ₹{{ order.shipping_fee }}</p>
               <p><strong>Grand Total : </strong>  ₹{{ order.order_total }}</p>
+
+              {% if order.coupon_applied %}
+                <p><strong>Coupon applied : </strong> {{ order.coupon_applied }}</p>
+                <p><strong>Coupon discount : </strong>  ₹{{ order.coupon_discount }}</p>
+              {% endif %}
+
+              {% if order.order_note %}
+                <p><strong>Order Note : </strong> {{ order.order_note }}</p>
+              {% endif %}
+
+              <p><strong>Offers</strong>
+                {% for product in order_products %}
+                  {% if product.offer_title %}
+                    {% if product.offer_discount_type == 'percentage' %}
+                      <p><span>{{ product.offer_title }} for <i>{{product.product_name}}</i> - </span><span>  {{ product.offer_discount_value }}%</span></p>
+                    {% else %}
+                      <p><span>{{ product.offer_title }} for <i>{{product.product_name}}</i>  </span><span>  ₹{{ product.offer_discount_value }}</span></p>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
               
               {% if order.status == 'Accepted' %}
               <p class="text-primary"><strong class="text-dark">Status : </strong> {{ order.status }}</p>
@@ -269,13 +289,17 @@
             <div class="card mb-3">
                 <div class="card-body d-flex">
                 <div class="product-details">
-                    <h5 class="card-title">{{ order_product.product.product_name }}</h5>
-                    <p class="card-text"><strong>Price : </strong> ₹{{ order_product.product.price }}</p>
+                    <h5 class="card-title">{{ order_product.product_name }}</h5>
+                    <p class="card-text"><strong>Price : </strong> ₹{{ order_product.price }}</p>
                     <p><strong>Quantity : </strong> {{ order_product.quantity }}</p>
                 </div>
-                <img src="{{ order_product.product.image_set.first.image.url }}" class="product-image" alt="">
+                {% if order_product.product_image %}
+                <img src="{{ order_product.product_image.url }}" class="product-image" alt="">
+                {% else %}
+                <p>No image found</p>
+                {% endif %}
             </div>
-              {% endfor %}
+            {% endfor %}
 
           </div>
         </div>

@@ -8,7 +8,7 @@ from django.db import transaction
 from paypalrestsdk import Refund
 from paypalrestsdk import Sale
 
-from orders.models import Order, Wallet, Transaction
+from orders.models import Order, Wallet, Transaction, OrderProduct
 
 paypalrestsdk.configure({
     "mode": "sandbox",  # Change to "live" for production
@@ -22,6 +22,34 @@ paypalrestsdk.configure({
 def create_payment(request, order_id):
     order = Order.objects.get(order_id=order_id)
     grand_total = order.order_total
+
+    try:
+        order_products = OrderProduct.objects.filter(order=order)
+    except OrderProduct.DoesNotExist:
+        messages.warning(request, 'No orderitemsfound')
+    
+    products = []
+    total = 0
+    for order_product in order_products:
+        if order_product.product.stock < order_product.quantity:
+            products.append(order_product.product)
+            total += order_product.product.price * order_product.quantity
+            order.status = 'Cancelled'
+            order.payment.status = 'Failed'
+            order.payment.save()
+            order.save()
+            out_of_stock_product = order_product.product
+            
+            context = {
+                    'order_products': order_products,
+                    'products': products,
+                    'order' : order,
+                    'total' : total,
+                    'out_of_stock_product' : out_of_stock_product,
+                }
+            
+            messages.warning(request, f'{order_product.product.product_name} is only {order_product.product.stock} numbers available')
+            return render(request, 'order_cancelled.html', context)
 
     payment = paypalrestsdk.Payment({
         "intent": "sale",
@@ -55,6 +83,34 @@ def execute_payment(request, order_id):
 
     order = Order.objects.get(order_id=order_id)
 
+    try:
+        order_products = OrderProduct.objects.filter(order=order)
+    except OrderProduct.DoesNotExist:
+        messages.warning(request, 'No orderitemsfound')
+    
+    products = []
+    total = 0
+    for order_product in order_products:
+        if order_product.product.stock < order_product.quantity:
+            products.append(order_product.product)
+            total += order_product.product.price * order_product.quantity
+            order.status = 'Cancelled'
+            order.payment.status = 'Failed'
+            order.payment.save()
+            order.save()
+            out_of_stock_product = order_product.product
+            
+            context = {
+                    'order_products': order_products,
+                    'products': products,
+                    'order' : order,
+                    'total' : total,
+                    'out_of_stock_product' : out_of_stock_product,
+                }
+            
+            messages.warning(request, f'{order_product.product.product_name} is only {order_product.product.stock} numbers available')
+            return render(request, 'order_cancelled.html', context)
+
     payment = paypalrestsdk.Payment.find(payment_id)
 
     order_payment = order.payment
@@ -67,6 +123,10 @@ def execute_payment(request, order_id):
         order_payment.status = 'Completed'
         order_payment.transaction_id = payment.transactions[0].related_resources[0].sale.id
         order_payment.save()
+
+        for order_product in order_products:
+            order_product.product.stock -= order_product.quantity
+            order_product.product.save()
 
         return render(request, 'payment_success.html')
     
