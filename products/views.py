@@ -124,17 +124,25 @@ def edit_product(request, pk):
         form = ProductForm(request.POST, instance=item)
         imgform = ImageForm(request.POST, request.FILES)
 
+        for image in existing_images:
+            # Check if a new image is uploaded for this existing image
+            new_image = request.FILES.get(f'image_{image.id}')
+            if new_image:
+                # Update the existing image with the new one
+                image.image = new_image
+                image.save()
+
         if form.is_valid():
             form.save()
         
         if imgform:
             if imgform.is_valid():
-                # Delete existing images before saving new ones (optional, depending on your preference)
-                Image.objects.filter(product=item).delete()
 
                 # Save new images
                 images = imgform.cleaned_data.get('image')
                 if images:
+                    # Delete existing images before saving new ones (optional, depending on your preference)
+                    Image.objects.filter(product=item).delete()
                     for image in images:
                         Image.objects.create(product=item, image=image)
 

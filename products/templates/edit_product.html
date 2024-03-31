@@ -193,11 +193,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                           
                       <!-- New image upload -->
                       <div class="form-group col-lg-8">
-                        <label>Upload images : </label>
+                        <label>Replace and upload new images : </label>
                         {{ imgform.image }}
                       </div>
+                      {% for image in existing_images %}
+                      <div class="form-group col-lg-8">
+                          <label>Replace image {{ forloop.counter }} :</label>
+                          <input type="file" name="image_{{ image.id }}" accept="image/*">
+                      </div>
+                      {% endfor %}
                     </div>
-                                        
+                    {% if imgform.image.errors or form.fields.errors %}
+                    <div class="alert alert-danger">
+                      {{imgform.errors}}
+                      {{form.errors}}
+                    </div>
+                    {% endif %}
+             
                     <!-- Submit button -->
                     <div class="card-footer text-center">
                         <button type="submit" class="btn btn-primary">Submit</button>

@@ -85,12 +85,12 @@
 
 								<!--=======  shop product small image gallery  =======-->
 
-								<div class="shop-product__small-image-gallery-wrapper">
+								<div class="shop-product__small-image-gallery-wrapper ml-auto">
 									<div class="shop-product__small-image-gallery-slider">
 										{% for image in single.image_set.all %}
 											<!--=======  single image  =======-->
 											<div class="single-image">
-												<img src="{{ image.image.url }}" class="img-fluid" alt="">
+												<img src="{{ image.image.url }}" class="img-fluid border-0" alt="">
 											</div>
 											<!--=======  End of single image  =======-->
 										{% endfor %}

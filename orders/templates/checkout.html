@@ -208,10 +208,9 @@
 
 												<p>Shipping Fee <span>₹{{shippping_fee}}</span></p>
 												<p>GST <i>2%</i><span>₹{{tax|floatformat:"2"}}</span></p>
-												{% if coupon_applied %}
+												{% if coupon_discount %}
 												<p>Coupon Name <span>{{coupon_applied}}</span></p>
 												<p>Coupon Discount <span>₹{{coupon_discount}}</span></p>
-												<p>Sub Total <span>₹{{cart_total}}</span></p>
 												{% endif %}
 
 												<h4>Grand Total <span>₹{{grand_total|floatformat:"2"}}</span></h4>
@@ -234,7 +233,7 @@
 													<div class="single-method">
 														<input type="radio" id="payment_cash" name="payment-method" value="cash">
 														<label for="payment_cash">Cash on Delivery</label>
-														<p data-method="cash">Not available for orders worth morethan ₹1000/-</p>
+														<p data-method="cash">Not available for orders worth lessthan ₹1000/-</p>
 													</div>
 	
 													<div class="single-method">

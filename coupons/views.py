@@ -43,14 +43,17 @@ def apply_coupons(request):
             messages.warning(request, f'This coupon is only applicable for orders worth rupees {coupon.minimum_order_value}')
             return redirect('cart')
         
-        print(cart_total)
-
         cart.cart_total = discounted_amount
         cart.coupon_name = coupon.name
         cart.coupon_code = coupon.code
         cart.save()
-        
+                   
         coupon.used_count += 1
+
+        if coupon.applies_to_all_users is False:
+            if coupon.max_usage_count == coupon.used_count:
+                coupon.is_active = False
+                
         coupon.save()
 
     messages.success(request, 'Coupon applied successfully')
