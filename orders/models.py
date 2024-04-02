@@ -5,6 +5,8 @@ from products.models import Product
 
 from django.core.validators import MinValueValidator
 
+from django.core.validators import MinValueValidator
+
 # Create your models here.
 
 class Payment(models.Model):
