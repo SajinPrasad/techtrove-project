@@ -32,44 +32,10 @@
     </ul>
 
     <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-      <!-- Navbar Search -->
-      <li class="nav-item">
-        <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-          <i class="fas fa-search"></i>
-        </a>
-        <div class="navbar-search-block">
-          <form class="form-inline">
-            <div class="input-group input-group-sm">
-              <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-              <div class="input-group-append">
-                <button class="btn btn-navbar" type="submit">
-                  <i class="fas fa-search"></i>
-                </button>
-                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </li>
-
-      
-      <li class="nav-item">
-        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-          <i class="fas fa-expand-arrows-alt"></i>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li>
-    </ul>
+    
   </nav>
   <!-- /.navbar -->
-{% include 'includes/alerts.html' %}
+  {% include 'includes/alerts.html' %}
   <!-- Main Sidebar Container -->
   {% include 'includes/slidebar.html' %}
 
@@ -80,12 +46,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Category</h1>
+            <h1>Product Variations</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Categories</li>
+              <li class="breadcrumb-item"><a href="{% url 'adminhome' %}">Home</a></li>
+              <li class="breadcrumb-item active">Users</li>
             </ol>
           </div>
         </div>
@@ -93,47 +59,48 @@
     </section>
 
     <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-11 p-5">
-            <!-- Category Details -->
-            <div class="card">
-              <div class="card-body">
-                <div class="row">
-                  <!-- Image and Edit Button on the left side -->
-                  <div class="col-md- d-flex flex-column px-5">
-                    {% if single.cat_image %}
-                    <img src="{{ single.cat_image.url }}" class="img-fluid mb-3" alt="{{ single.category_name }}" style="width: 200px; height: 200px;">
-                    {% else %}
-                    <h5>No image found</h5>
-                    {% endif %}
-                    <!-- Edit Button -->
-                    <a href="{% url 'editcategory' single.id %}" class="btn btn-primary">Edit Category</a><br><br>
-                    <a href="{% url 'deletecategory' single.id %}" class="btn btn-danger mt-1">Delete Category</a>
-                  </div>
-                  <!-- Category name and description on the right side -->
-                  <div class="col-md-8">
-                    <h1 class="card-title font-weight-bold mt-3" style="font-size: 1.7rem;">{{ single.category_name }}</h1><br><br>
-                    <p class="card-text mt-3">{{ single.description }}</p> 
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Variations</h3>
           </div>
+          <!-- ./card-header -->
+          <div class="card-body">
+            <table class="table table-bordered table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Variation category</th>
+                  <th>Product</th>
+                  <th>Variation value</th>
+                  <th>Is active</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for variation in variations %}
+                  {% for product in variation.product.all %}
+                  <tr>
+                    <td>{{variation.variation_category}}</td>
+                    <td>{{ product.product_name }}</td>
+                    <td>{{variation.variation_value}}</td>
+                    <td>{{variation.is_active}}</td>
+                  </tr>
+                  {% endfor %}
+                {% endfor %}
+              </tbody>
+            </table>
         </div>
-      </div><!-- /.container-fluid -->
-    </section>
-    
-  
+    </div>
     <!-- /.content -->
-  </div>
+    </div>
   <!-- /.content-wrapper -->
 
-  <footer class="main-footer">
-    <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.2.0
+  <footer class="main-footer ml-auto">
+    <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+      Anything you want
     </div>
+    <!-- Default to the left -->
     <strong>TechTrove &copy; ITSolutions </strong>
   </footer>
 
@@ -155,7 +122,6 @@
 <script src="{% static 'plugins/ion-rangeslider/js/ion.rangeSlider.min.js' %}"></script>
 <!-- Bootstrap slider -->
 <script src="{% static 'plugins/bootstrap-slider/bootstrap-slider.min.js' %}"></script>
-
 <!-- Page specific script -->
 <script>
   $(function () {

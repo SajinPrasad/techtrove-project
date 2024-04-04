@@ -42,14 +42,10 @@ def cart_view(request):
         if cart.cart_total < coupon_instance.minimum_order_value:
             cart.coupon_code = None
             cart.save()
-        print('cart total', cart.cart_total)
-        print('minimum', coupon_instance.minimum_order_value)
-        print('coupon applied hi hi', cart.coupon_code)
     except Coupon.DoesNotExist:
         coupon_instance = None
     
     coupon_applied = cart.coupon_code
-    print('coupon applied hu hu', coupon_applied)
         
     cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
@@ -138,10 +134,28 @@ def cart_view(request):
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 def add_to_cart(request, product_id):
+    referring_url = request.META.get('HTTP_REFERER', '/')
+    request.session['referring_url'] = referring_url
+
     product = Product.objects.get(id=product_id)
 
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
+
+        color = request.POST.get('color')
+        storage = request.POST.get('storage')
+
+        if color and storage:
+            variation_category  = 'Color & Storage'
+            variation_value     = f'{color} | {storage}'
+        elif color and not storage:
+            variation_category  = 'Color'
+            variation_value     = f'{color}'
+        elif storage and not color:
+            variation_category  = 'Storage'
+            variation_value     = f'{storage}'
+
+        print("Variation value : ", variation_value)
 
         if not (1 <= quantity <= 5):
             messages.warning(request, 'Please enter a quantity between 1 and 5.')
@@ -156,12 +170,19 @@ def add_to_cart(request, product_id):
         cart_item = None
 
         try:
-            cart_item = CartItem.objects.get(product=product, cart=cart)
+            if variation_value:
+                cart_item = CartItem.objects.get(product=product, variation_value=variation_value, cart=cart)
+            else: 
+                cart_item = CartItem.objects.get(product=product, cart=cart)
         except CartItem.DoesNotExist:
             cart_item = None
 
         if cart_item is not None:
             wishlist = request.POST.get('wishlist')
+            if product.stock == cart_item.quantity:
+                messages.warning(request, f'You already added maximum available quantity for this product')
+                return redirect(referring_url)
+
             if quantity <= product.stock and cart_item.quantity < 5:
                 cart_item.quantity += quantity
                 if cart.cart_total:
@@ -175,9 +196,7 @@ def add_to_cart(request, product_id):
                 if wishlist:
                     wishlist_item = Wishlist.objects.get(product=cart_item.product)
                     wishlist_item.delete()
-
-                product.stock -= quantity
-                product.save()
+                    
                 return redirect('cart')
             
             elif cart_item.quantity == 5:
@@ -190,7 +209,31 @@ def add_to_cart(request, product_id):
             else:
                 messages.warning(request, f'Exceeds the available stock for this product. Stock: {product.stock}')
                 return redirect(reverse('singleproduct', kwargs={'category_slug': product.category.slug, 'product_slug': product.slug}))
+        elif cart_item is None and variation_value:
+            wishlist = request.POST.get('wishlist')
+            if quantity <= product.stock:
+                cart_item = CartItem.objects.create(
+                    product=product,
+                    variation_category=variation_category,
+                    variation_value=variation_value,
+                    quantity=quantity,
+                    cart=cart
+                )
 
+                cart.cart_total = cart_item.product.price * quantity
+                cart.save()
+
+                messages.success(request, f'{quantity} item(s) added to your cart.')
+                cart_item.save()
+
+                if wishlist:
+                    wishlist_item = Wishlist.objects.get(product=cart_item.product)
+                    wishlist_item.delete()
+
+                return redirect('cart')
+            else:
+                messages.warning(request, f'Exceeds the available stock for this product. You can only pick {product.stock}')
+                return redirect(referring_url)
         else:
             wishlist = request.POST.get('wishlist')
             if quantity <= product.stock:
@@ -210,13 +253,10 @@ def add_to_cart(request, product_id):
                     wishlist_item = Wishlist.objects.get(product=cart_item.product)
                     wishlist_item.delete()
 
-                product.stock -= quantity
-                product.save()
-
                 return redirect('cart')
             else:
                 messages.warning(request, f'Exceeds the available stock for this product. You can only pick {product.stock}')
-                return redirect('cart')
+                return redirect(referring_url)
 
     else:
         max_quantity = min(product.stock, 5)
@@ -264,25 +304,23 @@ def update_cart_item(request, cart_item_id):
                 return redirect('cart')
         else:
             # Update cart item quantity
-            cart_item.quantity = new_quantity
-            diff = abs(old_quantity - new_quantity)
-            if new_quantity < old_quantity:
-                cart.cart_total -= cart_item.product.price * diff
-                cart.save()
-            elif new_quantity > old_quantity:
-                cart.cart_total += cart_item.product.price * diff
-                cart.save()
+            if new_quantity <= cart_item.product.stock:
+                cart_item.quantity = new_quantity
+                diff = abs(old_quantity - new_quantity)
+                if new_quantity < old_quantity:
+                    cart.cart_total -= cart_item.product.price * diff
+                    cart.save()
+                elif new_quantity > old_quantity:
+                    cart.cart_total += cart_item.product.price * diff
+                    cart.save()
+            else:
+                messages.warning(request, f'Only {cart_item.product.stock} numbers are available for this product.')
+                return redirect('cart')
                 
             cart_item.save()
             
             messages.success(request, 'Cart updated.')
 
-            # Update product stock based on the quantity difference
-            product.stock -= quantity_difference
-            if product.stock < 0:
-                product.stock = 0
-            
-            product.save()
             return redirect('cart')
             
 
@@ -303,9 +341,6 @@ def delete_cart_item(request, cart_item_id):
         cart.save()
 
         cart_item.delete()
-
-        product.stock += quantity_to_add_back
-        product.save()
 
         messages.success(request, 'Item removed from cart')
         

@@ -151,9 +151,9 @@
                   <tbody>
                     {% for item in product_sales %}
                     <tr>
-                      <td>{{ item.product__product_name }}</td>
-                      <td>{{ item.product__category__category_name }}</td>
-                      <td>₹{{ item.product__price }}</td>
+                      <td>{{ item.product_name }}</td>
+                      <td>{{ item.category }}</td>
+                      <td>₹{{ item.price }}</td>
                       <td>{{ item.quantity }}</td>
                       <td>₹{{ item.total_sales }}</td>
                     </tr>
@@ -172,7 +172,7 @@
                     <tbody>
                         {% for item in category_sales %}
                         <tr>
-                            <td>{{ item.product__category__category_name }}</td>
+                            <td>{{ item.category }}</td>
                             <td>{{ item.quantity }}</td>
                         {% endfor %}
                     </tbody>

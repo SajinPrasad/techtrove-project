@@ -229,9 +229,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <!-- <label class="custom-file-label" ></label> -->
                             </div>
 
-                            {% if form.errors %}
+                            {% if form.errors or imgform.errors %}
                               <div class="alert alert-danger">
                                 {{ form.errors }}
+                                {{ imgform.errors }}
                               </div>
                             {% endif %}
                         </div>

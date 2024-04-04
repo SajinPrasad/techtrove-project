@@ -16,6 +16,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+
+  <style>
+    .image-box {
+        height: 200px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .image-box img {
+        max-height: 100%;
+        width: auto;
+    }
+
+    .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .image-box {
+        width: 150px; /* Set the desired fixed width */
+        margin: 10px; /* Add some margin between images */
+    }
+
+    .image-box img {
+        width: 100%;
+        height: auto;
+    }
+</style>
+
 </head>
 <body class="hold-transition layout-top-nav">
 <div class="wrapper">
@@ -25,7 +55,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="container">
       <a href="../../index3.html" class="navbar-brand">
         <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        <span class="brand-text font-weight-light">TechTrove Admin</span>
       </a>
 
       <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,6 +117,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       <!-- Right navbar links -->
       <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+        <!-- Messages Dropdown Menu -->
         
         <li class="nav-item">
           <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
@@ -97,7 +128,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </div>
   </nav>
   <!-- /.navbar -->
-{% include 'includes/alerts.html' %}
+  {% include 'includes/alerts.html' %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -105,7 +136,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <div class="container">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Add Categories</h1>
+            <h1 class="m-0">Add Products</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -123,65 +154,57 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="content">
       <div class="container">
         <div class="row">
-            <div class="card card-warning mx-auto w-50">
+            <div class="card card-warning d-flex mx-auto col-lg-8">
                 <div class="card-header">
                   <h3 class="card-title">General Elements</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
                   <form action="" method="post" enctype="multipart/form-data">
-                  {% csrf_token %}
+                    {% csrf_token %}
                     <div class="row">
-                      <div class="col-sm-6">
-                        <!-- text input -->
-                        <div class="form-group">
-                          <label>Category Name</label>
-                          {{form.category_name}}
+                        <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Variation category</label>
+                                {{variation_form.variation_category}}
+                            </div>
                         </div>
-                      </div>
-                      <div class="col-sm-6">
-                        <!-- text input -->
-                        <div class="form-group">
-                          <label>Slug</label>
-                          {{form.slug}}
+                        <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Variation value</label>
+                                {{variation_form.variation_value}}
+                            </div>
                         </div>
-                      </div>
                     </div>
                     <div class="row">
-                      <div class="col-sm-12">
-                        <!-- textarea -->
-                        <div class="form-group">
-                          <label>Description</label>
-                          {{form.description}}
+                        <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Product</label>
+                                {{variation_form.product}}
+                            </div>
                         </div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputFile">Image input</label>
-                        <div class="input-group">
-                          <div class="custom-file">
-                            {{form.cat_image}}
-                            <!-- <label class="custom-file-label" ></label> -->
-                          </div>
-                          <!-- <div class="input-group-append">
-                            <span class="input-group-text">Upload</span>
-                          </div> -->
+                        <div class="col-sm-4 mt-5">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <div class="form-check ml-5">
+                                    <label class="mr-5">
+                                        Is active
+                                    </label>
+                                    {{ variation_form.is_active }}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-footer text-center ">
-                        <button type="submit" class="btn ml-auto btn-primary">Submit</button>
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
-                  </form>
-                </div>
-                {% if form.cat_image.errors %}
-                <div class="alert alert-danger">
-                  {{ form.cat_image.errors }}
-                </div>
-                {% endif %}
-                
-                {% include 'includes/alerts.html' %}
-                <!-- /.card-body -->
+                </form>
               </div>
+                <!-- /.card-body -->
+            </div>
           <!-- /.col-md-6 -->
         </div>
         <!-- /.row -->
@@ -216,6 +239,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- Bootstrap 4 -->
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
 
 </body>
 </html>

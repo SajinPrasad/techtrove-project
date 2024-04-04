@@ -26,27 +26,51 @@ def create_first_time_coupon(sender, instance, created, **kwargs):
             max_usage_count = 1,
         )
 
+# @receiver(post_save, sender=Order)
+# def generate_coupon_on_order_completion(sender, instance, **kwargs):
+#     # Check if the order is delivered
+#     if instance.status == 'Delivered':
+#         # Calculate the total ordered amount for the user
+#         total_ordered_amount = Order.objects.filter(user=instance.user, status='Delivered').aggregate(models.Sum('order_total'))['order_total__sum']
+
+#         # Check if the total ordered amount is Rs 100,000 or more
+#         if total_ordered_amount >= 100000:
+#             # Generate a coupon for the user
+#             Coupon.objects.create(
+#                 code                = Coupon.generate_coupon_code(),
+#                 name                = 'One Lakh Reward Coupon',
+#                 description         = "Congratulations! You've reached Rs 100,000 in total ordered amount. So enjoy next order with a 100 rupees coupon. (Only applicable for orders worth RS 1000)",
+#                 discount_type       = 'fixed_amount',
+#                 discount_value      = 100,
+#                 minimum_order_value = 1000,
+#                 applies_to_all_users = False,
+#                 user                = instance.user,
+#                 is_active           = True,
+#                 valid_from          = timezone.now(),
+#                 valid_to            = timezone.now() + timezone.timedelta(days=365),
+#                 max_usage_count     = 1,
+#             )
+        
 @receiver(post_save, sender=Order)
 def generate_coupon_on_order_completion(sender, instance, **kwargs):
-    # Check if the order is delivered
     if instance.status == 'Delivered':
-        # Calculate the total ordered amount for the user
         total_ordered_amount = Order.objects.filter(user=instance.user, status='Delivered').aggregate(models.Sum('order_total'))['order_total__sum']
 
-        # Check if the total ordered amount is Rs 100,000 or more
         if total_ordered_amount >= 100000:
-            # Generate a coupon for the user
-            Coupon.objects.create(
-                code                = Coupon.generate_coupon_code(),
-                name                = 'One Lakh Reward Coupon',
-                description         = "Congratulations! You've reached Rs 100,000 in total ordered amount. So enjoy next order with a 100 rupees coupon. (Only applicable for orders worth RS 1000)",
-                discount_type       = 'fixed_amount',
-                discount_value      = 100,
-                minimum_order_value = 1000,
-                applies_to_all_users = False,
-                user                = instance.user,
-                is_active           = True,
-                valid_from          = timezone.now(),
-                valid_to            = timezone.now() + timezone.timedelta(days=365),
-                max_usage_count     = 1,
-            )
+            # Check if a coupon already exists for the user using the fixed coupon code
+            existing_coupon = Coupon.objects.filter(user=instance.user, code='7BZH9#J8S9').exists()
+            if not existing_coupon:
+                Coupon.objects.create(
+                    code                = '7BZH9#J8S9',
+                    name                = 'One Lakh Reward Coupon',
+                    description         = "Congratulations! You've reached Rs 100,000 in total ordered amount. So enjoy next order with a 100 rupees coupon. (Only applicable for orders worth RS 1000)",
+                    discount_type       = 'fixed_amount',
+                    discount_value      = 100,
+                    minimum_order_value = 1000,
+                    applies_to_all_users = False,
+                    user                = instance.user,
+                    is_active           = True,
+                    valid_from          = timezone.now(),
+                    valid_to            = timezone.now() + timezone.timedelta(days=365),
+                    max_usage_count     = 1,
+                )

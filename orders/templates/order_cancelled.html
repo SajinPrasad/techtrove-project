@@ -6,7 +6,7 @@
 
 <style>
     h2 {
-        color: #28a745;
+        color: #d43434;
         font-weight: bold;
         text-align: center;
     }
@@ -63,11 +63,16 @@
 
 <div class="container mt-5 order-details-container">
     <h2 class="mb-4">
-        <div class="alert alert-success" role="alert">
-            <i class=""></i> Order Placed Successfully
+        <div class="alert alert-danger" role="alert">
+            <i class=""></i> Order Cancelled
         </div>
     </h2>
-
+    <div class="text-center">
+        {% if out_of_stock_product.stock <= 0 %}
+        <p>{{out_of_stock_product.product_name}} is currently out of stock or not availbe</p>
+        <p>{{out_of_stock_product.product_name}} is only {{out_of_stock_product.stock}} numbers available.</p>
+        {% endif %}
+    </div>
     <div class="row">
         <div class="col-md-6 customer-info-box">
             <h4 class="mb-3">Customer Information</h4>
@@ -122,8 +127,8 @@
         {% for order_product in order_products %}
         <div class="card mb-3">
             <div class="card-body d-flex">
-            <div class="product-details">
-                <h5 class="card-title">{{ order_product.product_name }}</h5>
+            <div class="product-details text-left">
+                <h5 class="card-title text-decoration-line-through">{{ order_product.product_name }}</h5>
                 <p class="card-text"><strong>Price : </strong> ₹{{ order_product.price }}</p>
 
                 {% if order_product.offer_title %}
@@ -134,7 +139,7 @@
                   {% endif %}
                 {% endif %}
                 
-                <p><strong>Quantity : </strong> {{ order_product.quantity }}</p>
+                <p class="text-danger text-decoration-line-through"><strong>Quantity : </strong> {{ order_product.quantity }}</p>
             </div>
             {% if order_product.product_image %}
             <img src="{{ order_product.product_image.url }}" class="product-image" alt="">
@@ -144,8 +149,30 @@
         </div>
         {% endfor %}
     </div>
-    <a class="text-danger btn text-light btn-danger" href="{% url 'generate_invoice_pdf' order_id=order.order_id %}"><i class="fa fa-file-pdf-o"></i> Download Invoice</a>
+    <a class="text-danger" href="{% url 'generate_invoice_pdf' order_id=order.order_id %}">Download Invoice PDF</a>
     <p><strong><a class="text-dark" href="{% url 'shop_view' %}">Click here to shop more!</a></strong></p>
 </div>
+
+<script>
+    function refreshParent() {
+      window.opener.postMessage({ message: 'refresh' }, '*');
+      window.close(); // Close the popup after sending the message
+    }
+  
+    // Add an event listener on the form's submit event
+    document.getElementById('paypalForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+  
+      // Simulate successful payment (replace with your actual payment processing logic)
+      setTimeout(function() {
+        refreshParent();
+      }, 2000); // Simulate a 2-second delay for payment processing
+    });
+  </script>
+
+<script>
+    window.opener.location.reload()
+    window.close();
+</script>
 
 {% endblock %}

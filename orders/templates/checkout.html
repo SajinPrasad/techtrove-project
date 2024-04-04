@@ -188,13 +188,15 @@
 														{{ product.product.product_name }}
 														{% endif %}
 														<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+														<li>{{product.variation_category}}<span>{{product.variation_value}}</span></li>
 														{% if product.product_offer.discount_type == 'fixed_amount' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.product_offer.title}} discount applied<span>₹{{product.product_offer.discount_value}}</span></small></li>
 														{% elif product.product_offer.discount_type == 'percentage' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.product_offer.title}} discount applied<span>{{product.product_offer.discount_value}}%</span></small></li>
 														{% endif %}
 													{% elif product.category_offer %}
-													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+														<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+														<li style="margin-top: -20px;">{{product.variation_category}} {{product.variation_value}}</li>
 														{% if product.category_offer.discount_type == 'fixed_amount' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.category_offer.title}} Offer discount applied<span>₹{{product.category_offer.discount_value}}</span></small></li>
 														{% elif product.category_offer.discount_type == 'percentage' %}
@@ -202,16 +204,16 @@
 														{% endif %}
 													{% else %}
 													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
+													<li>{{product.variation_category}}<span>{{product.variation_value}}</span></li>
 													{% endif %}
 													{% endfor %}
 												</ul>
 
 												<p>Shipping Fee <span>₹{{shippping_fee}}</span></p>
 												<p>GST <i>2%</i><span>₹{{tax|floatformat:"2"}}</span></p>
-												{% if coupon_applied %}
+												{% if coupon_discount %}
 												<p>Coupon Name <span>{{coupon_applied}}</span></p>
 												<p>Coupon Discount <span>₹{{coupon_discount}}</span></p>
-												<p>Sub Total <span>₹{{cart_total}}</span></p>
 												{% endif %}
 
 												<h4>Grand Total <span>₹{{grand_total|floatformat:"2"}}</span></h4>
@@ -234,7 +236,7 @@
 													<div class="single-method">
 														<input type="radio" id="payment_cash" name="payment-method" value="cash">
 														<label for="payment_cash">Cash on Delivery</label>
-														<p data-method="cash">Not available for orders worth morethan ₹1000/-</p>
+														<p data-method="cash">Not available for orders worth lessthan ₹1000/-</p>
 													</div>
 	
 													<div class="single-method">

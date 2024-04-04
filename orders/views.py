@@ -17,10 +17,12 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment
 
 from cart.models import Cart, CartItem
-from .forms import OrderForm, OrderStatusForm, PaymentStatusForm
+from coupons.models import Coupon
+from .forms import OrderForm, PaymentStatusForm
 from .models import Order, Payment, OrderProduct, Wallet
 from userprofile.models import Address
 from userprofile.forms import AddressForm
+from products.models import Product, Image
 from .utils import render_to_pdf, send_order_confirmation_email, send_order_cancellation_email
 
 # Create your views here.
@@ -30,6 +32,8 @@ from .utils import render_to_pdf, send_order_confirmation_email, send_order_canc
 def order_checkout(request):
     user            = request.user
     wallet_msg      = None
+    coupon          = None
+    coupon_discount = None
     wallet, create  = Wallet.objects.get_or_create(user=user)
 
     try:
@@ -39,11 +43,23 @@ def order_checkout(request):
         messages.info(request, 'Your cart is empty')
         return redirect('cart')
     
+    count = cart_items.count()
+
+    if count == 0:
+        messages.info(request, 'Cart is empty, add items from the shop.')
+        return redirect('shop_view')
+    
     for cart_item in cart_items:
         item = cart_item.product
 
         if not item.is_available:
             messages.info(request, f'{item.product_name} is not available right now')
+            return redirect('cart')
+        elif item.stock <= 0:
+            messages.info(request, f'{item.product_name} is out of stock.')
+            return redirect('cart')
+        elif item.stock < cart_item.quantity:
+            messages.info(request, f'Only {item.stock} is available for the {item.product_name}')
             return redirect('cart')
     
     products = []
@@ -58,28 +74,41 @@ def order_checkout(request):
         primary_address = Address.objects.get(user=user, is_primary=True)
     except Address.DoesNotExist:
         primary_address = None
-
-    count = cart_items.count()
+    
     cart_total = cart.cart_total
     coupon_applied = cart.coupon_name
     coupon_code  = cart.coupon_code
 
+    total = Decimal(0)
+
+    if coupon_code:
+        try:
+            coupon = Coupon.objects.get(code=coupon_code)
+        except Coupon.DoesNotExist:
+            messages.error(request, 'Coupon does not exist')
+            return redirect('cart')
+    
+    price = 0
+    for cart_item in cart_items:
+        if cart_item.product_offer:
+            total += cart_item.product_offer.apply_offer(cart_item)
+        elif cart_item.category_offer:
+            total += cart_item.category_offer.apply_offer(cart_item)
+        else:            
+            total += cart_item.product.price * cart_item.quantity
+        
+    if coupon:
+        if coupon.discount_type == 'fixed_amount':
+            coupon_discount = Decimal(coupon.discount_value).quantize(Decimal('0.00'))
+        elif coupon.discount_type == 'percentage':
+            coupon_discount = (total * (Decimal(coupon.discount_value) / Decimal(100))).quantize(Decimal('0.00'))
+   
     grand_total = Decimal(0)
     tax         = Decimal(0)
     shipping_fee = Decimal(30)
-    total       = Decimal(0)
 
     tax = 2 * (cart_total / 100)
     grand_total = cart_total + tax + shipping_fee
-    if coupon_applied:
-        for cart_item in cart_items:
-            total += cart_item.product.price * cart_item.quantity
-
-    coupon_discount = total - cart_total
-
-    if count == 0:
-        messages.info(request, 'Cart is empty, add items from the shop.')
-        return redirect('shop_view')
 
     if request.method == 'POST':
         form = OrderForm(request.POST, user=request.user)
@@ -140,9 +169,17 @@ def order_checkout(request):
 
             terms_and_conditions   = request.POST.get('accept-terms', '')
 
+            if not terms_and_conditions:
+                return redirect('order_checkout')
+            
+            for cart_item in cart_items:
+                if cart_item.product.stock < cart_item.quantity:
+                    messages.warning(request, f'{cart_item.product.product_name} is only {cart_item.product.stock} available.')
+                    return redirect('cart')
+
             if payment_method == 'cash'and terms_and_conditions:
-                if grand_total >= 1000:
-                    messages.warning(request, 'Not available for orders worth morethan ₹1000/-')
+                if grand_total < 1000:
+                    messages.warning(request, 'Cash on delivery is only available for orders worth morethan ₹1000/-')
                     return redirect('order_checkout')
                 else:
                     payment = Payment.objects.create(
@@ -166,10 +203,22 @@ def order_checkout(request):
                         else:
                             # Check for CategoryOffer if ProductOffer not found
                             offer = cart_item.category_offer
+                        
+                        product = cart_item.product
+                        first_image = Image.objects.filter(product=product).first()
+                        if cart_item.variation_category:
+                            product_name = cart_item.product.product_name + f'({cart_item.variation_category} : {cart_item.variation_value})'
+                        else:
+                            product_name = cart_item.product.product_name
 
                         OrderProduct.objects.create(
                             order           = data,
-                            product         = cart_item.product,
+                            product         = product,
+                            product_image   = first_image.image,
+                            product_name    = product_name,
+                            price           = cart_item.product.price,
+                            description     = cart_item.product.description,
+                            category        = cart_item.product.category,
                             quantity        = cart_item.quantity,
                             offer_title     = offer.title if offer else None,
                             offer_discount_type  = offer.discount_type if offer else None,
@@ -203,9 +252,25 @@ def order_checkout(request):
                         # Check for CategoryOffer if ProductOffer not found
                         offer = cart_item.category_offer
 
+                    product = cart_item.product
+                    try:
+                        first_image = Image.objects.filter(product=product).order_by('date_uploaded').first()
+                    except Image.DoesNotExist:
+                        first_image = None
+
+                    if cart_item.variation_category:
+                            product_name = cart_item.product.product_name + f'({cart_item.variation_category} : {cart_item.variation_value})'
+                    else:
+                        product_name = cart_item.product.product_name
+
                     OrderProduct.objects.create(
                         order           = data,
-                        product         = cart_item.product,
+                        product         = product,
+                        product_image   = first_image.image,
+                        product_name    = product_name,
+                        price           = cart_item.product.price,
+                        description     = cart_item.product.description,
+                        category        = cart_item.product.category,
                         quantity        = cart_item.quantity,
                         offer_title     = offer.title if offer else None,
                         offer_discount_type  = offer.discount_type if offer else None,
@@ -242,9 +307,22 @@ def order_checkout(request):
                             # Check for CategoryOffer if ProductOffer not found
                             offer = cart_item.category_offer
 
+                        product = cart_item.product
+                        first_image = Image.objects.filter(product=product).first()
+
+                        if cart_item.variation_category:
+                            product_name = cart_item.product.product_name + f'({cart_item.variation_category} : {cart_item.variation_value})'
+                        else:
+                            product_name = cart_item.product.product_name
+
                         OrderProduct.objects.create(
                             order           = data,
-                            product         = cart_item.product,
+                            product         = product,
+                            product_image   = first_image.image,
+                            product_name    = product_name,
+                            price           = cart_item.product.price,
+                            description     = cart_item.product.description,
+                            category        = cart_item.product.category,
                             quantity        = cart_item.quantity,
                             offer_title     = offer.title if offer else None,
                             offer_discount_type  = offer.discount_type if offer else None,
@@ -286,7 +364,7 @@ def order_checkout(request):
 @login_required(login_url='register')
 def order_confirmation(request, order_id):
     order = Order.objects.get(order_id=order_id)
-    
+  
     try:
         # Try to get the OrderProduct object using get()
         order_products = OrderProduct.objects.filter(order_id=order_id)
@@ -324,57 +402,85 @@ def order_confirmation(request, order_id):
         except Exception:
             messages.error(request, 'Failed to send cancellation email')
         return render(request, 'order_placed.html', context)
+    
+    if order.status == 'Cancelled':
+        messages.warning(request, 'The order has been cancelld')
+        return render(request, 'order_cancelled.html', context)
         
     if request.method == 'POST':
         payment_type = order.payment.payment_method
+        for order_product in order_products:
+            if order_product.product.stock < order_product.quantity:
+                order.status = 'Cancelled'
+                order.payment.status = 'Failed'
+                order.payment.save()
+                order.save()
+                out_of_stock_product = order_product.product
 
-        if payment_type == 'Cash on delivery':
-            order.status = 'Accepted'
-            order.is_ordered = True
-            order.save()
+                context = {
+                    'order_products': order_products,
+                    'products': products,
+                    'order' : order,
+                    'total' : total,
+                    'out_of_stock_product' : out_of_stock_product,
+                }
 
-            context = {
-                'order_products': order_products,
-                'products': products,
-                'order' : order,
-                'total' : total,
-            }
+                messages.warning(request, f'{order_product.product.product_name} is currently unavailable, Sorry for the inconvenience!')
+                return render(request, 'order_cancelled.html', context)
 
-            try:
-                send_order_confirmation_email(order)
-            except Exception:
-                messages.error(request, 'Failed to send cancellation email')
+            if payment_type == 'Cash on delivery':
+                order.status = 'Accepted'
+                order.is_ordered = True
+                order.save()
 
-            return render(request, 'order_placed.html', context)
+                context = {
+                    'order_products': order_products,
+                    'products': products,
+                    'order' : order,
+                    'total' : total,
+                }
+
+                order_product.product.stock -= order_product.quantity
+                order_product.product.save()
+
+                try:
+                    send_order_confirmation_email(order)
+                except Exception:
+                    messages.error(request, 'Failed to send cancellation email')
+
+                return render(request, 'order_placed.html', context)
         
-        elif payment_type == 'paypal':
-            return HttpResponseRedirect(reverse('create_payment', args=[order.order_id]))
+            elif payment_type == 'paypal':
+                return HttpResponseRedirect(reverse('create_payment', args=[order.order_id]))
 
-        elif payment_type == 'Wallet':
-            wallet = Wallet.objects.get(user=request.user)
-            wallet.balance -= order.order_total
-            wallet.save()
+            elif payment_type == 'Wallet':
+                wallet = Wallet.objects.get(user=request.user)
+                wallet.balance -= order.order_total
+                wallet.save()
 
-            order.status = 'Accepted'
-            order.is_ordered = True
-            order.save()
+                order.status = 'Accepted'
+                order.is_ordered = True
+                order.save()
 
-            order.payment.status = 'Completed'
-            order.payment.save()
+                order.payment.status = 'Completed'
+                order.payment.save()
 
-            context = {
-                'order_products': order_products,
-                'products': products,
-                'order' : order,
-                'total' : total,
-            }
+                order_product.product.stock -= order_product.quantity
+                order_product.product.save()
 
-            try:
-                send_order_confirmation_email(order)
-            except Exception:
-                messages.error(request, 'Failed to send cancellation email')
+                context = {
+                    'order_products': order_products,
+                    'products': products,
+                    'order' : order,
+                    'total' : total,
+                }
 
-            return render(request, 'order_placed.html', context)
+                try:
+                    send_order_confirmation_email(order)
+                except Exception:
+                    messages.error(request, 'Failed to send cancellation email')
+
+                return render(request, 'order_placed.html', context)
         
     context = {
         'order_products': order_products,
@@ -385,33 +491,27 @@ def order_confirmation(request, order_id):
 
     return render(request, 'order_confirmation.html', context)
 
+
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')
 def generate_invoice_pdf(request, order_id):
-    # Get the order and related order products
-    order = get_object_or_404(Order, order_id=order_id)
-    order_products = OrderProduct.objects.filter(order=order)
+    try:
+        order = Order.objects.get(order_id=order_id)
+        order_products = OrderProduct.objects.filter(order=order)
+    except Order.DoesNotExist:
+        messages.warning(request, 'Order doesnot exist')
+        return redirect('order_details')
+    except OrderProduct.DoesNotExist:
+         messages.warning(request, 'Order products not found')
+         return redirect('order_details')
     
-    # Get the Django template
-    template_path = 'invoice_template.html'
-    template = get_template(template_path)
+    context = {
+        'order' : order,
+        'order_products' : order_products,
+    }
 
-    # Render the template with the context data
-    context = {'order': order, 'order_products': order_products}
-    rendered_template = template.render(context)
+    return render_to_pdf('invoice_template.html', context)
 
-    # Create a PDF response
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="invoice_{order_id}.pdf"'
-
-    # Generate PDF from rendered template
-    pisa_status = pisa.CreatePDF(rendered_template, dest=response)
-
-    # Check if PDF generation was successful
-    if pisa_status.err:
-        return HttpResponse('PDF generation error occurred.')
-
-    return response
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')
@@ -426,13 +526,10 @@ def order_details(request, order_id):
     except OrderProduct.DoesNotExist:
         # If no object is found, raise a specific error message
         raise Http404("Order product not found")
-
-    products = [product.product for product in order_products]
     
     context = {
         'order_products':order_products,
         'order':order,
-        'products': products,
     }
 
     return render(request, 'order_detail.html', context)
@@ -495,8 +592,9 @@ def admin_order_details(request):
         orders = Order.objects.all().order_by('-created_at')
         products = []
 
-        for product in order_product:
-            products.append(product)
+        if order_product:
+            for product in order_product:
+                products.append(product)
 
     except Order.DoesNotExist:
         pass
@@ -597,15 +695,15 @@ def generate_sales_report(request):
 
         product_sales = OrderProduct.objects.filter(order__status='Delivered', order__created_at__date__range=[start_date, end_date])\
             .values(
-                'product__product_name',
-                'product__category__category_name',
-                'product__description',
-                'product__price',
+                'product_name',
+                'category',
+                'description',
+                'price',
             )\
             .annotate(
                 quantity=Sum('quantity'),
                 total_sales=ExpressionWrapper(
-                    F('quantity') * F('product__price'),
+                    F('quantity') * F('price'),
                     output_field=DecimalField()
                 )
             )\
@@ -615,8 +713,7 @@ def generate_sales_report(request):
                 order__status='Delivered',
                 order__created_at__date__range=[start_date, end_date]
             ).values(
-                'product__category__category_name',
-                'product__category__description'
+                'category',
             ).annotate(
                 quantity=Sum('quantity'),
             ).order_by('-quantity')
@@ -678,10 +775,10 @@ def generate_sales_report_pdf(request):
 
     product_sales = OrderProduct.objects.filter(order__status='Delivered', order__created_at__date__range=[start_date, end_date])\
         .values(
-            'product__product_name',
-            'product__category__category_name',
-            'product__description',
-            'product__price',
+            'product_name',
+            'category',
+            'description',
+            'price',
         )\
         .annotate(
             quantity=Sum('quantity'),
@@ -696,8 +793,7 @@ def generate_sales_report_pdf(request):
             order__status='Delivered',
             order__created_at__date__range=[start_date, end_date]
         ).values(
-            'product__category__category_name',
-            'product__category__description'
+            'category',
         ).annotate(
             quantity=Sum('quantity'),
         ).order_by('-quantity')
@@ -756,10 +852,10 @@ def generate_sales_report_excel(request):
 
     product_sales = OrderProduct.objects.filter(order__status='Delivered', order__created_at__date__range=[start_date, end_date])\
         .values(
-            'product__product_name',
-            'product__category__category_name',
-            'product__description',
-            'product__price',
+            'product_name',
+            'category',
+            'description',
+            'price',
         )\
         .annotate(
             quantity=Sum('quantity'),
@@ -769,16 +865,15 @@ def generate_sales_report_excel(request):
             )
         )\
         .order_by('-quantity')
-    
+
     category_sales = OrderProduct.objects.filter(
-                order__status='Delivered',
-                order__created_at__date__range=[start_date, end_date]
-            ).values(
-                'product__category__category_name',
-                'product__category__description'
-            ).annotate(
-                quantity=Sum('quantity'),
-            ).order_by('-quantity')
+            order__status='Delivered',
+            order__created_at__date__range=[start_date, end_date]
+        ).values(
+            'category',
+        ).annotate(
+            quantity=Sum('quantity'),
+        ).order_by('-quantity')
 
     offer_counts = OrderProduct.objects.filter(
             Q(offer_title__isnull=False) | Q(offer_discount_type__isnull=False) | Q(offer_discount_value__isnull=False)
@@ -813,9 +908,9 @@ def generate_sales_report_excel(request):
     # Write data for product sales table
     for row_num, item in enumerate(product_sales, 6):
         row_data = [
-            item['product__product_name'],
-            item['product__category__category_name'],
-            f'₹{item["product__price"]}',
+            item['product_name'],
+            item['category'],
+            f'₹{item["price"]}',
             item['quantity'],
             f'₹{item["total_sales"]}',
         ]
@@ -833,7 +928,7 @@ def generate_sales_report_excel(request):
     # Write data for category sales table
     for row_num, item in enumerate(category_sales, row_num + 3):
         row_data = [
-            item['product__category__category_name'],
+            item['category'],
             item['quantity'],
         ]
         for col_num, value in enumerate(row_data, 1):
