@@ -13,21 +13,7 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
 </head>
-<style>
-  .single-product {
-      border: 1px solid lightgrey;
-      padding: 10px;
-      margin-bottom: 10px;
-      max-height: 370px;
-      overflow: hidden;
-  }
 
-  .single-product__image img {
-      width: 268px;
-      height: 210px;
-      object-fit: cover;  /* This property maintains the aspect ratio while covering the container */
-  }
-</style>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   <!-- Navbar -->
@@ -94,12 +80,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Product list</h1>
+            <h1>Product Variations</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="{% url 'adminhome' %}">Home</a></li>
-              <li class="breadcrumb-item active">Products</li>
+              <li class="breadcrumb-item active">Users</li>
             </ol>
           </div>
         </div>
@@ -107,62 +93,50 @@
     </section>
 
     <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-          <div class="row">
-              <div class="col-12">
-                  <div class="card card-primary">
-                      <div class="card-header">
-                        <h3 class="card-title">Products <a href="{% url 'addproduct' %}"><i class="fa fa-plus"></i></a></h3>
-                      </div>
-                      <!-- /.card-header -->
-                      <div class="card-body">
-                          <div class="row">
-                            {% for product in products %}
-                                <div class="col-md-3">
-                                    <div class="single-product">
-                                        <div class="single-product__content text-center">
-                                            <div class="title">
-                                                <div class="single-product__image">
-                                                    <a class="image-wrap" href="{% url 'singleproductadmin' cat_slug=product.category.slug prod_slug=product.slug %}">
-                                                        <img src="{{ product.image_set.first.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
-                                                    </a>
-                                                </div>
-                                                <div class="title">
-                                                    <h6><a style="color: black;" href="{% url 'singleproductadmin' cat_slug=product.category.slug prod_slug=product.slug %}">{{ product.product_name }}</a></h6>
-                                                </div>
-                                                <div class="price">
-                                                    <h5>₹{{ product.price }}</h5>
-                                                </div>
-                                                <div class="price">
-                                                  <h6>Stock available:{{ product.stock }}</h6>
-                                              </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                          </div>
-                      </div>
-                      <!-- /.card-body -->
-                  </div>
-                  <!-- /.card -->
-              </div>
-              <!-- /.col -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Variations</h3>
           </div>
-          <!-- /.row -->
-      </div>
-      <!-- /.container-fluid -->
-  </section>
-  
+          <!-- ./card-header -->
+          <div class="card-body">
+            <table class="table table-bordered table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Variation category</th>
+                  <th>Product</th>
+                  <th>Variation value</th>
+                  <th>Is active</th>
+                  <th>Edit/Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for variation in variations %}
+                  {% for product in variation.product.all %}
+                  <tr>
+                    <td>{{variation.variation_category}}</td>
+                    <td>{{ product.product_name }}</td>
+                    <td>{{variation.variation_value}}</td>
+                    <td>{{variation.is_active}}</td>
+                    <td><a class="text-warning" href="{% url 'edit_variations' variation.id %}">Edit/</a><a class="text-danger" href="{% url 'delete_variations' variation.id %}">Delete</a></td>
+                  </tr>
+                  {% endfor %}
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
     <!-- /.content -->
-  </div>
+    </div>
   <!-- /.content-wrapper -->
 
-  <footer class="main-footer">
-    <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.2.0
+  <footer class="main-footer w-100" style="margin-left: -20px;">
+    <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+      Anything you want
     </div>
+    <!-- Default to the left -->
     <strong>TechTrove &copy; ITSolutions </strong>
   </footer>
 
@@ -184,7 +158,6 @@
 <script src="{% static 'plugins/ion-rangeslider/js/ion.rangeSlider.min.js' %}"></script>
 <!-- Bootstrap slider -->
 <script src="{% static 'plugins/bootstrap-slider/bootstrap-slider.min.js' %}"></script>
-
 <!-- Page specific script -->
 <script>
   $(function () {

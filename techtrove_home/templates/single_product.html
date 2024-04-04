@@ -181,42 +181,73 @@
 									<!--=======  End of shop product short description  =======-->
 
 									<!--=======  shop product size block  =======-->
-
-									<!-- <div class="shop-product__block shop-product__block--size mb-20">
-										<div class="shop-product__block__title">Size: </div>
-										<div class="shop-product__block__value">
-											<div class="shop-product-size-list">
-												<span class="single-size">L</span>
-												<span class="single-size">M</span>
-												<span class="single-size">S</span>
-												<span class="single-size">XS</span>
+									<form method="post" action="{% url 'add_to_cart' single.id %}">
+										{% csrf_token %}
+										
+										<!-- {% if single.variations.all %}
+											<p><strong>Click to choose from following varients</strong></p>
+											<div class="shop-product__block shop-product__block--size mb-20">
+												{% for variation in single.variations.all %}
+												{% if variation.variation_category == 'storage size' %}
+												<button class="btn btn-outline-warning border border-secondary mr-3 variation-button" data-category="{{ variation.variation_category }}"
+												data-value="{{ variation.variation_value }}" type="button">
+													<div class="shop-product__block__title">
+														<p class="text-secondary mt-0">{{ variation.variation_value }}</p>
+													</div>
+												</button>
+												{% endif %}
+												{% endfor %}
 											</div>
-										</div>
-									</div> -->
-
-									<!--=======  End of shop product size block  =======-->
-
-									<!--=======  shop product color block  =======-->
-
-									<!-- <div class="shop-product__block shop-product__block--color mb-20">
-										<div class="shop-product__block__title">Color: </div>
-										<div class="shop-product__block__value">
-											<div class="shop-product-color-list">
-
-												<ul class="single-filter-widget--list single-filter-widget--list--color">
-													<li class="mb-0 pt-0 pb-0 mr-10"><a class="active" href="#"><span
-																class="color-picker black"></span></a></li>
-													<li class="mb-0 pt-0 pb-0 mr-10"><a href="#"><span class="color-picker blue"></span></a></li>
-													<li class="mb-0 pt-0 pb-0 mr-10"><a href="#"><span class="color-picker brown"></span></a></li>
-
-												</ul>
+											<input type="text" required class="variation_category" hidden name="variation_category">
+											<input type="text" required class="variation_value" hidden name="variation_value" id="">
+											
+											<div class="shop-product__block shop-product__block--size mb-20">
+												{% for variation in single.variations.all %}
+												{% if variation.variation_category == 'color' %}
+												<button class="btn btn-outline-warning border border-secondary mr-3 variation-button" data-category="{{ variation.variation_category }}"
+												data-value="{{ variation.variation_value }}" type="button">
+													<div class="shop-product__block__title">
+														<p class="text-secondary mt-0">{{ variation.variation_value }}</p>
+													</div>
+												</button>
+												{% endif %}
+												{% endfor %}
 											</div>
-										</div>
-									</div> -->
+											<input type="text" required class="variation_category" hidden name="variation_category">
+											<input type="text" required class="variation_value" hidden name="variation_value" id="">
+										{% endif %} -->
 
-									<!--=======  End of shop product color block  =======-->
+										{% if single.variations.all %}
+											<p><strong>Click to choose from following varients</strong></p>
+											<div class="shop-product__block shop-product__block--size mb-20">
+												<p class="mt-2 mb-3 mr-2">Storage</p>
+												<select class="nice-select" required name="storage" id="">
+													<option value="" selected disabled>Select</option>
+													{% for variation in single.variations.all %}
+													{% if variation.variation_category == 'storage size' %}
+														<option value="{{variation.variation_value}}">{{variation.variation_value}}</option>
+													{% endif %}
+													{% endfor %}
+												</select>
+											</div>
+											
+											
+											<div class="shop-product__block shop-product__block--size mb-20">
+												<p class="mt-2 mb-3 mr-4">Color</p>
+												<select class="nice-select" required name="color" id="">
+													<option value="" selected disabled>Select</option>
+													{% for variation in single.variations.all %}
+													{% if variation.variation_category == 'color' %}
+														<option value="{{variation.variation_value}}">{{variation.variation_value}}</option>
+													{% endif %}
+													{% endfor %}
+												</select>
+											</div>
+										{% endif %}
+										
+										<!--=======  End of shop product size block  =======-->
 
-									<!--=======  shop product quantity block  =======-->
+										<!--=======  shop product quantity block  =======-->
 
 									
 									
@@ -224,8 +255,6 @@
 											<div class="shop-product__block shop-product__block--quantity mb-40">
 												<div class="shop-product__block__title">Quantity: </div>
 												<div class="shop-product__block__value">
-											<form method="post" action="{% url 'add_to_cart' single.id %}">
-												{% csrf_token %}
 												
 												<div class="pro-qty d-inline-block mx-0 pt-0">
 													<input type="text" value="1" id="quantityInput" name="quantity">
@@ -239,8 +268,33 @@
 														The product is out of stock.
 													</div>
 												{% endif %}
-											</form>
-										</div>
+											</div>
+										<script>
+											// Get all variation buttons
+											var variationButtons = document.querySelectorAll('.variation-button');
+										
+											// Loop through each variation button
+											variationButtons.forEach(function(button) {
+												// Add event listener for click event
+												button.addEventListener('click', function() {
+													// Get the variation category and value from data attributes
+													var category = button.getAttribute('data-category');
+													var value = button.getAttribute('data-value');
+										
+													// Set the values of hidden input fields
+													document.querySelector('.variation_category').value = category;
+													document.querySelector('.variation_value').value = value;
+												});
+											});
+										</script>
+										{% if messages %}
+										{% for message in messages %}
+											<div class="alert alert-danger" role="alert">
+												{{ message }}
+											</div>
+										{% endfor %}
+										{% endif %}
+									</form>
 									</div>
 									<!--=======  End of shop product quantity block  =======-->
 									

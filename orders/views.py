@@ -206,12 +206,16 @@ def order_checkout(request):
                         
                         product = cart_item.product
                         first_image = Image.objects.filter(product=product).first()
+                        if cart_item.variation_category:
+                            product_name = cart_item.product.product_name + f'({cart_item.variation_category} : {cart_item.variation_value})'
+                        else:
+                            product_name = cart_item.product.product_name
 
                         OrderProduct.objects.create(
                             order           = data,
                             product         = product,
                             product_image   = first_image.image,
-                            product_name    = cart_item.product.product_name,
+                            product_name    = product_name,
                             price           = cart_item.product.price,
                             description     = cart_item.product.description,
                             category        = cart_item.product.category,
@@ -254,13 +258,16 @@ def order_checkout(request):
                     except Image.DoesNotExist:
                         first_image = None
 
-                    print('first image', first_image.image.url)
+                    if cart_item.variation_category:
+                            product_name = cart_item.product.product_name + f'({cart_item.variation_category} : {cart_item.variation_value})'
+                    else:
+                        product_name = cart_item.product.product_name
 
                     OrderProduct.objects.create(
                         order           = data,
                         product         = product,
                         product_image   = first_image.image,
-                        product_name    = cart_item.product.product_name,
+                        product_name    = product_name,
                         price           = cart_item.product.price,
                         description     = cart_item.product.description,
                         category        = cart_item.product.category,
@@ -303,11 +310,16 @@ def order_checkout(request):
                         product = cart_item.product
                         first_image = Image.objects.filter(product=product).first()
 
+                        if cart_item.variation_category:
+                            product_name = cart_item.product.product_name + f'({cart_item.variation_category} : {cart_item.variation_value})'
+                        else:
+                            product_name = cart_item.product.product_name
+
                         OrderProduct.objects.create(
                             order           = data,
                             product         = product,
                             product_image   = first_image.image,
-                            product_name    = cart_item.product.product_name,
+                            product_name    = product_name,
                             price           = cart_item.product.price,
                             description     = cart_item.product.description,
                             category        = cart_item.product.category,
