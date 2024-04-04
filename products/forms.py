@@ -1,5 +1,5 @@
 from django import forms
-from . models import Product, Image
+from . models import Product, Image, Variation
 from multiupload.fields import MultiFileField
 from product_category.models import Category
 from django.forms import inlineformset_factory
@@ -61,4 +61,19 @@ class ImageForm(forms.ModelForm):
                 raise forms.ValidationError("File size exceeds the maximum limit (5 MB).")
 
         return images
+    
 
+class VariationForm(forms.ModelForm):
+    class Meta:
+        model = Variation
+        fields = ['product', 'variation_category', 'variation_value', 'is_active']
+
+        widgets = {
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(VariationForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            if field != 'is_active':
+                self.fields[field].widget.attrs['class'] = 'form-control'

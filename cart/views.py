@@ -142,6 +142,21 @@ def add_to_cart(request, product_id):
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
 
+        color = request.POST.get('color')
+        storage = request.POST.get('storage')
+
+        if color and storage:
+            variation_category  = 'Color & Storage'
+            variation_value     = f'{color} | {storage}'
+        elif color and not storage:
+            variation_category  = 'Color'
+            variation_value     = f'{color}'
+        elif storage and not color:
+            variation_category  = 'Storage'
+            variation_value     = f'{storage}'
+
+        print("Variation value : ", variation_value)
+
         if not (1 <= quantity <= 5):
             messages.warning(request, 'Please enter a quantity between 1 and 5.')
             return redirect(reverse('singleproduct', kwargs={'category_slug': product.category.slug, 'product_slug': product.slug}))
@@ -155,7 +170,10 @@ def add_to_cart(request, product_id):
         cart_item = None
 
         try:
-            cart_item = CartItem.objects.get(product=product, cart=cart)
+            if variation_value:
+                cart_item = CartItem.objects.get(product=product, variation_value=variation_value, cart=cart)
+            else: 
+                cart_item = CartItem.objects.get(product=product, cart=cart)
         except CartItem.DoesNotExist:
             cart_item = None
 
@@ -191,7 +209,31 @@ def add_to_cart(request, product_id):
             else:
                 messages.warning(request, f'Exceeds the available stock for this product. Stock: {product.stock}')
                 return redirect(reverse('singleproduct', kwargs={'category_slug': product.category.slug, 'product_slug': product.slug}))
+        elif cart_item is None and variation_value:
+            wishlist = request.POST.get('wishlist')
+            if quantity <= product.stock:
+                cart_item = CartItem.objects.create(
+                    product=product,
+                    variation_category=variation_category,
+                    variation_value=variation_value,
+                    quantity=quantity,
+                    cart=cart
+                )
 
+                cart.cart_total = cart_item.product.price * quantity
+                cart.save()
+
+                messages.success(request, f'{quantity} item(s) added to your cart.')
+                cart_item.save()
+
+                if wishlist:
+                    wishlist_item = Wishlist.objects.get(product=cart_item.product)
+                    wishlist_item.delete()
+
+                return redirect('cart')
+            else:
+                messages.warning(request, f'Exceeds the available stock for this product. You can only pick {product.stock}')
+                return redirect(referring_url)
         else:
             wishlist = request.POST.get('wishlist')
             if quantity <= product.stock:

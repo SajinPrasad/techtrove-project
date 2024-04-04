@@ -2,16 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
-from django.views.generic.edit import UpdateView
-from django.urls import reverse_lazy
-from django.forms import inlineformset_factory
-from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.db import IntegrityError
 
 
-from .forms import ProductForm, ImageForm, ImageFormSet
-from .models import Image, Product
+from .forms import ProductForm, ImageForm, VariationForm
+from .models import Image, Product, Variation
 
 # Create your views here.
 
@@ -176,5 +172,44 @@ def soft_delete_product(request, pk):
         messages.error(request, 'Product not found.')
     return redirect('listproduct')
 
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
+def add_variation(request):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorized')
+        return redirect('userhome')
+    
+    if request.POST:
+        variation_form = VariationForm(request.POST)
+
+        if variation_form.is_valid():
+            variation_form.save()
+            messages.success(request, 'Variation added')
+            return redirect('add_variations')
+        
+    else:
+        variation_form = VariationForm()
+
+    context = {
+        'variation_form' : variation_form,
+    }
+    
+    return render(request, 'add_variations.html', context)
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
+def list_variation(request):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorized')
+        return redirect('userhome')
+    
+    variations = Variation.objects.all()
+
+    context = {
+        'variations' : variations,
+    }
+
+    return render(request, 'list_variations.html', context)
 
 
