@@ -73,7 +73,10 @@
                                 </td>
                                 <td class="product-name">
                                     <a href="#">{{ cart_item.product.product_name }}</a>
+                                    {% if cart_item.variation_value %}
                                     <span class="product-variation">{{cart_item.variation_value}}</span>
+                                    {% endif %}
+                                    
                                     {% if cart_item.product_offer %}
                                     <span class="product-variation"><strong><i>{{cart_item.product_offer.title}}</i> Offer applied!</strong></span>
                                     {% elif cart_item.category_offer %}
@@ -82,9 +85,9 @@
                                 </td>
 
                                 {% if cart_item.product.is_available %}
-                                <td class="product-price"><span class="price">₹{{ cart_item.product.price }}</span></td>
+                                <td class="product-price"><span class="price">₹{{ cart_item.product_price }}</span></td>
                                 {% else %}
-                                <td class="product-price "><span class="price text-white">₹{{ cart_item.product.price }}</span></td>
+                                <td class="product-price "><span class="price text-white">₹{{ cart_item.product_price }}</span></td>
                                 {% endif %}
 
                                 <td class="product-quantity">
@@ -102,9 +105,9 @@
                                 </td>
                                 
                                 {% if cart_item.product.is_available %}
-                                <td class="total-price"><span class="price">₹{{ product_total }}</span></td>
+                                <td class="total-price"><span class="price">₹{{ product_total|floatformat:2 }}</span></td>
                                 {% else %}
-                                <td class="total-price"><span class="price text-white">₹{{ product_total }}</span></td>
+                                <td class="total-price"><span class="price text-white">₹{{ product_total|floatformat:2 }}</span></td>
                                 {% endif %}
 
                                 <td class="product-remove">
@@ -204,7 +207,7 @@
                         </tr> -->
                         <tr>
                             <th>TOTAL</th>
-                            <td class="total">₹{{cart_total}}</td>
+                            <td class="total">₹{{cart_total|floatformat:2}}</td>
                         </tr>
                     </table>
 
@@ -393,7 +396,7 @@
                         <div class="content">
                             <h5><a href="{% url 'singleproduct' category_slug=cart_item.product.category.slug product_slug=cart_item.product.slug %}">{{ cart_item.product.product_name }}</a></h5>
                             {% if cart_item.product.is_available %}
-                            <p><span class="cart-count">{{ cart_item.quantity }} x </span> <span class="discounted-price">₹{{ cart_item.product.price }}</span></p>
+                            <p><span class="cart-count">{{ cart_item.quantity }} x </span> <span class="discounted-price">₹{{ cart_item.product_price }}</span></p>
                             {% else %}
                             <p><span class="discounted-price text-danger">Not available</span></p>
                             {% endif %}

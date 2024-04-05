@@ -34,12 +34,12 @@ class ProductOffer(Offer):
         if cart_item.product == self.product:
             discount = 0
             if self.discount_type == 'fixed_amount':
-                discounted_amount = cart_item.product.price - self.discount_value
+                discounted_amount = cart_item.product_price - self.discount_value
             else:
-                discount = cart_item.product.price * (self.discount_value / 100)
-                discounted_amount = cart_item.product.price - discount
+                discount = cart_item.product_price * (self.discount_value / 100)
+                discounted_amount = cart_item.product_price - discount
         else:
-            discounted_amount = cart_item.product.price
+            discounted_amount = cart_item.product_price
 
         return discounted_amount
     
@@ -72,12 +72,12 @@ class CategoryOffer(Offer):
         if cart_item.product.category == self.category:
             discount = 0
             if self.discount_type == 'fixed_amount':
-                discounted_amount = cart_item.product.price - self.discount_value
+                discounted_amount = cart_item.product_price - self.discount_value
             else:
-                discount = cart_item.product.price * (self.discount_value / 100)
-                discounted_amount = cart_item.product.price - discount
+                discount = cart_item.product_price * (self.discount_value / 100)
+                discounted_amount = cart_item.product_price - discount
         else:
-            discounted_amount = cart_item.product.price
+            discounted_amount = cart_item.product_price
 
         return discounted_amount
     

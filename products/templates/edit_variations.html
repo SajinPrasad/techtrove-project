@@ -180,28 +180,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </div>
                     </div>
                     <div class="row">
-                        {% if products %}
-                        <div class="col-sm-6">
-                          <!-- Search input for Product -->
-                          <div class="form-group">
-                              <label for="product-search">Search for product</label>
-                              <input type="text" id="product-search" class="form-control" placeholder="Search for product">
-                              <select name="product" id="product-list" multiple style="height: 150px; overflow-y: auto;">
-                                  {% for product in products %}
-                                      <option value="{{ product.pk }}">{{ product.product_name }}</option>
-                                  {% endfor %}
-                              </select>
-                          </div>
+                      <div class="col-sm-6">
+                        <!-- Text input for Variation value -->
+                        <div class="form-group">
+                            <label>Chose products</label>
+                            {{variation_form.product}}
                         </div>
-                        {% else %}
-                        <div class="col-sm-6">
-                          <!-- Text input for Variation value -->
-                          <div class="form-group">
-                              <label>Chose products</label>
-                              {{variation_form.product}}
-                          </div>
-                        </div>
-                        {% endif %}
+                      </div>            
                         <div class="col-sm-6">
                             <!-- Text input for Price -->
                             <div class="form-group">
@@ -264,23 +249,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
-<script>
-  const searchInput = document.getElementById('product-search');
-  const productList = document.getElementById('product-list');
 
-  searchInput.addEventListener('input', function() {
-      const query = searchInput.value.toLowerCase();
-      const options = productList.getElementsByTagName('option');
-
-      Array.from(options).forEach(function(option) {
-          const text = option.textContent.toLowerCase();
-          if (text.indexOf(query) !== -1) {
-              option.style.display = 'block';
-          } else {
-              option.style.display = 'none';
-          }
-      });
-  });
-</script>
 </body>
 </html>

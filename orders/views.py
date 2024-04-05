@@ -91,12 +91,12 @@ def order_checkout(request):
     price = 0
     for cart_item in cart_items:
         if cart_item.product_offer:
-            total += cart_item.product_offer.apply_offer(cart_item)
+            total += cart_item.product_offer.apply_offer(cart_item) * cart_item.quantity
         elif cart_item.category_offer:
-            total += cart_item.category_offer.apply_offer(cart_item)
+            total += cart_item.category_offer.apply_offer(cart_item) * cart_item.quantity
         else:            
-            total += cart_item.product.price * cart_item.quantity
-        
+            total += cart_item.product_price * cart_item.quantity
+
     if coupon:
         if coupon.discount_type == 'fixed_amount':
             coupon_discount = Decimal(coupon.discount_value).quantize(Decimal('0.00'))
@@ -216,7 +216,7 @@ def order_checkout(request):
                             product         = product,
                             product_image   = first_image.image,
                             product_name    = product_name,
-                            price           = cart_item.product.price,
+                            price           = cart_item.product_price,
                             description     = cart_item.product.description,
                             category        = cart_item.product.category,
                             quantity        = cart_item.quantity,
@@ -268,7 +268,7 @@ def order_checkout(request):
                         product         = product,
                         product_image   = first_image.image,
                         product_name    = product_name,
-                        price           = cart_item.product.price,
+                        price           = cart_item.product_price,
                         description     = cart_item.product.description,
                         category        = cart_item.product.category,
                         quantity        = cart_item.quantity,
@@ -320,7 +320,7 @@ def order_checkout(request):
                             product         = product,
                             product_image   = first_image.image,
                             product_name    = product_name,
-                            price           = cart_item.product.price,
+                            price           = cart_item.product_price,
                             description     = cart_item.product.description,
                             category        = cart_item.product.category,
                             quantity        = cart_item.quantity,

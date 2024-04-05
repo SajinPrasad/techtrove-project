@@ -70,7 +70,7 @@ class ImageForm(forms.ModelForm):
 class VariationForm(forms.ModelForm):
     class Meta:
         model = Variation
-        fields = ['product', 'variation_category', 'variation_value', 'is_active']
+        fields = ['product', 'variation_category', 'variation_value', 'is_active', 'price']
 
         widgets = {
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

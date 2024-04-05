@@ -89,12 +89,38 @@ def single_product_admin(request, cat_slug, prod_slug):
     
     try:
         product = Product.objects.get(category__slug=cat_slug, slug=prod_slug)
-    except Exception as e:
+        variations = Variation.objects.filter(product=product, is_active=True)
+    except Product.DoesNotExist:
         messages.error(request, 'Product not found')
         return redirect('listproduct')
+    except Variation.DoesNotExist:
+        messages.error(request, 'Vatiation not found')
+
+    storage = None
+    color = None
+    storage_price = None
+    color_price = None
+    if variations:
+        print('variations und')
+        for variation in variations:
+            if variation.variation_category == 'storage size':
+                storage = 'storage'
+                if variation.price:
+                    storage_price = 'storage price'
+            elif variation.variation_category == 'color':
+                color = 'color'
+                if variation.price:
+                    color_price = 'color price'
+
+    print('Ellam', storage, color, color_price, storage_price)
     
     context = {
         'product':product,
+        'variations' : variations,
+        'storage' : storage,
+        'color' :color,
+        'storage_price' : storage_price,
+        'color_price' : color_price,
     }
     return render(request, 'single_product_admin.html', context)
 
@@ -184,6 +210,8 @@ def add_variation(request):
         messages.warning(request, 'You are not authorized')
         return redirect('userhome')
     
+    products = Product.objects.filter(is_available=True, is_deleted=False)
+    
     if request.POST:
         variation_form = VariationForm(request.POST)
 
@@ -197,6 +225,7 @@ def add_variation(request):
 
     context = {
         'variation_form' : variation_form,
+        'products' : products,
     }
     
     return render(request, 'add_variations.html', context)
@@ -263,8 +292,8 @@ def delete_variations(request, pk):
         variation = Variation.objects.get(pk=pk)
         variation.delete()
         messages.success(request, 'Variation deleted successfully')
-        return redirect('list_variation')
+        return redirect('list_variations')
     except Variation.DoesNotExist:
         messages.warning(request, 'Requested vaiation does not exist')
-        return redirect('list_variation')
+        return redirect('list_variations')
 

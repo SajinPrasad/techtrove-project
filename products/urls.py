@@ -12,5 +12,5 @@ urlpatterns = [
     path('list_variations/', views.list_variation, name='list_variations'),
     path('edit_variations/<pk>/variations/edit/', views.edit_variations, name='edit_variations'),
     path('delete_variations/<pk>/variations/delete/', views.delete_variations, name='delete_variations'),
-
+    
 ]
