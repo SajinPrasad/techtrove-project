@@ -32,7 +32,45 @@
     </ul>
 
     <!-- Right navbar links -->
+<<<<<<< HEAD
+    <ul class="navbar-nav ml-auto">
+      <!-- Navbar Search -->
+      <li class="nav-item">
+        <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+          <i class="fas fa-search"></i>
+        </a>
+        <div class="navbar-search-block">
+          <form class="form-inline" method="get">
+            <div class="input-group input-group-sm">
+              <input class="form-control form-control-navbar" name="search" type="search" placeholder="Search" aria-label="Search">
+              <div class="input-group-append">
+                <button class="btn btn-navbar" type="submit">
+                  <i class="fas fa-search"></i>
+                </button>
+                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </li>
+
+      
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+=======
     
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
   </nav>
   <!-- /.navbar -->
   {% include 'includes/alerts.html' %}
@@ -74,6 +112,10 @@
                   <th>Product</th>
                   <th>Variation value</th>
                   <th>Is active</th>
+<<<<<<< HEAD
+                  <th>Edit/Delete</th>
+=======
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
                 </tr>
               </thead>
               <tbody>
@@ -84,6 +126,10 @@
                     <td>{{ product.product_name }}</td>
                     <td>{{variation.variation_value}}</td>
                     <td>{{variation.is_active}}</td>
+<<<<<<< HEAD
+                    <td><a class="text-warning" href="{% url 'edit_variations' variation.id %}">Edit/</a><a class="text-danger" href="{% url 'delete_variations' variation.id %}">Delete</a></td>
+=======
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
                   </tr>
                   {% endfor %}
                 {% endfor %}
@@ -95,7 +141,11 @@
     </div>
   <!-- /.content-wrapper -->
 
+<<<<<<< HEAD
+  <footer class="main-footer w-100" style="margin-left: -20px;">
+=======
   <footer class="main-footer ml-auto">
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
     <!-- To the right -->
     <div class="float-right d-none d-sm-inline">
       Anything you want

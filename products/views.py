@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
-from django.utils.decorators import method_decorator
+from django.db.models import Q
 from django.db import IntegrityError
 
 
+from .forms import ProductForm, ImageForm, VariationForm
+from .models import Image, Product, Variation
 from .forms import ProductForm, ImageForm, VariationForm
 from .models import Image, Product, Variation
 
@@ -61,16 +63,14 @@ def list_product(request):
     
     search = request.GET.get('search')
 
+    print(search)
+
     if search:
-        try:
-            products = Product.objects.filter(
-                product_name__icontains = search,
-                description__icontains = search,
-                is_deleted = False,
-            )
-        except Product.DoesNotExist:
-            messages.error(request, 'Products matching the query doesnot exists')
-            return redirect('listproduct')
+        products = Product.objects.filter(
+            product_name__icontains = search,
+            description__icontains = search,
+            is_deleted = False,
+        )
     else:
         products = Product.objects.filter(is_deleted=False)
 
@@ -204,7 +204,16 @@ def list_variation(request):
         messages.warning(request, 'You are not authorized')
         return redirect('userhome')
     
-    variations = Variation.objects.all()
+    search = request.GET.get('search')
+
+    if search:
+        variations = Variation.objects.filter(
+            Q(variation_category__icontains=search) |
+            Q(variation_value__icontains=search) |
+            Q(product__product_name__icontains=search)
+        )
+    else:
+        variations = Variation.objects.all()
 
     context = {
         'variations' : variations,
@@ -212,4 +221,46 @@ def list_variation(request):
 
     return render(request, 'list_variations.html', context)
 
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
+def edit_variations(request, pk):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorized')
+        return redirect('userhome')
+
+    variation = Variation.objects.get(pk=pk)
+    if request.POST:
+        variation_form = VariationForm(request.POST, instance=variation)
+
+        if variation_form.is_valid():
+            variation_form.save()
+            messages.success(request, 'Variation edited successfully')
+            return redirect('list_variations')
+        
+    else:
+        variation_form = VariationForm(instance=variation)
+
+    context = {
+        'variation_form' : variation_form,
+    }
+    
+    return render(request, 'add_variations.html', context)
+
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='adminlogin')
+def delete_variations(request, pk):
+    if not request.user.is_superuser:
+        messages.warning(request, 'You are not authorized')
+        return redirect('userhome')
+
+    try:
+        variation = Variation.objects.get(pk=pk)
+        variation.delete()
+        messages.success(request, 'Variation deleted successfully')
+        return redirect('list_variation')
+    except Variation.DoesNotExist:
+        messages.warning(request, 'Requested vaiation does not exist')
+        return redirect('list_variation')
 

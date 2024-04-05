@@ -10,4 +10,9 @@ urlpatterns = [
     path('product_detail/<str:cat_slug>/<str:prod_slug>/techtrove/', views.single_product_admin, name='singleproductadmin'),
     path('add_variations/', views.add_variation, name='add_variations'),
     path('list_variations/', views.list_variation, name='list_variations'),
+<<<<<<< HEAD
+    path('edit_variations/<pk>/variations/edit/', views.edit_variations, name='edit_variations'),
+    path('delete_variations/<pk>/variations/delete/', views.delete_variations, name='delete_variations'),
+=======
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
 ]
