@@ -41,6 +41,10 @@ class ImageForm(forms.ModelForm):
         model = Image
         fields = ['image']
 
+        widgets = {
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['image'].required = False  # Ensure required=False is set here

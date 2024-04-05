@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from django.utils import timezone
 from product_category.models import Category
-from products.models import Product
+from products.models import Product, Variation
 from datetime import date
 from django.contrib import messages
 from django.db.models import Sum
@@ -65,8 +65,21 @@ def user_home(request):
 def single_product(request, category_slug, product_slug):
     try:
         single = Product.objects.get(category__slug=category_slug, slug=product_slug)
-    except Exception as e:
-        raise e
+        variations = Variation.objects.filter(product=single, is_active=True)
+    except Product.DoesNotExist:
+        messages.warning(request, 'Product does not exist')
+        return redirect('shop_view')
+    except Variation.DoesNotExist:
+        messages.warning(request, 'No variations found for this product')
+
+    storage = None
+    color   = None
+    if variations:
+        for variation in variations:
+            if variation.variation_category == 'storage size':
+                storage = 'storage'
+            elif variation.variation_category == 'color':
+                color = 'color'
     
     # Check for product-specific offer
     product_offer = ProductOffer.objects.filter(
@@ -89,6 +102,9 @@ def single_product(request, category_slug, product_slug):
         'single' : single,
         'product_offer' : product_offer,
         'category_offer' : category_offer,
+        'variations' : variations,
+        'storage' : storage,
+        'color' : color,
     }
     return render(request, 'single_product.html', context)
 

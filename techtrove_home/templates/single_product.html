@@ -183,66 +183,36 @@
 									<!--=======  shop product size block  =======-->
 									<form method="post" action="{% url 'add_to_cart' single.id %}">
 										{% csrf_token %}
-										
-										<!-- {% if single.variations.all %}
-											<p><strong>Click to choose from following varients</strong></p>
-											<div class="shop-product__block shop-product__block--size mb-20">
-												{% for variation in single.variations.all %}
-												{% if variation.variation_category == 'storage size' %}
-												<button class="btn btn-outline-warning border border-secondary mr-3 variation-button" data-category="{{ variation.variation_category }}"
-												data-value="{{ variation.variation_value }}" type="button">
-													<div class="shop-product__block__title">
-														<p class="text-secondary mt-0">{{ variation.variation_value }}</p>
-													</div>
-												</button>
-												{% endif %}
-												{% endfor %}
-											</div>
-											<input type="text" required class="variation_category" hidden name="variation_category">
-											<input type="text" required class="variation_value" hidden name="variation_value" id="">
-											
-											<div class="shop-product__block shop-product__block--size mb-20">
-												{% for variation in single.variations.all %}
-												{% if variation.variation_category == 'color' %}
-												<button class="btn btn-outline-warning border border-secondary mr-3 variation-button" data-category="{{ variation.variation_category }}"
-												data-value="{{ variation.variation_value }}" type="button">
-													<div class="shop-product__block__title">
-														<p class="text-secondary mt-0">{{ variation.variation_value }}</p>
-													</div>
-												</button>
-												{% endif %}
-												{% endfor %}
-											</div>
-											<input type="text" required class="variation_category" hidden name="variation_category">
-											<input type="text" required class="variation_value" hidden name="variation_value" id="">
-										{% endif %} -->
 
-										{% if single.variations.all %}
-											<p><strong>Click to choose from following varients</strong></p>
+										{% if variations %}
+											{% if storage %}
+											<p><strong>Choose from following varients</strong></p>
 											<div class="shop-product__block shop-product__block--size mb-20">
 												<p class="mt-2 mb-3 mr-2">Storage</p>
 												<select class="nice-select" required name="storage" id="">
 													<option value="" selected disabled>Select</option>
-													{% for variation in single.variations.all %}
-													{% if variation.variation_category == 'storage size' %}
+													{% for variation in variations %}
+														{% if variation.variation_category == 'storage size' %}
 														<option value="{{variation.variation_value}}">{{variation.variation_value}}</option>
-													{% endif %}
+														{% endif %}
 													{% endfor %}
 												</select>
 											</div>
+											{% endif %}
 											
-											
+											{% if color %}
 											<div class="shop-product__block shop-product__block--size mb-20">
 												<p class="mt-2 mb-3 mr-4">Color</p>
 												<select class="nice-select" required name="color" id="">
 													<option value="" selected disabled>Select</option>
 													{% for variation in single.variations.all %}
-													{% if variation.variation_category == 'color' %}
+														{% if variation.variation_category == 'color' %}
 														<option value="{{variation.variation_value}}">{{variation.variation_value}}</option>
-													{% endif %}
+														{% endif %}
 													{% endfor %}
 												</select>
 											</div>
+											{% endif %}
 										{% endif %}
 										
 										<!--=======  End of shop product size block  =======-->

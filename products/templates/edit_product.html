@@ -197,10 +197,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         {{ imgform.image }}
                       </div>
                       {% for image in existing_images %}
-                      <div class="form-group col-lg-8">
-                          <label>Replace image {{ forloop.counter }} :</label>
-                          <input type="file" name="image_{{ image.id }}" accept="image/*">
-                      </div>
+                        <div class="form-group col-lg-8">
+                            <label>Replace image {{ forloop.counter }} :</label>
+                            <input type="file" name="image_{{ image.id }}" accept="image/*">
+                            <label for="clear_image_{{ image.id }}">
+                                <input type="checkbox" name="clear_image_{{ image.id }}" id="clear_image_{{ image.id }}"> Delete
+                            </label>
+                        </div>
                       {% endfor %}
                     </div>
                     {% if imgform.image.errors or form.fields.errors %}

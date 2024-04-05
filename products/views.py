@@ -123,10 +123,14 @@ def edit_product(request, pk):
         for image in existing_images:
             # Check if a new image is uploaded for this existing image
             new_image = request.FILES.get(f'image_{image.id}')
+            clear_image = request.POST.get(f'clear_image_{image.id}')
             if new_image:
                 # Update the existing image with the new one
                 image.image = new_image
                 image.save()
+            
+            if clear_image:
+                image.delete()
 
         if form.is_valid():
             form.save()
