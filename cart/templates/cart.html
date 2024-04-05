@@ -73,7 +73,7 @@
                                 </td>
                                 <td class="product-name">
                                     <a href="#">{{ cart_item.product.product_name }}</a>
-                                    <span class="product-variation">Color: Black</span>
+                                    <span class="product-variation">{{cart_item.variation_value}}</span>
                                     {% if cart_item.product_offer %}
                                     <span class="product-variation"><strong><i>{{cart_item.product_offer.title}}</i> Offer applied!</strong></span>
                                     {% elif cart_item.category_offer %}

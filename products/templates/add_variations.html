@@ -55,7 +55,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="container">
       <a href="../../index3.html" class="navbar-brand">
         <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        <span class="brand-text font-weight-light">TechTrove Admin</span>
       </a>
 
       <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,6 +67,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <ul class="navbar-nav">
           <li class="nav-item">
             <a href="{% url 'adminhome' %}" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">Contact</a>
           </li>
           <li class="nav-item dropdown">
             <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Dropdown</a>
@@ -114,6 +117,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
       <!-- Right navbar links -->
       <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+        <!-- Messages Dropdown Menu -->
         
         <li class="nav-item">
           <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
@@ -124,7 +128,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </div>
   </nav>
   <!-- /.navbar -->
-
+  {% include 'includes/alerts.html' %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -150,7 +154,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="content">
       <div class="container">
         <div class="row">
-            <div class="card card-warning col-lg-8 mx-auto">
+            <div class="card card-warning d-flex mx-auto col-lg-8">
                 <div class="card-header">
                   <h3 class="card-title">General Elements</h3>
                 </div>
@@ -158,89 +162,53 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="card-body">
                   <form action="" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    
-                    <!-- Existing product fields -->
-                    <div class="form-group">
-                        <label>Product name</label>
-                        {{ form.product_name }}
-                    </div>
-                    <div class="form-group">
-                        <label>Slug</label>
-                        {{ form.slug }}
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        {{ form.description }}
-                    </div>
-                    <div class="form-group">
-                        <label>Price</label>
-                        {{ form.price }}
-                    </div>
-                    <div class="form-group">
-                        <label>Stock</label>
-                        {{ form.stock }}
-                    </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        {{ form.category }}
-                    </div>
-
-                    <div class="row my-5">
-                      <div class="form-group col-lg-4">
-                        <label class="mr-5">Is available</label>
-                        {{ form.is_available }}
-                      </div>
-                                          
-                      <!-- New image upload -->
-                      <div class="form-group col-lg-8">
-                        <label>Replace and upload new images : </label>
-                        {{ imgform.image }}
-                      </div>
-                      {% for image in existing_images %}
-                        <div class="form-group col-lg-8">
-                            <label>Replace image {{ forloop.counter }} :</label>
-                            <input type="file" name="image_{{ image.id }}" accept="image/*">
-                            <label for="clear_image_{{ image.id }}">
-                                <input type="checkbox" name="clear_image_{{ image.id }}" id="clear_image_{{ image.id }}"> Delete
-                            </label>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Variation category</label>
+                                {{variation_form.variation_category}}
+                            </div>
                         </div>
-                      {% endfor %}
+                        <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Variation value</label>
+                                {{variation_form.variation_value}}
+                            </div>
+                        </div>
                     </div>
-                    {% if imgform.image.errors or form.fields.errors %}
-                    <div class="alert alert-danger">
-                      {{imgform.errors}}
-                      {{form.errors}}
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <label>Product</label>
+                                {{variation_form.product}}
+                            </div>
+                        </div>
+                        <div class="col-sm-4 mt-5">
+                            <!-- text input -->
+                            <div class="form-group">
+                                <div class="form-check ml-5">
+                                    <label class="mr-5">
+                                        Is active
+                                    </label>
+                                    {{ variation_form.is_active }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
-             
-                    <!-- Submit button -->
                     <div class="card-footer text-center">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
-
-                    <!-- Existing images -->
-                  </form>
-                </div>
-              {% include 'includes/alerts.html' %}
-                <!-- /.card-body -->
+                </form>
               </div>
+                <!-- /.card-body -->
+            </div>
           <!-- /.col-md-6 -->
-        </div>
-        <div class="text-center mx-auto">
-          <label for="exampleInputFile">Existing Images</label>
-        </div>
-        <div class="form-group col-lg-12 d-flex bg-white mx-auto text-center">
-          <div class="image-container mx-auto ">
-              {% for image in existing_images %}
-                  <div class="image-box">
-                      <img src="{{ image.image.url }}" alt="Existing Image" class="img-fluid">
-                  </div>
-              {% endfor %}
-          </div>
         </div>
         <!-- /.row -->
       </div><!-- /.container-fluid -->
-      
     </div>
     <!-- /.content -->
   </div>
@@ -271,5 +239,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- Bootstrap 4 -->
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+
 </body>
 </html>

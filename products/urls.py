@@ -8,4 +8,9 @@ urlpatterns = [
     path('delete_product/<pk>', views.soft_delete_product, name='deleteproduct'),
     path('list_product/', views.list_product, name='listproduct'),
     path('product_detail/<str:cat_slug>/<str:prod_slug>/techtrove/', views.single_product_admin, name='singleproductadmin'),
+    path('add_variations/', views.add_variation, name='add_variations'),
+    path('list_variations/', views.list_variation, name='list_variations'),
+    path('edit_variations/<pk>/variations/edit/', views.edit_variations, name='edit_variations'),
+    path('delete_variations/<pk>/variations/delete/', views.delete_variations, name='delete_variations'),
+
 ]
