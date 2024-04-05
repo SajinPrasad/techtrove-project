@@ -32,6 +32,7 @@
     </ul>
 
     <!-- Right navbar links -->
+<<<<<<< HEAD
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->
       <li class="nav-item">
@@ -67,6 +68,9 @@
         </a>
       </li>
     </ul>
+=======
+    
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
   </nav>
   <!-- /.navbar -->
   {% include 'includes/alerts.html' %}
@@ -108,7 +112,10 @@
                   <th>Product</th>
                   <th>Variation value</th>
                   <th>Is active</th>
+<<<<<<< HEAD
                   <th>Edit/Delete</th>
+=======
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
                 </tr>
               </thead>
               <tbody>
@@ -119,7 +126,10 @@
                     <td>{{ product.product_name }}</td>
                     <td>{{variation.variation_value}}</td>
                     <td>{{variation.is_active}}</td>
+<<<<<<< HEAD
                     <td><a class="text-warning" href="{% url 'edit_variations' variation.id %}">Edit/</a><a class="text-danger" href="{% url 'delete_variations' variation.id %}">Delete</a></td>
+=======
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
                   </tr>
                   {% endfor %}
                 {% endfor %}
@@ -131,7 +141,11 @@
     </div>
   <!-- /.content-wrapper -->
 
+<<<<<<< HEAD
   <footer class="main-footer w-100" style="margin-left: -20px;">
+=======
+  <footer class="main-footer ml-auto">
+>>>>>>> 5dc0d3f5eac63ecd004e494af149e31c916ca71e
     <!-- To the right -->
     <div class="float-right d-none d-sm-inline">
       Anything you want

@@ -8,6 +8,8 @@ from django.db import IntegrityError
 
 from .forms import ProductForm, ImageForm, VariationForm
 from .models import Image, Product, Variation
+from .forms import ProductForm, ImageForm, VariationForm
+from .models import Image, Product, Variation
 
 # Create your views here.
 
