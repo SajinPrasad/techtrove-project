@@ -482,6 +482,12 @@ def order_confirmation(request, order_id):
 
 @cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
 @login_required(login_url='register')
+def payment_processing(request, order_id):
+    return redirect(request, 'payment_processing.html')
+
+
+@cache_control(no_cache=True, no_store=True, must_revalidate=True, max_age=0)
+@login_required(login_url='register')
 def generate_invoice_pdf(request, order_id):
     try:
         order = Order.objects.get(order_id=order_id)

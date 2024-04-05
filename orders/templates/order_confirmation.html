@@ -306,15 +306,17 @@
 <script>
   function openPayPalWindow() {
       // Open a new window with specific dimensions
-      var newWindow = window.open('', 'paypalWindow', 'width=500,height=700');
+      let newWindow = window.open('', 'paypalWindow', 'width=500,height=700');
       newWindow.focus();
       // Submit the form to the new window
       document.getElementById('paypalForm').target = 'paypalWindow';
       document.getElementById('paypalForm').submit();
+      newWindow.focus();
   }
 
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.message === 'refresh-success') {
+  window.addEventListener("message", (event) => {
+    console.log("Received message:", event.data); // Log message data to console
+    if (event.data === "reloadParent") {
       window.location.reload();
     }
   });

@@ -12,5 +12,5 @@ urlpatterns = [
     path('generate/sales/report/', views.generate_sales_report, name='generate_sales_report'),
     path('generate/sales/report/pdf/sales_report/', views.generate_sales_report_pdf, name='generate_sales_report_pdf'),
     path('generate/sales/report/excel/', views.generate_sales_report_excel, name='generate_sales_report_excel'),
-
+    path('generate/sales/report/excel/', views.payment_processing, name='payment_processing'),
 ]
