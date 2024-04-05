@@ -74,12 +74,18 @@ def single_product(request, category_slug, product_slug):
 
     storage = None
     color   = None
+    storage_price = None
+    color_price = None
     if variations:
         for variation in variations:
             if variation.variation_category == 'storage size':
                 storage = 'storage'
+                if variation.price:
+                    storage_price = 'storage price'
             elif variation.variation_category == 'color':
                 color = 'color'
+                if variation.price:
+                    color_price = 'color price'
     
     # Check for product-specific offer
     product_offer = ProductOffer.objects.filter(
@@ -105,6 +111,8 @@ def single_product(request, category_slug, product_slug):
         'variations' : variations,
         'storage' : storage,
         'color' : color,
+        'storage_price' : storage_price,
+        'color_price' : color_price,
     }
     return render(request, 'single_product.html', context)
 

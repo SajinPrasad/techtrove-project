@@ -187,24 +187,32 @@
 														{% else %}
 														{{ product.product.product_name }}
 														{% endif %}
-														<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
-														<li>{{product.variation_category}}<span>{{product.variation_value}}</span></li>
+														<i>*({{ product.quantity }})</i><span>₹{{product.product_price}}</span></li>
+
+														{% if product.variation_value %}
+														<li style="margin-top: -20px;">{{product.variation_value}}</li>
+														{% endif %}
+
 														{% if product.product_offer.discount_type == 'fixed_amount' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.product_offer.title}} discount applied<span>₹{{product.product_offer.discount_value}}</span></small></li>
 														{% elif product.product_offer.discount_type == 'percentage' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.product_offer.title}} discount applied<span>{{product.product_offer.discount_value}}%</span></small></li>
 														{% endif %}
 													{% elif product.category_offer %}
-														<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
-														<li style="margin-top: -20px;">{{product.variation_category}} {{product.variation_value}}</li>
+														<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product_price}}</span></li>
+														{% if product.variation_value %}
+														<li style="margin-top: -20px;">{{product.variation_value}}</li>
+														{% endif %}
 														{% if product.category_offer.discount_type == 'fixed_amount' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.category_offer.title}} Offer discount applied<span>₹{{product.category_offer.discount_value}}</span></small></li>
 														{% elif product.category_offer.discount_type == 'percentage' %}
 														<li style="margin-top: -16px; color: black"><small>{{product.category_offer.title}} Offer discount applied<span>{{product.category_offer.discount_value}}%</span></small></li>
 														{% endif %}
 													{% else %}
-													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product.price}}</span></li>
-													<li>{{product.variation_category}}<span>{{product.variation_value}}</span></li>
+													<li>{{product.product.product_name}}<i>*({{ product.quantity }})</i><span>₹{{product.product_price}}</span></li>
+													{% if product.variation_value %}
+													<li style="margin-top: -20px;">{{product.variation_value}}</li>
+													{% endif %}
 													{% endif %}
 													{% endfor %}
 												</ul>

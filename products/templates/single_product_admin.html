@@ -32,16 +32,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
   }
 
   .single-image {
-    width: 180px; /* Set a fixed width for each image container */
-    height: 180px; /* Set a fixed height for each image container */
-    margin: 5px; /* Optional margin between images */
-    overflow: hidden; /* Hide overflowing content */
+      min-width: 150px; /* Adjust the minimum width as needed */
+      max-width: 300px; /* Adjust the maximum width as needed */
+      min-height: 200px; /* Adjust the minimum height as needed */
+      max-height: 300px; /* Adjust the maximum height as needed */
+      margin: 3px;
   }
-
+  
   .single-image img {
-    width: 100%; /* Make the image fill the container */
-    height: 100%; /* Make the image fill the container */
-    object-fit: cover; /* Maintain aspect ratio and cover the container */
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
   }
 </style>
 
@@ -202,10 +203,44 @@ scratch. This page gets rid of all links and provides the needed markup only.
     
                       <!--=======  shop product price  =======-->
     
-                      <div class="shop-product__price mb-30">
-                        <!-- <h5 class="main-price discounted">Actual price : $160.00</h5> -->
-                        <h5 class="discounted-price">Price : ₹{{product.price}}</h5>
+                      {% if storage_price %}
+                      <div class="d-flex">
+                        {% for variation in variations %}
+                        {% if variation.variation_category == 'storage size' %}
+                        <div class="shop-product__block shop-product__block--size my-3 mr-4 text-center mt-10 mb-20 border border-secondary rounded">
+                          <div class="shop-product__price px-3 text-center">
+                            <h5><strong>{{variation.variation_value}}</strong></h5>
+                            <!-- <p><strong>{{variation.price}}</strong></p> -->
+                            {% if storage_price %}
+                            <h5 class="discounted-price">₹{{variation.price}}</h5>
+                            {% endif %}
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
                       </div>
+
+                      {% elif color_price %}
+                      <div class="d-flex">
+                        {% for variation in variations %}
+                        {% if variation.variation_category == 'color' %}
+                        <div class="shop-product__block shop-product__block--size my-3 mr-4 text-center mt-10 mb-20 border border-secondary rounded">
+                          <div class="shop-product__price px-3 text-center">
+                            <h5><strong>{{variation.variation_value}}</strong></h5>
+                            {% if color_price %}
+                            <h5 class="discounted-price">₹{{variation.price}}</h5>
+                            {% endif %}
+                          </div>
+                        </div>
+                        
+                        {% endif %}
+                        {% endfor %}
+                      </div>
+                      {% else %}
+                      <div class="shop-product__price mb-30">
+                        <h5 class="discounted-price">₹{{product.price}}</h5>
+                      </div>
+                      {% endif %}
     
                       <div class="mb-5 shop-product__price mb-30">
                         <h5>Stock available : {{product.stock}}</h5>
@@ -214,18 +249,33 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <!--=======  End of shop product price  =======-->
   
                       <div class="d-flex justify-content-center mb-5 w-100">
-                        <div class="shop-product__big-image-gallery-slider  d-flex">
-                          {% for image in product.image_set.all %}
-                            <div class="single-image p-2 text-center image-container">
-                              <img src="{{ image.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
+                        <div class="shop-product__big-image-gallery-slider d-flex">
+                            <div class="row"> <!-- Use Bootstrap row class -->
+                                {% for image in product.image_set.all %}
+                                    <div class="border border-secondary mx-auto m-3 p-2 col-lg-3 col-md-4 col-sm-6 mb-2 single-image"> <!-- Use Bootstrap grid classes -->
+                                        <img src="{{ image.image.url }}" class="img-fluid" alt="{{ product.product_name }}">
+                                    </div>
+                                {% endfor %}
                             </div>
-                          {% endfor %}
                         </div>
-                      </div>
+                    </div>
     
                     <!--=======  End of shop product big image gallery  =======-->
     
-                    
+                    {% if color %}
+                    <div class="containter">
+                      <h5>Colors available</h5>
+                      <div class="row">
+                        {% for variation in variations %}
+                          {% if variation.variation_category == 'color' %}
+                            <div class="variations p-2 m-3 border border-secondary rounded">
+                              <h5>{{variation.variation_value}}</h5>
+                            </div>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                    {% endif %}
     
                       <!--=======  shop product short description  =======-->
     

@@ -19,6 +19,7 @@ class Cart(models.Model):
     
 class CartItem(models.Model):
     product             = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_price       = models.IntegerField(validators=[MinValueValidator(1)], null=True, blank=True)
     cart                = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity            = models.IntegerField(validators=[MinValueValidator(1)])
     variation_category  = models.CharField(max_length=100, null=True, blank=True)
