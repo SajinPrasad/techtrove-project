@@ -270,7 +270,6 @@ def add_to_cart(request, product_id):
                 cart_item = CartItem.objects.create(
                     product=product,
                     product_price = product_price,
-                    product_price = product_price,
                     variation_category=variation_category,
                     variation_value=variation_value,
                     quantity=quantity,
@@ -297,7 +296,6 @@ def add_to_cart(request, product_id):
             if quantity <= product.stock:
                 cart_item = CartItem.objects.create(
                     product=product,
-                    product_price = product.price,
                     product_price = product.price,
                     quantity=quantity,
                     cart=cart
