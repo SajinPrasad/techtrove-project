@@ -147,10 +147,32 @@ def add_to_cart(request, product_id):
     storage = None
     color  = None
     variation_value = None
+    variation_price_string = None
+    storage = None
+    color  = None
+    variation_value = None
 
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
 
+        color_value = request.POST.get('color')
+        setorage_value = request.POST.get('storage')
+
+        if setorage_value and color_value:  # Check if a value was selected (avoids errors)
+            storage, variation_price_string = setorage_value.split('-')
+            color = color_value.split('-')[0]
+        elif not setorage_value and color_value:
+            color, variation_price_string = color_value.split('-')
+        elif setorage_value:
+            storage, variation_price_string = setorage_value.split('-')
+        
+        if variation_price_string is not None:
+            try:
+                variation_price = int(variation_price_string)
+            except ValueError:
+                variation_price = None
+        else:
+            variation_price = None
         color_value = request.POST.get('color')
         setorage_value = request.POST.get('storage')
 
@@ -210,7 +232,9 @@ def add_to_cart(request, product_id):
                 cart_item.quantity += quantity
                 if cart.cart_total:
                     cart.cart_total += cart_item.product_price * quantity
+                    cart.cart_total += cart_item.product_price * quantity
                 else:
+                    cart.cart_total = cart_item.product_price * quantity
                     cart.cart_total = cart_item.product_price * quantity
                 cart.save()
                 messages.success(request, f'{quantity} item(s) added to your cart.')
@@ -238,9 +262,14 @@ def add_to_cart(request, product_id):
                 product_price = variation_price
             else:
                 product_price = product.price
+            if variation_price:
+                product_price = variation_price
+            else:
+                product_price = product.price
             if quantity <= product.stock:
                 cart_item = CartItem.objects.create(
                     product=product,
+                    product_price = product_price,
                     product_price = product_price,
                     variation_category=variation_category,
                     variation_value=variation_value,
@@ -248,6 +277,7 @@ def add_to_cart(request, product_id):
                     cart=cart
                 )
 
+                cart.cart_total = cart_item.product_price * quantity
                 cart.cart_total = cart_item.product_price * quantity
                 cart.save()
 
@@ -268,10 +298,12 @@ def add_to_cart(request, product_id):
                 cart_item = CartItem.objects.create(
                     product=product,
                     product_price = product.price,
+                    product_price = product.price,
                     quantity=quantity,
                     cart=cart
                 )
 
+                cart.cart_total = cart_item.product_price * quantity
                 cart.cart_total = cart_item.product_price * quantity
                 cart.save()
 
@@ -338,8 +370,10 @@ def update_cart_item(request, cart_item_id):
                 diff = abs(old_quantity - new_quantity)
                 if new_quantity < old_quantity:
                     cart.cart_total -= cart_item.product_price * diff
+                    cart.cart_total -= cart_item.product_price * diff
                     cart.save()
                 elif new_quantity > old_quantity:
+                    cart.cart_total += cart_item.product_price * diff
                     cart.cart_total += cart_item.product_price * diff
                     cart.save()
             else:
