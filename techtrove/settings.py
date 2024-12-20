@@ -61,6 +61,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -150,14 +151,18 @@ AUTHENTICATION_BACKENDS = ["user_accounts.backends.EmailBackend"]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "/assets/"  # Keep STATIC_URL blank
-STATIC_ROOT = BASE_DIR / "assets"
+STATIC_URL = "/static/"  # Use a consistent static URL
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Standardize with 'staticfiles' for WhiteNoise compatibility
+
 STATICFILES_DIRS = [
-    "techtrove/assets",
+    BASE_DIR / "assets",  # Adjust to point to your actual static directory
 ]
 
-MEDIA_URL = "/photos/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "photos")
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "photos"
+
+# WhiteNoise settings
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 PAYPAL_CLIENT_ID = str(os.getenv("PAYPAL_CLIENT_ID"))
