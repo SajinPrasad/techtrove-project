@@ -7,7 +7,6 @@ asttokens==2.4.1
 bcrypt==3.2.2
 beautifulsoup4==4.12.3
 blinker==1.7.0
-Brlapi
 certifi==2024.2.2
 cffi==1.16.0
 chardet==5.2.0
