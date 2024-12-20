@@ -34,7 +34,6 @@ django-paypal==2.0
 djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 docutils==0.21.2
-duplicity==0.8.21
 et-xmlfile==1.1.0
 fasteners==0.18
 filelock==3.13.1
