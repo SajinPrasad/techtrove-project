@@ -151,10 +151,8 @@ AUTHENTICATION_BACKENDS = ["user_accounts.backends.EmailBackend"]
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "/assets/"  # Keep STATIC_URL blank
-STATIC_ROOT = BASE_DIR / "assets"
-STATICFILES_DIRS = [
-    "techtrove/assets",
-]
+STATICFILES_DIRS = [BASE_DIR / 'static']  # This is for development
+STATIC_ROOT = BASE_DIR / 'staticfiles'   # For production
 
 MEDIA_URL = "/photos/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "photos")
