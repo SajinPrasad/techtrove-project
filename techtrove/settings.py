@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.getenv("SECRET_KEY"))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -151,7 +151,7 @@ AUTHENTICATION_BACKENDS = ["user_accounts.backends.EmailBackend"]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "/static/"  # Use a consistent static URL
+STATIC_URL = "/assets/"  # Use a consistent static URL
 STATIC_ROOT = BASE_DIR / "staticfiles"  # Standardize with 'staticfiles' for WhiteNoise compatibility
 
 STATICFILES_DIRS = [
