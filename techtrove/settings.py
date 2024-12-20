@@ -151,11 +151,14 @@ AUTHENTICATION_BACKENDS = ["user_accounts.backends.EmailBackend"]
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "/assets/"  # Keep STATIC_URL blank
-STATICFILES_DIRS = [BASE_DIR / 'static']  # This is for development
-STATIC_ROOT = BASE_DIR / 'staticfiles'   # For production
+STATIC_ROOT = BASE_DIR / "assets"
+STATICFILES_DIRS = [
+    "techtrove/assets",
+]
 
 MEDIA_URL = "/photos/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "photos")
+
 
 PAYPAL_CLIENT_ID = str(os.getenv("PAYPAL_CLIENT_ID"))
 PAYPAL_SECRET = str(os.getenv("PAYPAL_SECRET"))
