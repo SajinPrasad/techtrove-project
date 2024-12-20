@@ -157,15 +157,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'   # For production
 MEDIA_URL = "/photos/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "photos")
 
-if DEBUG:
-
-    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'assets')]
-
-else:
-
-    STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
-
-
 PAYPAL_CLIENT_ID = str(os.getenv("PAYPAL_CLIENT_ID"))
 PAYPAL_SECRET = str(os.getenv("PAYPAL_SECRET"))
 
