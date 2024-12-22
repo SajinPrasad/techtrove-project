@@ -194,6 +194,8 @@ def soft_delete_product(request, pk):
         return redirect('adminlogin')
     try:
         product = Product.objects.get(pk=pk)
+        product.product_name = product.product_name + "_DELETED"
+        product.slug = product.slug + "_DELETED"
         product.is_deleted = True
         product.save()
         messages.success(request, 'Product successfully deleted.')
