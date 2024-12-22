@@ -61,7 +61,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -151,17 +151,18 @@ AUTHENTICATION_BACKENDS = ["user_accounts.backends.EmailBackend"]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "/assets/"  # Use a consistent static URL
-STATIC_ROOT = BASE_DIR / "staticfiles"  # Standardize with 'staticfiles' for WhiteNoise compatibility
-
+# Static files configuration
+STATIC_URL = "/static/"  # Changed from /assets/ to Django's default
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / "assets",  # Adjust to point to your actual static directory
+    BASE_DIR / "static",  # Changed from assets to static
 ]
 
+# Media files configuration
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "photos"
+MEDIA_ROOT = BASE_DIR / "mediafiles"  # Changed to a dedicated media directory
 
-# WhiteNoise settings
+# WhiteNoise configuration
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
