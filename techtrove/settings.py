@@ -152,11 +152,13 @@ AUTHENTICATION_BACKENDS = ["user_accounts.backends.EmailBackend"]
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 # Static files configuration
-STATIC_URL = "/static/"  # Changed from /assets/ to Django's default
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Changed from assets to static
+    BASE_DIR / "static",
+    BASE_DIR / "techtrove" / "assets",  # Add your original assets directory
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media files configuration
 MEDIA_URL = "/media/"
