@@ -123,7 +123,6 @@ def single_product_admin(request, cat_slug, prod_slug):
     storage_price = None
     color_price = None
     if variations:
-        print("variations und")
         for variation in variations:
             if variation.variation_category == "storage size":
                 storage = "storage"
@@ -133,8 +132,6 @@ def single_product_admin(request, cat_slug, prod_slug):
                 color = "color"
                 if variation.price:
                     color_price = "color price"
-
-    print("Ellam", storage, color, color_price, storage_price)
 
     context = {
         "product": product,
