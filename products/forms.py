@@ -20,7 +20,23 @@ class ProductForm(forms.ModelForm):
         for field in self.fields:
             if field != 'is_available':
                 self.fields[field].widget.attrs['class'] = 'form-control'
+                
+    def clean(self):
+        cleaned_data = super().clean()
+        product_name = cleaned_data.get("product_name")
 
+        # Check for an existing product with the same name
+        existing_product = Product.objects.filter(product_name=product_name).first()
+        
+        if existing_product:
+            if existing_product.is_deleted:
+                print("Found a deleted product with the same name, will reactivate.")
+            else:
+                print("Found an active product with the same name.")
+                raise forms.ValidationError("A product with this name or slug already exists.")
+        
+        return cleaned_data
+    
 ImageFormSet = inlineformset_factory(Product, Image, fields=['image'], extra=1, can_delete=True)
 
     
