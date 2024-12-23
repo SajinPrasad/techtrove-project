@@ -180,6 +180,9 @@ def edit_product(request, pk):
 
         if form.is_valid():
             form.save()
+        else:
+            print("Form errors:", form.errors)
+
 
         if imgform:
             if imgform.is_valid():
