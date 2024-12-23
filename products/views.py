@@ -35,11 +35,11 @@ def add_product(request):
                     # Reactivate the deleted product
                     existing_product.is_deleted = False
                     existing_product.category_id = request.POST.get("category")
-                    existing_product.slug = form.cleaned_data["slug"]
-                    existing_product.description = form.cleaned_data["description"]
-                    existing_product.price = form.cleaned_data["price"]
-                    existing_product.stock = form.cleaned_data["stock"]
-                    existing_product.is_available = form.cleaned_data["is_available"]
+                    existing_product.slug = request.POST.get("slug")
+                    existing_product.description = request.POST.get("description")
+                    existing_product.price = request.POST.get("price")
+                    existing_product.stock = request.POST.get("stock")
+                    existing_product.is_available = True
                     existing_product.save()
 
                     messages.success(request, "Product reactivated.")
@@ -87,8 +87,6 @@ def list_product(request):
         return redirect("adminlogin")
 
     search = request.GET.get("search")
-
-    print(search)
 
     if search:
         products = Product.objects.filter(
